@@ -1,0 +1,973 @@
+<style>
+  .lul-selector {
+    --lul-header: #393348;
+    --lul-text: #333333;
+    --lul-accent: #E0E5C2;
+    --lul-accent-dark: #c9d0a0;
+    --lul-card: #fafaf7;
+    --lul-border: rgba(57, 51, 72, 0.08);
+    --lul-btn-bg: #393347;
+    --lul-btn-bg-hover: #4c4460;
+    --lul-btn-fg: #ffffff;
+    --lul-muted: #6b6577;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--lul-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 0;
+    box-sizing: border-box;
+  }
+  .lul-selector *, .lul-selector *::before, .lul-selector *::after { box-sizing: border-box; }
+
+  /* ---------- Progress bar ---------- */
+  .lul-selector__progress {
+    margin: 0 0 28px;
+  }
+  .lul-selector__progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--lul-border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .lul-selector__progress-fill {
+    height: 100%;
+    background: var(--lul-header);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+  .lul-selector__step-label {
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: var(--lul-muted);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- Page ---------- */
+  .lul-selector__page { display: none; }
+  .lul-selector__page.is-active { display: block; }
+
+  .lul-selector__title {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: var(--lul-header);
+    margin: 0 0 8px;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .lul-selector__subtitle {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.95rem;
+    color: var(--lul-muted);
+    margin: 0 0 24px;
+    line-height: 1.5;
+  }
+
+  /* ---------- Options (radio / checkbox) ---------- */
+  .lul-selector__options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0 0 8px;
+  }
+  .lul-selector__options--single { grid-template-columns: 1fr; }
+
+  .lul-selector__option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--lul-card);
+    border: 1px solid var(--lul-border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--lul-text);
+    user-select: none;
+  }
+  .lul-selector__option:hover {
+    border-color: var(--lul-header);
+    background: #f5f5ee;
+  }
+  .lul-selector__option.is-selected {
+    border-color: var(--lul-header);
+    background: var(--lul-accent);
+  }
+  .lul-selector__option.is-disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .lul-selector__option input {
+    margin: 3px 0 0;
+    accent-color: var(--lul-header);
+    flex-shrink: 0;
+  }
+  .lul-selector__option-text { flex: 1; }
+
+  .lul-selector__hint {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--lul-muted);
+    font-style: italic;
+  }
+
+  /* ---------- Geographic fields ---------- */
+  .lul-selector__geo {
+    margin-top: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .lul-selector__geo.is-active { display: flex; }
+  .lul-selector__field label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--lul-header);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .lul-selector__field select,
+  .lul-selector__field input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--lul-text);
+    background: var(--lul-card);
+    border: 1px solid var(--lul-border);
+    border-radius: 6px;
+    transition: border-color 0.2s ease;
+  }
+  .lul-selector__field select:focus,
+  .lul-selector__field input:focus {
+    outline: none;
+    border-color: var(--lul-header);
+  }
+
+  /* ---------- Nav buttons ---------- */
+  .lul-selector__nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    gap: 12px;
+  }
+  .lul-btn {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 22px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    border-radius: 0;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease, gap 0.25s ease;
+    border: 1px solid var(--lul-btn-bg);
+  }
+  .lul-btn--solid {
+    background: var(--lul-btn-bg);
+    color: var(--lul-btn-fg);
+  }
+  .lul-btn--solid:hover {
+    background: var(--lul-btn-bg-hover);
+    border-color: var(--lul-btn-bg-hover);
+    gap: 12px;
+  }
+  .lul-btn--outline {
+    background: transparent;
+    color: var(--lul-btn-bg);
+  }
+  .lul-btn--outline:hover {
+    background: var(--lul-btn-bg);
+    color: var(--lul-btn-fg);
+  }
+  .lul-btn[disabled],
+  .lul-btn.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .lul-btn--ghost {
+    background: transparent;
+    color: var(--lul-muted);
+    border-color: transparent;
+    padding: 12px 8px;
+  }
+  .lul-btn--ghost:hover {
+    color: var(--lul-header);
+    background: transparent;
+  }
+
+  /* ---------- Result page ---------- */
+  .lul-selector__result-intro {
+    font-size: 1rem;
+    color: var(--lul-muted);
+    margin: 0 0 24px;
+    line-height: 1.5;
+  }
+  .lul-selector__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .lul-rec-card {
+    background: var(--lul-card);
+    border: 1px solid var(--lul-border);
+    border-radius: 8px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+  }
+  .lul-rec-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(57, 51, 72, 0.08);
+  }
+  .lul-rec-card--primary {
+    border-color: var(--lul-header);
+    border-width: 2px;
+  }
+  .lul-rec-card__rank {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--lul-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .lul-rec-card--primary .lul-rec-card__rank { color: var(--lul-header); }
+
+  .lul-rec-card__title {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--lul-header);
+    margin: 0 0 8px;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .lul-rec-card__desc {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--lul-text);
+    margin: 0 0 16px;
+  }
+  .lul-rec-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 16px;
+  }
+  .lul-rec-card__chip {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    background: var(--lul-accent);
+    color: var(--lul-header);
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .lul-rec-card__section-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--lul-muted);
+    font-weight: 500;
+    margin: 12px 0 6px;
+  }
+  .lul-rec-card__list {
+    margin: 0 0 12px;
+    padding-left: 20px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--lul-text);
+  }
+  .lul-rec-card__list li { margin-bottom: 4px; }
+  .lul-rec-card__not {
+    font-size: 0.92rem;
+    color: var(--lul-muted);
+    line-height: 1.5;
+    margin: 4px 0 16px;
+    font-style: italic;
+  }
+  .lul-rec-card__note {
+    background: rgba(224, 229, 194, 0.4);
+    border-left: 3px solid var(--lul-accent-dark);
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    color: var(--lul-header);
+    margin: 8px 0 12px;
+    line-height: 1.5;
+  }
+  .lul-rec-card__cta {
+    align-self: stretch;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--lul-btn-bg);
+    color: var(--lul-btn-fg);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 14px 18px;
+    border-radius: 0;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.25s ease, gap 0.25s ease;
+    white-space: nowrap;
+  }
+  .lul-rec-card__cta:hover {
+    background: var(--lul-btn-bg-hover);
+    gap: 12px;
+  }
+  .lul-rec-card__cta svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+  }
+  .lul-rec-card__cta:hover svg { transform: translateX(2px); }
+
+  .lul-selector__final-prompt {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--lul-header);
+    margin: 8px 0 16px;
+    font-weight: 500;
+  }
+  .lul-selector__final-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 0;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 640px) {
+    .lul-selector__options { grid-template-columns: 1fr; }
+    .lul-selector__title { font-size: 1.4rem; }
+    .lul-selector__nav { flex-direction: column-reverse; align-items: stretch; }
+    .lul-selector__nav .lul-btn { width: 100%; }
+    .lul-selector__final-actions { flex-direction: column; }
+    .lul-selector__final-actions .lul-btn { width: 100%; }
+  }
+</style>
+
+<div class="lul-selector" id="lul-selector">
+
+  <!-- ---------- Progress bar ---------- -->
+  <div class="lul-selector__progress">
+    <div class="lul-selector__progress-track">
+      <div class="lul-selector__progress-fill" id="lul-progress-fill"></div>
+    </div>
+    <div class="lul-selector__step-label" id="lul-step-label">Step 1 of 5</div>
+  </div>
+
+  <!-- ---------- Q1 ---------- -->
+  <div class="lul-selector__page is-active" data-page="q1">
+    <h2 class="lul-selector__title">What best describes you?</h2>
+    <p class="lul-selector__subtitle">Select one.</p>
+    <div class="lul-selector__options" data-input="radio" data-name="q1">
+      <label class="lul-selector__option"><input type="radio" name="q1" value="aggregator"><span class="lul-selector__option-text">Data Aggregator</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="platform"><span class="lul-selector__option-text">GIS Platform</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="technologist"><span class="lul-selector__option-text">Technologist</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="developer"><span class="lul-selector__option-text">Developer / Real Estate Professional</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="environmental"><span class="lul-selector__option-text">Environmental Consultant</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="government"><span class="lul-selector__option-text">Government</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="planner"><span class="lul-selector__option-text">Housing / Transportation Planner</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="lawyer"><span class="lul-selector__option-text">Lawyer / Legal Professional</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="researcher"><span class="lul-selector__option-text">Researcher</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="site"><span class="lul-selector__option-text">Site Selection Professional / Consultant</span></label>
+    </div>
+  </div>
+
+  <!-- ---------- Q2 ---------- -->
+  <div class="lul-selector__page" data-page="q2">
+    <h2 class="lul-selector__title">What are you trying to accomplish?</h2>
+    <p class="lul-selector__subtitle">Select up to 3.</p>
+    <div class="lul-selector__options lul-selector__options--single" data-input="checkbox" data-name="q2" data-max="3">
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="A"><span class="lul-selector__option-text">Assessing development feasibility</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="B"><span class="lul-selector__option-text">Conducting statistical analysis or policy research</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="C"><span class="lul-selector__option-text">Creating demographic cross-tabs</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="D"><span class="lul-selector__option-text">Enhancing an existing data pipeline</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="E"><span class="lul-selector__option-text">Looking up the zoning rules for one specific property</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="F"><span class="lul-selector__option-text">Selecting sites</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="G"><span class="lul-selector__option-text">Understanding district-specific regulations and/or boundaries</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="H"><span class="lul-selector__option-text">Understanding prevailing regulations across a geographic area</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="I"><span class="lul-selector__option-text">Understanding prevailing regulations on a parcel-by-parcel basis</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="J"><span class="lul-selector__option-text">Visualizing and analyzing land uses and/or environmental conditions</span></label>
+    </div>
+    <p class="lul-selector__hint" id="lul-q2-hint">0 of 3 selected.</p>
+  </div>
+
+  <!-- ---------- Q3 ---------- -->
+  <div class="lul-selector__page" data-page="q3">
+    <h2 class="lul-selector__title">What geographic scope are you interested in?</h2>
+    <p class="lul-selector__subtitle">Select one.</p>
+    <div class="lul-selector__options" data-input="radio" data-name="q3_scope">
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="parcel"><span class="lul-selector__option-text">Single Parcel</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="jurisdiction"><span class="lul-selector__option-text">Jurisdiction</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="county"><span class="lul-selector__option-text">County</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="cbsa"><span class="lul-selector__option-text">Metro Area (CBSA)</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="state"><span class="lul-selector__option-text">State</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="country"><span class="lul-selector__option-text">Country</span></label>
+    </div>
+
+    <!-- Conditional geographic fields -->
+    <div class="lul-selector__geo" id="lul-geo-parcel">
+      <div class="lul-selector__field">
+        <label for="lul-geo-parcel-input">Property address or coordinates</label>
+        <input id="lul-geo-parcel-input" type="text" placeholder="e.g., 123 Main St, Springfield, IL">
+      </div>
+    </div>
+
+    <div class="lul-selector__geo" id="lul-geo-state-only">
+      <div class="lul-selector__field">
+        <label for="lul-geo-state-only-select">State</label>
+        <select id="lul-geo-state-only-select"><option value="">Select a state…</option></select>
+      </div>
+    </div>
+
+    <div class="lul-selector__geo" id="lul-geo-state-sub">
+      <div class="lul-selector__field">
+        <label for="lul-geo-state-sub-select">State</label>
+        <select id="lul-geo-state-sub-select"><option value="">Select a state…</option></select>
+      </div>
+      <div class="lul-selector__field">
+        <label for="lul-geo-sub-input" id="lul-geo-sub-label">Jurisdiction</label>
+        <input id="lul-geo-sub-input" type="text" placeholder="Enter name">
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Q4 ---------- -->
+  <div class="lul-selector__page" data-page="q4">
+    <h2 class="lul-selector__title">How much zoning information do you need?</h2>
+    <p class="lul-selector__subtitle">We log many different zoning characteristics, including use treatment, parking requirements, setbacks, and more.</p>
+    <div class="lul-selector__options lul-selector__options--single" data-input="radio" data-name="q4">
+      <label class="lul-selector__option"><input type="radio" name="q4" value="1-2"><span class="lul-selector__option-text">One or two regulations — I need a small set of specific characteristics.</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q4" value="many"><span class="lul-selector__option-text">Many regulations — I need a comprehensive view of regulatory conditions.</span></label>
+    </div>
+  </div>
+
+  <!-- ---------- Q5 ---------- -->
+  <div class="lul-selector__page" data-page="q5">
+    <h2 class="lul-selector__title">How will the data be used?</h2>
+    <p class="lul-selector__subtitle">Select all that apply.</p>
+    <div class="lul-selector__options lul-selector__options--single" data-input="checkbox" data-name="q5">
+      <label class="lul-selector__option"><input type="checkbox" name="q5" value="internal"><span class="lul-selector__option-text">Internal use only</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q5" value="shared"><span class="lul-selector__option-text">Shared externally (e.g., incorporated into a subscription product or platform for third-party users)</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q5" value="public"><span class="lul-selector__option-text">Displayed publicly</span></label>
+    </div>
+  </div>
+
+  <!-- ---------- Result ---------- -->
+  <div class="lul-selector__page" data-page="result">
+    <h2 class="lul-selector__title">Your recommended product<span id="lul-result-plural"></span></h2>
+    <p class="lul-selector__result-intro" id="lul-result-intro">Based on your answers, here's what we'd suggest.</p>
+    <div class="lul-selector__cards" id="lul-result-cards"></div>
+    <p class="lul-selector__final-prompt">Not what you're looking for?</p>
+    <div class="lul-selector__final-actions">
+      <a class="lul-btn lul-btn--solid" href="explore_products_v2.html">Explore all products</a>
+      <a class="lul-btn lul-btn--outline" href="#">Explore services</a>
+    </div>
+  </div>
+
+  <!-- ---------- Nav ---------- -->
+  <div class="lul-selector__nav" id="lul-nav">
+    <button class="lul-btn lul-btn--ghost" id="lul-back-btn" type="button">← Back</button>
+    <button class="lul-btn lul-btn--solid" id="lul-next-btn" type="button" disabled>Next →</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Static data ----------
+  var STATES = [
+    ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
+    ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],
+    ["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],
+    ["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
+    ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],
+    ["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],
+    ["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
+    ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
+    ["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],
+    ["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],
+    ["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
+  ];
+
+  var PRODUCTS = {
+    parcel_reports: {
+      name: "Parcel Reports",
+      desc: "On-demand PDF reports summarizing zoning rules for one specific property.",
+      unit: "Single parcel (address/coordinates)",
+      delivery: "PDF",
+      bestFor: [
+        "Looking up zoning rules for a known property",
+        "Quick lookups without setting up a data pipeline",
+        "Sharing a clean, citable summary"
+      ],
+      notText: "Parcel Reports cover one parcel at a time — for batch parcel data, see Zoning Attributes.",
+      cta: "Buy now"
+    },
+    attributes: {
+      name: "Zoning Attributes",
+      desc: "Parcel-level zoning data delivered as CSV (or geospatial), tailored to the parcels you provide.",
+      unit: "Parcels (as provided by client)",
+      delivery: "CSV (+ GeoPackage, GeoJSON, or Geodatabase as add-on)",
+      bestFor: [
+        "Enhancing an existing data pipeline",
+        "Parcel-by-parcel regulatory analysis",
+        "Targeted lookups across many parcels"
+      ],
+      notText: "Attributes are computed for the parcels you supply — they do not include base or overlay district boundaries themselves.",
+      cta: "Request a quote"
+    },
+    districts: {
+      name: "Zoning Districts",
+      desc: "Raw base and overlay zoning district boundaries with regulatory metadata.",
+      unit: "Zoning district(s), including base and overlay districts",
+      delivery: "CSV (+ GeoPackage, GeoJSON, or Geodatabase as add-on)",
+      bestFor: [
+        "Working directly with raw district polygons",
+        "Building map layers or visual products",
+        "District-specific regulatory analysis"
+      ],
+      notText: "Zoning Districts are raw boundaries — for prevailing regulations across a geographic area, Zoning Slices are usually a better fit.",
+      cta: "Request a quote"
+    },
+    rasters: {
+      name: "Zoning Rasters",
+      desc: "30×30 m raster cells standardizing land use and environmental conditions across a geography.",
+      unit: "30×30 m raster cell",
+      delivery: "GeoTIFF",
+      bestFor: [
+        "Visualizing zoning patterns at scale",
+        "Environmental and land-cover analysis",
+        "Combining with other gridded datasets"
+      ],
+      notText: "Rasters are aggregated into cells — they are not parcel-level and won't show regulations for a specific lot.",
+      cta: "Request a quote"
+    },
+    slices: {
+      name: "Zoning Slices",
+      desc: "Unique base + overlay district combinations with computed prevailing regulations across a geographic area.",
+      unit: "Unique base+overlay district combination",
+      delivery: "CSV (+ GeoPackage, GeoJSON, or Geodatabase as add-on)",
+      bestFor: [
+        "Site selection and feasibility analysis",
+        "Understanding prevailing regulations across an area",
+        "A cost-effective alternative to raw Districts"
+      ],
+      notText: "Zoning Slices are not raw district polygons — if you need raw boundaries, see Zoning Districts.",
+      cta: "Request a quote"
+    },
+    tables: {
+      name: "Zoning Tables",
+      desc: "Statistics summarizing zoning, housing, and demographic conditions at various geographic levels.",
+      unit: "Jurisdiction, census tract, block group, zip code, or other geometry",
+      delivery: "CSV (+ GeoPackage, GeoJSON, or Geodatabase as add-on)",
+      bestFor: [
+        "Statistical analysis and policy research",
+        "Demographic cross-tabs",
+        "Aggregate reporting at standard geographies"
+      ],
+      notText: "Tables are aggregated — for parcel-level or district-level detail, see Attributes or Slices.",
+      cta: "Request a quote"
+    }
+  };
+
+  var STABLE_ORDER = ["parcel_reports","slices","attributes","tables","rasters","districts"];
+
+  // ---------- State ----------
+  var state = {
+    answers: {
+      q1: null,
+      q2: [],
+      q3_scope: null,
+      q3_state: "",
+      q3_sub: "",
+      q4: null,
+      q5: []
+    },
+    pageIdx: 0
+  };
+
+  function getPageOrder() {
+    var pages = ["q1","q2","q3"];
+    if (state.answers.q3_scope === "parcel" || state.answers.q2.indexOf("E") !== -1) {
+      pages.push("result");
+      return pages;
+    }
+    if (q4Relevant()) pages.push("q4");
+    pages.push("q5");
+    pages.push("result");
+    return pages;
+  }
+
+  function q4Relevant() {
+    var triggers = ["A","D","F","G","H","I"];
+    for (var i = 0; i < state.answers.q2.length; i++) {
+      if (triggers.indexOf(state.answers.q2[i]) !== -1) return true;
+    }
+    return false;
+  }
+
+  // ---------- DOM helpers ----------
+  var root = document.getElementById("lul-selector");
+  var pages = root.querySelectorAll(".lul-selector__page");
+  var progressFill = document.getElementById("lul-progress-fill");
+  var stepLabel = document.getElementById("lul-step-label");
+  var backBtn = document.getElementById("lul-back-btn");
+  var nextBtn = document.getElementById("lul-next-btn");
+  var navEl = document.getElementById("lul-nav");
+
+  function showPage(name) {
+    for (var i = 0; i < pages.length; i++) {
+      if (pages[i].getAttribute("data-page") === name) {
+        pages[i].classList.add("is-active");
+      } else {
+        pages[i].classList.remove("is-active");
+      }
+    }
+    var order = getPageOrder();
+    var idx = order.indexOf(name);
+    var totalSteps = order.length - 1; // excluding result
+    var stepNum = Math.min(idx + 1, totalSteps);
+    var pct = name === "result" ? 100 : (stepNum / totalSteps) * 100;
+    progressFill.style.width = pct + "%";
+    if (name === "result") {
+      stepLabel.textContent = "Complete";
+    } else {
+      stepLabel.textContent = "Step " + stepNum + " of " + totalSteps;
+    }
+    backBtn.style.visibility = idx === 0 ? "hidden" : "visible";
+    nextBtn.style.display = name === "result" ? "none" : "inline-flex";
+    if (name === "result") {
+      navEl.style.display = "none";
+    } else {
+      navEl.style.display = "flex";
+    }
+    nextBtn.textContent = (order[idx + 1] === "result") ? "See recommendation →" : "Next →";
+    refreshNextEnabled();
+    if (name === "q3") setupGeoFields();
+    window.scrollTo({ top: root.offsetTop - 20, behavior: "smooth" });
+  }
+
+  function go(direction) {
+    var order = getPageOrder();
+    var current = order[state.pageIdx];
+    var nextIdx = state.pageIdx + direction;
+    if (nextIdx < 0 || nextIdx >= order.length) return;
+    state.pageIdx = nextIdx;
+    var next = order[nextIdx];
+    if (next === "result") renderResult();
+    showPage(next);
+  }
+
+  // ---------- Input handling ----------
+  function bindOptionGroup(groupEl) {
+    var inputType = groupEl.getAttribute("data-input");
+    var name = groupEl.getAttribute("data-name");
+    var max = parseInt(groupEl.getAttribute("data-max") || "0", 10);
+    var inputs = groupEl.querySelectorAll("input");
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].addEventListener("change", function () {
+        if (inputType === "radio") {
+          state.answers[name] = this.value;
+          var labels = groupEl.querySelectorAll(".lul-selector__option");
+          for (var j = 0; j < labels.length; j++) labels[j].classList.remove("is-selected");
+          this.parentNode.classList.add("is-selected");
+          if (name === "q3_scope") setupGeoFields();
+        } else {
+          var arr = state.answers[name];
+          if (this.checked) {
+            if (max && arr.length >= max) {
+              this.checked = false;
+              return;
+            }
+            arr.push(this.value);
+            this.parentNode.classList.add("is-selected");
+          } else {
+            arr.splice(arr.indexOf(this.value), 1);
+            this.parentNode.classList.remove("is-selected");
+          }
+          if (name === "q2") updateQ2State();
+        }
+        refreshNextEnabled();
+      });
+    }
+  }
+
+  function updateQ2State() {
+    var hint = document.getElementById("lul-q2-hint");
+    var count = state.answers.q2.length;
+    hint.textContent = count + " of 3 selected.";
+    var inputs = root.querySelectorAll('input[name="q2"]');
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var label = input.parentNode;
+      if (!input.checked && count >= 3) {
+        input.disabled = true;
+        label.classList.add("is-disabled");
+      } else {
+        input.disabled = false;
+        label.classList.remove("is-disabled");
+      }
+    }
+  }
+
+  function refreshNextEnabled() {
+    var order = getPageOrder();
+    var current = order[state.pageIdx];
+    var ok = false;
+    if (current === "q1") ok = !!state.answers.q1;
+    else if (current === "q2") ok = state.answers.q2.length >= 1;
+    else if (current === "q3") ok = !!state.answers.q3_scope;
+    else if (current === "q4") ok = !!state.answers.q4;
+    else if (current === "q5") ok = state.answers.q5.length >= 1;
+    nextBtn.disabled = !ok;
+  }
+
+  // ---------- Geographic fields ----------
+  function setupGeoFields() {
+    var scope = state.answers.q3_scope;
+    var parcelBox = document.getElementById("lul-geo-parcel");
+    var stateOnly = document.getElementById("lul-geo-state-only");
+    var stateSub = document.getElementById("lul-geo-state-sub");
+    parcelBox.classList.remove("is-active");
+    stateOnly.classList.remove("is-active");
+    stateSub.classList.remove("is-active");
+
+    if (scope === "parcel") parcelBox.classList.add("is-active");
+    else if (scope === "state") stateOnly.classList.add("is-active");
+    else if (scope === "jurisdiction" || scope === "county" || scope === "cbsa") {
+      stateSub.classList.add("is-active");
+      var subLabel = document.getElementById("lul-geo-sub-label");
+      var subInput = document.getElementById("lul-geo-sub-input");
+      if (scope === "jurisdiction") { subLabel.textContent = "Jurisdiction"; subInput.placeholder = "e.g., City of Springfield"; }
+      if (scope === "county")        { subLabel.textContent = "County";       subInput.placeholder = "e.g., Sangamon County"; }
+      if (scope === "cbsa")          { subLabel.textContent = "Metro Area (CBSA)"; subInput.placeholder = "e.g., Springfield, IL Metro Area"; }
+    }
+  }
+
+  function populateStateSelects() {
+    var selects = [document.getElementById("lul-geo-state-only-select"), document.getElementById("lul-geo-state-sub-select")];
+    selects.forEach(function (sel) {
+      STATES.forEach(function (s) {
+        var opt = document.createElement("option");
+        opt.value = s[0];
+        opt.textContent = s[1];
+        sel.appendChild(opt);
+      });
+      sel.addEventListener("change", function () { state.answers.q3_state = this.value; });
+    });
+    document.getElementById("lul-geo-sub-input").addEventListener("input", function () { state.answers.q3_sub = this.value; });
+  }
+
+  // ---------- Algorithm ----------
+  function recommend(a) {
+    var notes = { license: false, discount: false, downsell: false, rastersSecondary: false };
+
+    // ----- Stage A: hard overrides -----
+    if (a.q3_scope === "parcel") {
+      return finalize(["parcel_reports"], notes, a, true);
+    }
+    if (a.q2.indexOf("E") !== -1) {
+      return finalize(["parcel_reports"], notes, a, true);
+    }
+    if (a.q5.indexOf("shared") !== -1 || a.q5.indexOf("public") !== -1) notes.license = true;
+    if (a.q1 === "government") notes.discount = true;
+
+    // ----- Stage B: scoring -----
+    var scores = { parcel_reports: 0, attributes: 0, districts: 0, rasters: 0, slices: 0, tables: 0 };
+
+    var q2W = {
+      A: { slices: 10, attributes: 7 },
+      B: { tables: 10 },
+      C: { tables: 10 },
+      D: { attributes: 10 },
+      F: { slices: 10, attributes: 7 },
+      G: { districts: 10 },
+      H: { slices: 10 },
+      I: { slices: 10, attributes: 7 },
+      J: { rasters: 10 }
+    };
+    a.q2.forEach(function (code) {
+      var w = q2W[code];
+      if (!w) return;
+      Object.keys(w).forEach(function (p) { scores[p] += w[p]; });
+    });
+
+    if (a.q4 === "1-2") scores.attributes += 5;
+    else if (a.q4 === "many") { scores.slices += 5; scores.districts += 5; }
+
+    var q3W = { county: { slices: 2 }, cbsa: { slices: 2 }, state: { tables: 2 }, country: { tables: 2 } };
+    var n = q3W[a.q3_scope];
+    if (n) Object.keys(n).forEach(function (p) { scores[p] += n[p]; });
+
+    // ----- Stage A.5: explicit rules -----
+    var isResearcherOrGov = a.q1 === "researcher" || a.q1 === "government";
+    var bAndNarrowRegs = a.q2.indexOf("B") !== -1 && a.q4 === "1-2";
+    if (isResearcherOrGov || bAndNarrowRegs) {
+      scores.tables += 10; // P4
+    }
+    var isPlatform = a.q1 === "aggregator" || a.q1 === "platform" || a.q1 === "technologist";
+    if (isPlatform && a.q2.indexOf("D") === -1) {
+      scores.districts += 8; // P7
+      scores.attributes += 5;
+    }
+    if (a.q2.indexOf("H") !== -1) notes.rastersSecondary = true; // P6
+
+    // ----- Tiebreakers + downsell -----
+    var sorted = Object.entries(scores).sort(function (x, y) {
+      if (y[1] !== x[1]) return y[1] - x[1];
+      return STABLE_ORDER.indexOf(x[0]) - STABLE_ORDER.indexOf(y[0]);
+    });
+
+    // Districts vs Slices tie → Slices for non-platform
+    if (sorted.length > 1 && Math.abs(sorted[0][1] - sorted[1][1]) <= 3 && !isPlatform) {
+      var topProds = [sorted[0][0], sorted[1][0]];
+      if (topProds.indexOf("districts") !== -1 && topProds.indexOf("slices") !== -1 && sorted[0][0] === "districts") {
+        var tmp = sorted[0]; sorted[0] = sorted[1]; sorted[1] = tmp;
+      }
+    }
+
+    // Downsell post-pass
+    if (sorted[0][0] === "districts" && !isPlatform) {
+      var slicesIdx = sorted.findIndex(function (s) { return s[0] === "slices"; });
+      if (slicesIdx !== -1) {
+        var slicesEntry = sorted[slicesIdx];
+        sorted.splice(slicesIdx, 1);
+        sorted.unshift(slicesEntry);
+      } else {
+        sorted.unshift(["slices", sorted[0][1]]);
+      }
+      notes.downsell = true;
+    }
+
+    // ----- Card selection -----
+    var top = sorted[0][1];
+    if (top <= 0) {
+      return finalize([], notes, a, false);
+    }
+    var threshold = top * 0.6;
+    var picks = sorted.filter(function (s) { return s[1] >= threshold; }).slice(0, 3).map(function (s) { return s[0]; });
+
+    // P6: ensure rasters appears
+    if (notes.rastersSecondary && picks.indexOf("rasters") === -1) {
+      if (picks.length >= 3) picks[2] = "rasters";
+      else picks.push("rasters");
+    }
+
+    return finalize(picks, notes, a, false);
+  }
+
+  function finalize(picks, notes, a, terminal) {
+    return { picks: picks, notes: notes, terminal: terminal };
+  }
+
+  // ---------- Render result ----------
+  function renderResult() {
+    var rec = recommend(state.answers);
+    var cardsEl = document.getElementById("lul-result-cards");
+    cardsEl.innerHTML = "";
+
+    document.getElementById("lul-result-plural").textContent = rec.picks.length > 1 ? "s" : "";
+
+    var intro;
+    if (rec.terminal) intro = "Based on your scope, this is the right fit.";
+    else if (rec.picks.length === 1) intro = "Based on your answers, here's the product that best matches your needs.";
+    else intro = "Based on your answers, here are the products that best match — ranked by fit.";
+    document.getElementById("lul-result-intro").textContent = intro;
+
+    rec.picks.forEach(function (key, idx) {
+      cardsEl.appendChild(buildCard(key, idx, rec));
+    });
+  }
+
+  function buildCard(key, idx, rec) {
+    var p = PRODUCTS[key];
+    if (!p) return document.createElement("div");
+    var card = document.createElement("div");
+    card.className = "lul-rec-card" + (idx === 0 ? " lul-rec-card--primary" : "");
+
+    var rankLabel;
+    if (rec.picks.length === 1) rankLabel = "Recommended";
+    else if (idx === 0) rankLabel = "Top recommendation";
+    else if (idx === 1) rankLabel = "Also consider";
+    else rankLabel = "Complementary";
+
+    var noteHtml = "";
+    if (idx === 0 && rec.notes.downsell && key === "slices") {
+      noteHtml += '<div class="lul-rec-card__note">Most clients who think they need Zoning Districts actually get what they need from Zoning Slices, which are computed from the same underlying data at a fraction of the cost. Zoning Districts are best when you need the raw boundary polygons themselves.</div>';
+    }
+    if (key === "rasters" && rec.notes.rastersSecondary && idx > 0) {
+      noteHtml += '<div class="lul-rec-card__note">Rasters can complement Slices when visualizing land-use patterns at scale.</div>';
+    }
+    if (rec.notes.license) {
+      noteHtml += '<div class="lul-rec-card__note">This use case requires a redistribution license. We\'ll be in touch to discuss terms.</div>';
+    }
+    if (rec.notes.discount) {
+      noteHtml += '<div class="lul-rec-card__note">You may qualify for our 50% .gov/.edu discount. Confirm with your institutional email during checkout.</div>';
+    }
+
+    var bestFor = p.bestFor.map(function (b) { return "<li>" + b + "</li>"; }).join("");
+    var arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
+
+    card.innerHTML =
+      '<div class="lul-rec-card__rank">' + rankLabel + '</div>' +
+      '<h3 class="lul-rec-card__title">' + p.name + '</h3>' +
+      '<p class="lul-rec-card__desc">' + p.desc + '</p>' +
+      '<div class="lul-rec-card__meta">' +
+        '<span class="lul-rec-card__chip">' + p.unit + '</span>' +
+        '<span class="lul-rec-card__chip">' + p.delivery + '</span>' +
+      '</div>' +
+      '<div class="lul-rec-card__section-title">Best for</div>' +
+      '<ul class="lul-rec-card__list">' + bestFor + '</ul>' +
+      '<div class="lul-rec-card__section-title">What it\'s not</div>' +
+      '<p class="lul-rec-card__not">' + p.notText + '</p>' +
+      noteHtml +
+      '<a class="lul-rec-card__cta" href="mailto:hello@landuselabs.com?subject=' + encodeURIComponent("Product inquiry: " + p.name) + '">' + p.cta + ' ' + arrow + '</a>';
+
+    return card;
+  }
+
+  // ---------- Init ----------
+  function init() {
+    var groups = root.querySelectorAll("[data-input]");
+    for (var i = 0; i < groups.length; i++) bindOptionGroup(groups[i]);
+    populateStateSelects();
+    backBtn.addEventListener("click", function () { go(-1); });
+    nextBtn.addEventListener("click", function () { go(1); });
+    showPage("q1");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>

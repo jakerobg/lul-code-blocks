@@ -1,0 +1,124 @@
+/*
+  Shared styles for Land Use Labs product/dictionary cards.
+  Kept as a reference / source of truth — the HTML files below
+  still embed their own copies so they stay paste-ready for Squarespace.
+
+  Used by:
+    - explore_products_v2.html  (carousel of product cards)
+    - dictionaries.html         (static grid of dictionary cards)
+*/
+
+/* ---------- Tokens ---------- */
+.lul-products,
+.lul-dicts {
+  --lul-header: #393348;
+  --lul-text: #333333;
+  --lul-accent: #E0E5C2;
+  --lul-accent-dark: #c9d0a0;
+  --lul-card: #fafaf7;
+  --lul-border: rgba(57, 51, 72, 0.08);
+  --lul-btn-bg: #393347;
+  --lul-btn-bg-hover: #4c4460;
+  --lul-btn-fg: #ffffff;
+
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--lul-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 8px 0;
+  box-sizing: border-box;
+}
+.lul-products *, .lul-products *::before, .lul-products *::after,
+.lul-dicts *,    .lul-dicts *::before,    .lul-dicts *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Card shell ---------- */
+.lul-card {
+  background: var(--lul-card);
+  border: 1px solid var(--lul-border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+}
+.lul-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(57, 51, 72, 0.08);
+}
+
+/* ---------- Media ---------- */
+.lul-card__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  position: relative;
+}
+.lul-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease;
+}
+.lul-card:hover .lul-card__media img { transform: scale(1.01); }
+
+/* ---------- Body ---------- */
+.lul-card__body {
+  padding: 28px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.lul-card__title {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  color: var(--lul-header);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+.lul-card__desc {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--lul-text);
+  margin: 0 0 24px;
+  flex: 1;
+}
+
+/* ---------- Button ---------- */
+.lul-card__btn {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--lul-btn-bg);
+  color: var(--lul-btn-fg);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 14px 18px;
+  border-radius: 0;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.25s ease, gap 0.25s ease;
+}
+.lul-card__btn:hover {
+  background: var(--lul-btn-bg-hover);
+  gap: 12px;
+}
+.lul-card__btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.25s ease;
+}
+.lul-card__btn:hover svg { transform: translateX(2px); }

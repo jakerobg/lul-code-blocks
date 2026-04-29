@@ -1,0 +1,174 @@
+<style>
+  .lul-hero {
+    --lul-header: #393348;
+    --lul-accent: #E0E5C2;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--lul-header);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 80px 24px;
+    text-align: center;
+  }
+  .lul-hero *, .lul-hero *::before, .lul-hero *::after { box-sizing: border-box; }
+
+  .lul-hero__headline {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: clamp(4.25rem, 6.5vw, 5.35rem); /* ~64.3pt at top end */
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--lul-header);
+  }
+
+  .lul-hero__rotator {
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    color: var(--lul-header);
+    font-style: italic;
+  }
+  .lul-hero__word {
+    display: inline;
+    background: #E0E5C2;
+    padding: 0.0em 0.05em;
+    border-radius: 0.01em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .lul-hero__caret {
+    display: inline-block;
+    width: 0.06em;
+    height: 0.95em;
+    background: currentColor;
+    margin-left: 0.06em;
+    vertical-align: -0.12em;
+    animation: lul-hero-blink 1s steps(1) infinite;
+  }
+  @keyframes lul-hero-blink {
+    50% { opacity: 0; }
+  }
+
+  .lul-hero__actions {
+    margin-top: clamp(28px, 4vw, 48px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .lul-hero__btn {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 14px 26px;
+    border-radius: 0;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    border: 1px solid #393347;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease, gap 0.25s ease;
+  }
+  .lul-hero__btn--primary {
+    background: #393347;
+    color: #ffffff;
+  }
+  .lul-hero__btn--primary:hover {
+    background: #4c4460;
+    border-color: #4c4460;
+    gap: 12px;
+  }
+  .lul-hero__btn--secondary {
+    background: transparent;
+    color: #393347;
+  }
+  .lul-hero__btn--secondary:hover {
+    background: #393347;
+    color: #ffffff;
+    gap: 12px;
+  }
+  .lul-hero__or {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--lul-header);
+    font-size: 1rem;
+    opacity: 0.7;
+  }
+  .lul-hero__btn svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.25s ease;
+  }
+  .lul-hero__btn:hover svg { transform: translateX(2px); }
+</style>
+
+<section class="lul-hero" aria-label="Data built for your use case">
+  <h1 class="lul-hero__headline">
+    Data built for <span class="lul-hero__rotator"><span class="lul-hero__word" id="lul-hero-word"></span><span class="lul-hero__caret" aria-hidden="true"></span></span>
+  </h1>
+  <div class="lul-hero__actions">
+    <a class="lul-hero__btn lul-hero__btn--primary" href="https://www.landuselabs.com/#explore">Find your product
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 10h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <span class="lul-hero__or">or</span>
+    <a class="lul-hero__btn lul-hero__btn--secondary" href="https://www.landuselabs.com/services">Explore services
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 10h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const words = [
+      "research",
+      "advocacy",
+      "visualization",
+      "integration",
+      "planning"
+    ];
+
+    const el = document.getElementById("lul-hero-word");
+    if (!el) return;
+
+    const typeSpeed = 70;       // ms per char while typing
+    const deleteSpeed = 80;     // ms per char while deleting
+    const holdFull = 1400;      // pause when word is fully typed
+    const holdEmpty = 100;      // pause before starting next word
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function tick() {
+      const current = words[wordIndex];
+
+      //IF NOT DELETING (detault) - type one word at a time until index = len of word
+      if (!deleting) {
+        charIndex++;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === current.length) {
+          deleting = true;
+          return setTimeout(tick, holdFull);
+        }
+        return setTimeout(tick, typeSpeed);
+      }
+
+      //IF DELETING 
+      charIndex--;
+      el.textContent = current.slice(0, charIndex);
+      if (charIndex === 0) {
+        deleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+        return setTimeout(tick, holdEmpty);
+      }
+      setTimeout(tick, deleteSpeed);
+    }
+
+    setTimeout(tick, 400);
+  })();
+</script>

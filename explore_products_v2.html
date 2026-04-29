@@ -1,0 +1,295 @@
+<style>
+  .lul-products {
+    --lul-header: #393348;
+    --lul-text: #333333;
+    --lul-accent: #E0E5C2;
+    --lul-accent-dark: #c9d0a0;
+    --lul-card: #fafaf7;
+    --lul-border: rgba(57, 51, 72, 0.08);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--lul-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 8px 0;
+    box-sizing: border-box;
+    position: relative;
+  }
+  .lul-products *, .lul-products *::before, .lul-products *::after { box-sizing: border-box; }
+
+  .lul-carousel {
+    position: relative;
+  }
+  .lul-carousel::before,
+  .lul-carousel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .lul-carousel::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(224,229,194,0.95), rgba(224,229,194,0));
+  }
+  .lul-carousel::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(224,229,194,0.95), rgba(224,229,194,0));
+  }
+  .lul-carousel.has-prev::before { opacity: 1; }
+  .lul-carousel.has-next::after { opacity: 1; }
+
+  .lul-track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 60px;
+    scroll-padding-right: 60px;
+    scroll-behavior: smooth;
+    padding: 12px 60px 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .lul-track::-webkit-scrollbar { display: none; }
+
+  .lul-card {
+    flex: 0 0 calc((100% - 24px * 3) / 4);
+    min-width: 300px;
+    scroll-snap-align: start;
+    background: var(--lul-card);
+    border: 1px solid var(--lul-border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+  }
+  .lul-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(57, 51, 72, 0.08);
+  }
+
+  .lul-card__media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    position: relative;
+  }
+  .lul-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+  .lul-card:hover .lul-card__media img { transform: scale(1.01); }
+
+  .lul-card__body {
+    padding: 28px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .lul-card__title {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.9rem;
+    font-weight: 500;
+    color: var(--lul-header);
+    margin: 0 0 12px;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  .lul-card__desc {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--lul-text);
+    margin: 0 0 24px;
+    flex: 1;
+  }
+  .lul-card__btn {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #393347;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 14px 18px;
+    border-radius: 0;
+    transition: background 0.25s ease, gap 0.25s ease;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .lul-card__btn:hover {
+    background: #4c4460;
+    gap: 12px;
+  }
+  .lul-card__btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.25s ease;
+  }
+  .lul-card__btn:hover svg { transform: translateX(2px); }
+
+  .lul-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--lul-border);
+    box-shadow: 0 2px 6px rgba(57, 51, 72, 0.12);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--lul-header);
+    z-index: 2;
+    transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+    padding: 0;
+  }
+  .lul-nav:hover { background: var(--lul-accent); }
+  .lul-nav:disabled { opacity: 0.35; cursor: default; }
+  .lul-nav svg { width: 16px; height: 16px; }
+  .lul-nav--prev { left: 4px; }
+  .lul-nav--next { right: 4px; }
+
+  @media (max-width: 1100px) {
+    .lul-card { flex: 0 0 calc((100% - 24px * 2) / 3); }
+  }
+  @media (max-width: 820px) {
+    .lul-card { flex: 0 0 calc((100% - 24px) / 2); }
+  }
+  @media (max-width: 640px) {
+    .lul-products { padding: 4px 4px; }
+    .lul-track {
+      gap: 16px;
+      padding: 8px 20px 12px;
+      scroll-padding-left: 20px;
+      scroll-padding-right: 20px;
+    }
+    .lul-card { flex: 0 0 85%; min-width: 260px; max-width: 420px; }
+    .lul-card__body { padding: 22px 22px 26px; }
+    .lul-card__title { font-size: 1.5rem; }
+  }
+</style>
+
+<section class="lul-products" aria-label="Explore Our Products">
+  <div class="lul-carousel">
+    <button class="lul-nav lul-nav--prev" type="button" aria-label="Previous">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M13 4l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="lul-track" id="lul-products-track"></div>
+    <button class="lul-nav lul-nav--next" type="button" aria-label="Next">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const products = [
+      {
+        title: "Parcel Reports",
+        desc: "Comprehensive information about applicable zoning regulations.",
+        img: "https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/476ed804-b6f4-4467-8c99-c5e32e436f0a/parcels1.png?format=2500w",
+        href: "https://www.landuselabs.com/reports"
+      },
+      {
+        title: "Zoning Attributes",
+        desc: "Integrate into your data pipeline to show how regulatory outcomes affect individual parcels or addresses.",
+        img: "https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/6edf6009-9a37-4664-b14a-5a8b1557ffcf/districts.png?format=2500w",
+        href: "https://www.landuselabs.com/attributes"
+      },
+      {
+        title: "Zoning Districts",
+        desc: "Our premier product offers customized regulatory information built to meet your needs.",
+        img: "https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/9d91e4bd-bc6d-4bc0-957a-a4d8d759ea89/districts_updated.png?format=2500w",
+        href: "https://www.landuselabs.com/districts"
+      },
+      {
+        title: "Zoning Rasters",
+        desc: "Show the future of our places. They standardize the residential and nonresidential uses allowed in 30x30 meter grid cells.",
+        img: "https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/97ec9f62-ef33-4292-83a2-77ff759d3c96/raster+updated.png?format=2500w",
+        href: "https://www.landuselabs.com/rasters"
+      },
+      {
+        title: "Zoning Slices",
+        desc: "The only product on the market that combines base and overlay districts into unique geometric combinations (\u201Cslices\u201D) that compute prevailing regulations.",
+        img: "https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/9e7b5122-eef7-4692-ba53-1c3169978bf0/slices_updated.png?format=2500w",
+        href: "https://www.landuselabs.com/slices"
+      },
+      {
+        title: "Zoning Tables",
+        desc: "Provide statistics by geographic area for nearly fifty land cover, demographic, housing, and zoning characteristics.",
+        img: "https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/ef841a28-ba11-455e-a291-f94fc1a6b9ec/table.png?format=1500w",
+        href: "https://www.landuselabs.com/tables"
+      }
+    ];
+
+    const arrow = '<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 10h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    const track = document.getElementById("lul-products-track");
+    if (!track) return;
+
+    track.innerHTML = products.map(function (p) {
+      return '<article class="lul-card">' +
+               '<div class="lul-card__media">' +
+                 '<img src="' + p.img + '" alt="' + p.title + '" loading="lazy" />' +
+               '</div>' +
+               '<div class="lul-card__body">' +
+                 '<h3 class="lul-card__title">' + p.title + '</h3>' +
+                 '<p class="lul-card__desc">' + p.desc + '</p>' +
+                 '<a class="lul-card__btn" href="' + p.href + '">Learn more ' + arrow + '</a>' +
+               '</div>' +
+             '</article>';
+    }).join("");
+
+    const carousel = track.parentElement;
+    const prev = carousel.querySelector(".lul-nav--prev");
+    const next = carousel.querySelector(".lul-nav--next");
+
+    function step() {
+      const card = track.querySelector(".lul-card");
+      if (!card) return 300;
+      return card.getBoundingClientRect().width + 20;
+    }
+
+    function updateButtons() {
+      const maxScroll = track.scrollWidth - track.clientWidth - 1;
+      const atStart = track.scrollLeft <= 0;
+      const atEnd = track.scrollLeft >= maxScroll;
+      prev.disabled = atStart;
+      next.disabled = atEnd;
+      carousel.classList.toggle("has-prev", !atStart);
+      carousel.classList.toggle("has-next", !atEnd && maxScroll > 0);
+    }
+
+    prev.addEventListener("click", function () {
+      track.scrollBy({ left: -step(), behavior: "smooth" });
+    });
+    next.addEventListener("click", function () {
+      track.scrollBy({ left: step(), behavior: "smooth" });
+    });
+    track.addEventListener("scroll", updateButtons, { passive: true });
+    window.addEventListener("resize", updateButtons);
+    updateButtons();
+  })();
+</script>
