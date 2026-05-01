@@ -54,7 +54,6 @@ Checked first, in order. Terminal overrides return immediately. Annotation overr
 | A1 | Q3 = Single Parcel | **Terminal.** Recommend Parcel Reports. Skip Q4/Q5. |
 | A2 | Q2 includes E | **Terminal.** Recommend Parcel Reports. |
 | A3 | Q5 includes "Shared externally" OR "Displayed publicly" | Append redistribution-license note: *"This use case requires a redistribution license. We'll be in touch to discuss terms."* |
-| A4 | Q1 = Government | Append discount note: *"You may qualify for our 50% .gov/.edu discount. Confirm with your institutional email during checkout."* (Open question: should Researcher also trigger this for academic discount?) |
 
 ---
 
@@ -234,10 +233,9 @@ Below the cards (inside the block):
 ### Example 8 — Government with cross-tabs
 **Inputs:** Q1 = Government, Q2 = [B, C], Q3 = Country, Q4 = (skipped), Q5 = [Internal]
 
-- Stage A4: discount note attached.
 - Stage B: B → Tables +10. C → Tables +10. Q3 Country → Tables +2. **Tables = 22.**
 - Stage A.5 P4: Gov + B → Tables +10. **Tables = 32.**
-- **Result:** Tables (single card) with .gov discount note.
+- **Result:** Tables (single card).
 
 ### Example 9 — Environmental consultant visualizing land use
 **Inputs:** Q1 = Environmental Consultant, Q2 = [J], Q3 = State, Q4 = (skipped — J doesn't trigger), Q5 = [Internal]
@@ -311,9 +309,8 @@ Below the cards (inside the block):
 
 ## Open Questions / Decisions to Revisit
 
-1. **Academic discount eligibility for Researchers.** A4 currently fires only on Q1 = Government. Should Q1 = Researcher also trigger the .gov/.edu discount note? The doc says "Government or Academic" but Academic isn't a Q1 option.
-2. **Q1 soft nudges.** Deferred. Re-enable the +3 weights when ready.
-3. **Q4 follow-up question** (the "specific uses / specific regulations" deep-dive). Per doc, this only matters for Attributes / Districts / Slices recommendations. Not implemented in v1 — flag for v2.
+1. **Q1 soft nudges.** Deferred. Re-enable the +3 weights when ready.
+2. **Q4 follow-up question** (the "specific uses / specific regulations" deep-dive). Per doc, this only matters for Attributes / Districts / Slices recommendations. Not implemented in v1 — flag for v2.
 
 ## Resolved
 

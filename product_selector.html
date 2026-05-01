@@ -788,7 +788,7 @@
 
   // ---------- Algorithm ----------
   function recommend(a) {
-    var notes = { license: false, discount: false, downsell: false, rastersSecondary: false };
+    var notes = { license: false, downsell: false, rastersSecondary: false };
 
     // ----- Stage A: hard overrides -----
     if (a.q3_scope === "parcel") {
@@ -798,7 +798,6 @@
       return finalize(["parcel_reports"], notes, a, true);
     }
     if (a.q5.indexOf("shared") !== -1 || a.q5.indexOf("public") !== -1) notes.license = true;
-    if (a.q1 === "government") notes.discount = true;
 
     // ----- Stage B: scoring -----
     var scores = { parcel_reports: 0, attributes: 0, districts: 0, rasters: 0, slices: 0, tables: 0 };
@@ -928,9 +927,6 @@
     }
     if (rec.notes.license) {
       noteHtml += '<div class="lul-rec-card__note">This use case requires a redistribution license. We\'ll be in touch to discuss terms.</div>';
-    }
-    if (rec.notes.discount) {
-      noteHtml += '<div class="lul-rec-card__note">You may qualify for our 50% .gov/.edu discount. Confirm with your institutional email during checkout.</div>';
     }
 
     var bestFor = p.bestFor.map(function (b) { return "<li>" + b + "</li>"; }).join("");
