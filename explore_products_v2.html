@@ -249,7 +249,12 @@
     const track = document.getElementById("lul-products-track");
     if (!track) return;
 
-    track.innerHTML = products.map(function (p) {
+    // Render many copies of the list so the carousel feels effectively infinite.
+    const COPIES = 8;
+    const cards = [];
+    for (let i = 0; i < COPIES; i++) cards.push.apply(cards, products);
+
+    track.innerHTML = cards.map(function (p) {
       return '<article class="lul-card">' +
                '<div class="lul-card__media">' +
                  '<img src="' + p.img + '" alt="' + p.title + '" loading="lazy" />' +
