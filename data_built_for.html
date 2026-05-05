@@ -8,7 +8,7 @@
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     box-sizing: border-box;
-    padding: 80px 24px 0;
+    padding: 50px 24px 90px;
     text-align: center;
   }
   .lul-hero *, .lul-hero *::before, .lul-hero *::after { box-sizing: border-box; }
@@ -16,7 +16,7 @@
   .lul-hero__headline {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 500;
-    font-size: clamp(4.25rem, 6.5vw, 5.35rem); /* ~64.3pt at top end */
+    font-size: clamp(4.00rem, 6.5vw, 5.35rem); /* ~64.3pt at top end */
     line-height: 1.1;
     letter-spacing: -0.02em;
     margin: 0;
@@ -49,6 +49,18 @@
   }
   @keyframes lul-hero-blink {
     50% { opacity: 0; }
+  }
+
+  @media (max-width: 800px) {
+    .lul-hero { padding: 50px 18px 50px; }
+    .lul-hero__headline { font-size: clamp(2.5rem, 11vw, 3.5rem); }
+    .lul-hero__rotator { display: block; margin-top: 0.1em; }
+  }
+  
+  @media (max-width: 767px) {
+    .lul-hero { padding: 50px 18px 10px; }
+    .lul-hero__headline { font-size: clamp(2.5rem, 11vw, 3.5rem); }
+    .lul-hero__rotator { display: block; margin-top: 0.1em; }
   }
 
   .lul-hero__subhead {
@@ -124,7 +136,7 @@
   </h1>
   <p class="lul-hero__subhead">Land Use Labs packages best-in-class zoning data with the accuracy and coverage your work demands.</p>
   <div class="lul-hero__actions">
-    <a class="lul-hero__btn lul-hero__btn--primary" href="https://www.landuselabs.com/#explore">Find your product
+    <a class="lul-hero__btn lul-hero__btn--primary" href="https://www.landuselabs.com/product-selection-test">Find your product
       <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 10h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </a>
     <span class="lul-hero__or">or</span>
@@ -150,7 +162,7 @@
     const typeSpeed = 70;       // ms per char while typing
     const deleteSpeed = 80;     // ms per char while deleting
     const holdFull = 1400;      // pause when word is fully typed
-    const holdEmpty = 100;      // pause before starting next word
+    const holdEmpty = 200;      // pause before starting next word
 
     let wordIndex = 0;
     let charIndex = 0;
