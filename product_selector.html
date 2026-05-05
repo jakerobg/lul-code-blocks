@@ -565,7 +565,7 @@
         "Understanding a large number (5 or more) of prevailing rules across a geographic area",
         "Selecting sites"
       ],
-      notText: "Zoning Slices compute prevailing rules by combining base and overlay districts and are ready-made for advanced analysis. If you need district-specific rules, choose Zoning Districts.",
+      notText: "Zoning Slices compute prevailing rules by combining base and overlay districts and are ready-made for advanced analysis.",
       cta: "Request a quote"
     },
     tables: {
@@ -989,7 +989,7 @@
     var bestFor = p.bestFor.map(function (b) { return "<li>" + b + "</li>"; }).join("");
     var arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
 
-    var ctaHref = p.ctaHref || ("mailto:hello@landuselabs.com?subject=" + encodeURIComponent("Product inquiry: " + p.name));
+    var ctaHref = p.ctaHref || ("mailto:info@landuselabs.com?subject=" + encodeURIComponent("Product inquiry: " + p.name));
 
     card.innerHTML =
       '<div class="lul-rec-card__rank">' + rankLabel + '</div>' +
