@@ -277,9 +277,14 @@
     margin: 8px 0 12px;
     line-height: 1.5;
   }
-  .lul-rec-card__cta {
-    align-self: stretch;
+  .lul-rec-card__cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
     margin-top: 8px;
+  }
+  .lul-rec-card__cta {
+    flex: 1 1 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -291,15 +296,25 @@
     font-size: 1rem;
     padding: 14px 18px;
     border-radius: 0;
-    border: none;
+    border: 1px solid var(--lul-btn-bg);
     cursor: pointer;
     letter-spacing: 0.02em;
-    transition: background 0.25s ease, gap 0.25s ease;
+    transition: background 0.25s ease, color 0.25s ease, gap 0.25s ease;
     white-space: nowrap;
   }
   .lul-rec-card__cta:hover {
     background: var(--lul-btn-bg-hover);
+    border-color: var(--lul-btn-bg-hover);
     gap: 12px;
+  }
+  .lul-rec-card__cta--secondary {
+    background: transparent;
+    color: var(--lul-btn-bg);
+  }
+  .lul-rec-card__cta--secondary:hover {
+    background: var(--lul-btn-bg);
+    color: var(--lul-btn-fg);
+    border-color: var(--lul-btn-bg);
   }
   .lul-rec-card__cta svg {
     width: 16px;
@@ -456,7 +471,8 @@
         "Conducting due diligence"
       ],
       notText: "Parcel Reports cover one parcel at a time. Other products, like Zoning Slices and Zoning Districts, cover larger numbers of parcels.",
-      cta: "Buy now"
+      cta: "Buy now",
+      learnHref: "https://www.landuselabs.com/reports"
     },
     districts: {
       name: "Zoning Districts",
@@ -468,7 +484,8 @@
         "Conducting statistical analysis or policy research"
       ],
       notText: "Zoning Districts offer information about base and overlay districts. If you need a computation of prevailing rules, choose Zoning Slices.",
-      cta: "Request a quote"
+      cta: "Request a quote",
+      learnHref: "https://www.landuselabs.com/districts"
     },
     rasters: {
       name: "Zoning Rasters",
@@ -480,7 +497,8 @@
         "Conducting high-level analysis, planning, and data integration"
       ],
       notText: "Zoning Rasters show land uses permitted under current zoning rules at high resolution; they do not show parcel-level rules. If you need parcel-specific information, consider Parcel Reports (one parcel at a time) or Zoning Slices (many parcels).",
-      cta: "Request a quote"
+      cta: "Request a quote",
+      learnHref: "https://www.landuselabs.com/rasters"
     },
     slices: {
       name: "Zoning Slices",
@@ -493,7 +511,8 @@
         "Enhancing an existing data pipeline"
       ],
       notText: "Zoning Slices compute prevailing rules by combining base and overlay districts and are ready-made for advanced analysis. If you need district-specific rules, choose Zoning Districts.",
-      cta: "Request a quote"
+      cta: "Request a quote",
+      learnHref: "https://www.landuselabs.com/slices"
     },
     tables: {
       name: "Zoning Tables",
@@ -505,7 +524,8 @@
         "Creating demographic cross-tabs"
       ],
       notText: "Zoning Tables summarize regulatory information for cross-geographic comparisons. For parcel-specific or district-specific rules, see Zoning Slices or Zoning Districts.",
-      cta: "Request a quote"
+      cta: "Request a quote",
+      learnHref: "https://www.landuselabs.com/tables"
     },
     services: {
       name: "Services",
@@ -880,6 +900,9 @@
     var arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>';
 
     var ctaHref = p.ctaHref || ("mailto:info@landuselabs.com?subject=" + encodeURIComponent("Product inquiry: " + p.name));
+    var learnBtn = p.learnHref
+      ? '<a class="lul-rec-card__cta lul-rec-card__cta--secondary" href="' + p.learnHref + '">Learn more ' + arrow + '</a>'
+      : '';
 
     card.innerHTML =
       '<div class="lul-rec-card__rank">' + rankLabel + '</div>' +
@@ -894,7 +917,10 @@
       '<div class="lul-rec-card__section-title">More details</div>' +
       '<p class="lul-rec-card__not">' + p.notText + '</p>' +
       noteHtml +
-      '<a class="lul-rec-card__cta" href="' + ctaHref + '">' + p.cta + ' ' + arrow + '</a>';
+      '<div class="lul-rec-card__cta-row">' +
+        '<a class="lul-rec-card__cta" href="' + ctaHref + '">' + p.cta + ' ' + arrow + '</a>' +
+        learnBtn +
+      '</div>';
 
     return card;
   }
