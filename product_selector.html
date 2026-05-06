@@ -401,7 +401,6 @@
     <p class="lul-selector__subtitle">Select one.</p>
     <div class="lul-selector__options" data-input="radio" data-name="q3_scope">
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="A"><span class="lul-selector__option-text">Single parcel</span></label>
-      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="B"><span class="lul-selector__option-text">Census tract or block group</span></label>
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="C"><span class="lul-selector__option-text">Jurisdiction(s) (town, city, or unincorporated county)</span></label>
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="D"><span class="lul-selector__option-text">County or counties</span></label>
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="E"><span class="lul-selector__option-text">Metropolitan or micropolitan area (CBSA)</span></label>
@@ -764,7 +763,6 @@
     // ----- Step 5: Q3 weights -----
     var q3W = {
       // A handled as override
-      B: { tables: 5 },
       C: { slices: 5, districts: 5 },
       D: { slices: 5, districts: 5, rasters: 5 },
       E: { slices: 5, districts: 5, rasters: 5 },

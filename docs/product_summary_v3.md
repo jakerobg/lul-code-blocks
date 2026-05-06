@@ -87,7 +87,6 @@ The two former Attributes overrides (Q1=A with D/H/I + Q3 ∈ {B–G}, and Q1 �
 | Q3 | Score |
 |---|---|
 | A — Single parcel | *(hard override)* |
-| B — Census tract / block group | Tables +5 |
 | C — Jurisdiction(s) | Slices +5, Districts +5 |
 | D–G — County, CBSA, State, Country | Slices +5, Districts +5, Rasters +5 |
 
