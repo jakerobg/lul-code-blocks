@@ -9,11 +9,20 @@
 | Product | Unit | Delivered as | CTA |
 |---|---|---|---|
 | Parcel Reports | Single parcel (address/coordinates) | PDF | Buy now |
-| Zoning Districts | Zoning district(s), base + overlay | CSV (+ geospatial add-on) | Request a quote |
+| Zoning Districts | Zoning district(s), including base and any overlay district(s) | GeoPackage, GeoJSON, or Geodatabase | Request a quote |
 | Zoning Rasters | 30×30 m raster cell | GeoTIFF | Request a quote |
-| Zoning Slices | Unique base+overlay district combination | CSV (+ geospatial add-on) | Request a quote |
-| Zoning Tables | Jurisdiction, census tract, block group, etc. | CSV (+ geospatial add-on) | Request a quote |
+| Zoning Slices | Unique base+overlay district combination | GeoPackage, GeoJSON, or Geodatabase | Request a quote |
+| Zoning Tables | Jurisdiction, census tract, block group, zip code, or other geometry | CSV, plus (with geospatial add-on) GeoPackage, GeoJSON, or Geodatabase | Request a quote |
 | Services | Custom geographies | Custom analysis | Get in touch → landuselabs.com/services |
+
+### "More details" copy (final card)
+
+- **Parcel Reports:** Parcel Reports cover one parcel at a time. Other products, like Zoning Slices and Zoning Districts, cover larger numbers of parcels.
+- **Zoning Districts:** Zoning Districts offer information about base and overlay districts. If you need a computation of prevailing rules, choose Zoning Slices.
+- **Zoning Rasters:** Zoning Rasters show land uses permitted under current zoning rules at high resolution; they do not show parcel-level rules. If you need parcel-specific information, consider Parcel Reports (one parcel at a time) or Zoning Slices (many parcels).
+- **Zoning Slices:** Zoning Slices compute prevailing rules by combining base and overlay districts and are ready-made for advanced analysis. If you need district-specific rules, choose Zoning Districts.
+- **Zoning Tables:** Zoning Tables summarize regulatory information for cross-geographic comparisons. For parcel-specific or district-specific rules, see Zoning Slices or Zoning Districts.
+- **Services:** Our team can offer technical capacity and customize analysis to meet your needs.
 
 Tie order: **Parcel Reports → Slices → Tables → Rasters → Districts** (Services last, inserted by rule).
 
@@ -48,7 +57,7 @@ The two former Attributes overrides (Q1=A with D/H/I + Q3 ∈ {B–G}, and Q1 �
 | E — Government | Tables +5 |
 | **F — Lawyer** | *(none)* |
 | G — Researcher | Tables +10 |
-| **H — Site selection pro** | *(none)* — was Attributes-only |
+| H — Site selection pro | Slices +5 |
 
 ### Step 3 — Q2 (goal) weights
 
@@ -94,7 +103,10 @@ The two former Attributes overrides (Q1=A with D/H/I + Q3 ∈ {B–G}, and Q1 �
 Highest score wins; ties broken by stable order (Slices before Districts). If Q1 ∈ {C, D, E, F, G} AND Districts and Slices are within 5 points, swap so Slices wins; attach the downsell note.
 
 ### Steps 9–10 — Pick & render
-Top score sets the cutoff; products at ≥60% of top are included, max 3. Then Services and Rasters are inserted per Step 6. First card "Top recommendation" / "Recommended"; second "Also consider"; third "Complementary".
+Top score sets the cutoff; products at ≥60% of top are included, max 3. Then Services and Rasters are inserted per Step 6. Card labels are italic: first card "Recommended"; second "Also Consider"; third "Complementary".
+
+### Geographic context
+Q3 captures geographic scope for scoring purposes only. The selector no longer collects an address, state, or jurisdiction name on this step — those details are gathered later during checkout.
 
 ---
 
@@ -132,12 +144,13 @@ Final: **Tables=15**, Districts=10, Rasters=10, Slices=10. ✅ This was a proble
 **Picks:** Tables, Slices, Rasters (+ cap note).
 
 ### 6. Site selector full-area feasibility — `H / [F, H] / E / E / [A]`
+- Q1=H: Slices+5
 - Q2=F: Slices+5, Rasters+5
 - Q2=H: Slices+10
 - Q3=E: Slices+5, Districts+5, Rasters+5
 - Q4=E: Slices+5, Districts+5
 
-Final: **Slices=25**, Districts=10, Rasters=10. Step 6 fires services secondary (Q1=H, Q2 includes F/H) and rasters supplemental (Q1=H, Q2=H).
+Final: **Slices=30**, Districts=10, Rasters=10. Step 6 fires services secondary (Q1=H, Q2 includes F/H) and rasters supplemental (Q1=H, Q2=H).
 **Picks:** Slices, Services, Rasters (+ cap note).
 
 ### 7. Lawyer wanting district info — `F / [G] / F / E / [A]`
@@ -179,8 +192,8 @@ Final: **Rasters=15**, Districts=5, Slices=5. Threshold=9 → only Rasters clear
 - Q3=C: Slices+5, Districts+5
 - Q4=E: Slices+5, Districts+5
 
-Final: **Districts=20, Slices=20**. Tie → Slices wins via stable order. Step 6 services secondary (Q1=F, Q2=H). Rasters fallback fires (Q2=H but Rasters not in picks).
-**Picks:** Slices, Services, Rasters. Districts pushed out by Services + Rasters insertion. ⚠️ See issue #3.
+Final: **Districts=20, Slices=20**. Tie → Slices wins via stable order. Downsell note fires (Slices ≥ Districts within 5 points, Q1=F is non-platform). Step 6 services secondary (Q1=F, Q2=H). Rasters fallback fires (Q2=H but Rasters not in picks).
+**Picks:** Slices, Services, Rasters. Districts pushed out by Services + Rasters insertion. Slices card carries the downsell note explaining why it leads over Districts.
 
 ### 12. All-rules all-uses Lawyer + G — `F / [G] / C / E / [A]`
 - Q2=G: Districts+10
@@ -200,26 +213,24 @@ Same gap as v2. Still a placeholder. Combined with empty Q1=C/D/F weights, a fea
 ### Issue 2 — Q2 = D (Enhancing a data pipeline) has no weights
 This is **new in v3**. D used to be Attributes +10 — the strongest single signal in the doc. With Attributes removed, D now contributes nothing, so a user who picks "I'm enhancing a data pipeline" gets no signal from that selection. **Suggested fill:** Q2=D → Slices+10 (the data product most readily piped into a downstream system).
 
-### Issue 3 — Q1 = H (Site selector) has no weights
-Also new — H was Attributes+5 only. Site-selection users lose their role nudge entirely. **Suggested fill:** Q1=H → Slices+5.
-
-### Issue 4 — Slices and Districts often tie at 10
+### Issue 3 — Slices and Districts often tie at 10
 Q3 (C–G) and Q4 (B–E) both award Slices and Districts the same amount. Without Attributes acting as a separate target, anyone whose primary signal is "I want regulations" splits evenly between the two. The tie-order resolves to Slices, which is usually the right call for non-platform users (and the downsell rule reinforces it). But it means the score-based ranking doesn't really distinguish the two. **Suggested fix:** make Q4=B/C/D give Slices+5 and Districts+3 (or similar asymmetric weights). Same for Q3=C–G.
 
-### Issue 5 — The downsell note still doesn't fire when Slices already leads via stable order
-Same as v2 issue #3. See Example 11: Districts and Slices tied at 20, Slices wins via stable order, no swap happens, no downsell note. The user could still benefit from the explanation. **Suggested fix:** trigger the downsell note whenever the tie-break (or the stable-order win) puts Slices over Districts for non-platform users.
-
-### Issue 6 — Q4 = Unsure has no impact
+### Issue 4 — Q4 = Unsure has no impact
 Unchanged from v2. Combined with the empty Q1/Q2 cells, "Unsure" paths can collapse to almost no signal.
 
-### Issue 7 — Step 5 (Q3) weights still flat across most scopes
+### Issue 5 — Step 5 (Q3) weights still flat across most scopes
 C/D/E/F/G barely differ. Same call as v2 — consider dropping these to +2/+3 to reduce their share.
+
+### Resolved since last review
+
+- ✅ **Q1 = H (Site selector) now scores Slices +5** — was previously a gap.
+- ✅ **Downsell note now fires whenever Slices ranks at or above Districts within 5 points** for non-platform users (Q1 ∈ {C, D, E, F, G}). Previously the note only fired when an actual swap happened, which silently suppressed it during stable-order ties (see Example 11).
 
 ---
 
 ## Summary of recommendations
 
-1. **Fill in placeholders** for Q1 ∈ {C, D, F, H}, Q2 ∈ {A, D}.
+1. **Fill in placeholders** for Q1 ∈ {C, D, F}, Q2 ∈ {A, D}.
 2. **Asymmetric Slices/Districts weights** in Q3/Q4 so they don't always tie.
-3. **Decouple downsell note from swap** — fire whenever Slices is at or above Districts at a tie/near-tie for non-platform users.
-4. **Shrink Q3 weights** if scope is meant to be a tiebreaker rather than a primary signal.
+3. **Shrink Q3 weights** if scope is meant to be a tiebreaker rather than a primary signal.

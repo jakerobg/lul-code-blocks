@@ -83,7 +83,7 @@
     padding: 14px 16px;
     background: var(--lul-card);
     border: 1px solid var(--lul-border);
-    border-radius: 8px;
+    border-radius: 0;
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease, transform 0.1s ease;
     font-size: 0.95rem;
@@ -116,39 +116,6 @@
     font-size: 0.85rem;
     color: var(--lul-muted);
     font-style: italic;
-  }
-
-  /* ---------- Geographic fields ---------- */
-  .lul-selector__geo {
-    margin-top: 20px;
-    display: none;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .lul-selector__geo.is-active { display: flex; }
-  .lul-selector__field label {
-    display: block;
-    font-size: 0.9rem;
-    color: var(--lul-header);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-  .lul-selector__field select,
-  .lul-selector__field input {
-    width: 100%;
-    padding: 10px 14px;
-    font-size: 1rem;
-    font-family: inherit;
-    color: var(--lul-text);
-    background: var(--lul-card);
-    border: 1px solid var(--lul-border);
-    border-radius: 6px;
-    transition: border-color 0.2s ease;
-  }
-  .lul-selector__field select:focus,
-  .lul-selector__field input:focus {
-    outline: none;
-    border-color: var(--lul-header);
   }
 
   /* ---------- Nav buttons ---------- */
@@ -225,7 +192,7 @@
   .lul-rec-card {
     background: var(--lul-card);
     border: 1px solid var(--lul-border);
-    border-radius: 8px;
+    border-radius: 0;
     padding: 28px;
     display: flex;
     flex-direction: column;
@@ -241,12 +208,11 @@
     border-width: 2px;
   }
   .lul-rec-card__rank {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    font-size: 0.85rem;
     color: var(--lul-muted);
     margin-bottom: 6px;
     font-weight: 500;
+    font-style: italic;
   }
   .lul-rec-card--primary .lul-rec-card__rank { color: var(--lul-header); }
 
@@ -427,32 +393,6 @@
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="F"><span class="lul-selector__option-text">State(s)</span></label>
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="G"><span class="lul-selector__option-text">Whole country</span></label>
     </div>
-
-    <!-- Conditional geographic fields -->
-    <div class="lul-selector__geo" id="lul-geo-parcel">
-      <div class="lul-selector__field">
-        <label for="lul-geo-parcel-input">Property address or coordinates</label>
-        <input id="lul-geo-parcel-input" type="text" placeholder="e.g., 123 Main St, Springfield, IL">
-      </div>
-    </div>
-
-    <div class="lul-selector__geo" id="lul-geo-state-only">
-      <div class="lul-selector__field">
-        <label for="lul-geo-state-only-select">State</label>
-        <select id="lul-geo-state-only-select"><option value="">Select a state…</option></select>
-      </div>
-    </div>
-
-    <div class="lul-selector__geo" id="lul-geo-state-sub">
-      <div class="lul-selector__field">
-        <label for="lul-geo-state-sub-select">State</label>
-        <select id="lul-geo-state-sub-select"><option value="">Select a state…</option></select>
-      </div>
-      <div class="lul-selector__field">
-        <label for="lul-geo-sub-input" id="lul-geo-sub-label">Jurisdiction</label>
-        <input id="lul-geo-sub-input" type="text" placeholder="Enter name">
-      </div>
-    </div>
   </div>
 
   <!-- ---------- Q4 ---------- -->
@@ -504,20 +444,6 @@
   "use strict";
 
   // ---------- Static data ----------
-  var STATES = [
-    ["AL","Alabama"],["AK","Alaska"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],
-    ["CO","Colorado"],["CT","Connecticut"],["DE","Delaware"],["DC","District of Columbia"],
-    ["FL","Florida"],["GA","Georgia"],["HI","Hawaii"],["ID","Idaho"],["IL","Illinois"],
-    ["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],["LA","Louisiana"],
-    ["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],["MN","Minnesota"],
-    ["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],["NV","Nevada"],
-    ["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
-    ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
-    ["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],
-    ["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],
-    ["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
-  ];
-
   var PRODUCTS = {
     parcel_reports: {
       name: "Parcel Reports",
@@ -536,7 +462,7 @@
       name: "Zoning Districts",
       desc: "Raw base and overlay zoning district boundaries with regulatory metadata.",
       unit: "Zoning district(s), including base and any overlay district(s)",
-      delivery: "CSV, plus (with geospatial add-on) GeoPackage, GeoJSON, or Geodatabase",
+      delivery: "GeoPackage, GeoJSON, or Geodatabase",
       bestFor: [
         "Understanding district-specific rules and/or boundaries",
         "Conducting statistical analysis or policy research"
@@ -553,19 +479,20 @@
         "Visualizing and analyzing land uses and/or environmental conditions",
         "Conducting high-level analysis, planning, and data integration"
       ],
-      notText: "Zoning Rasters show land uses permitted under current zoning rules at high resolution; they do not show parcel-level rules. If you need parcel-specific information, consider Parcel Reports.",
+      notText: "Zoning Rasters show land uses permitted under current zoning rules at high resolution; they do not show parcel-level rules. If you need parcel-specific information, consider Parcel Reports (one parcel at a time) or Zoning Slices (many parcels).",
       cta: "Request a quote"
     },
     slices: {
       name: "Zoning Slices",
       desc: "Unique base + overlay district combinations with computed prevailing rules across a geographic area.",
       unit: "Unique base+overlay district combination",
-      delivery: "CSV, plus (with geospatial add-on) GeoPackage, GeoJSON, or Geodatabase",
+      delivery: "GeoPackage, GeoJSON, or Geodatabase",
       bestFor: [
-        "Understanding a large number (5 or more) of prevailing rules across a geographic area",
-        "Selecting sites"
+        "Understanding prevailing rules across a geographic area or on a parcel-by-parcel basis",
+        "Selecting sites",
+        "Enhancing an existing data pipeline"
       ],
-      notText: "Zoning Slices compute prevailing rules by combining base and overlay districts and are ready-made for advanced analysis.",
+      notText: "Zoning Slices compute prevailing rules by combining base and overlay districts and are ready-made for advanced analysis. If you need district-specific rules, choose Zoning Districts.",
       cta: "Request a quote"
     },
     tables: {
@@ -606,8 +533,6 @@
       q1: null,
       q2: [],
       q3_scope: null,
-      q3_state: "",
-      q3_sub: "",
       q4: null,
       q5: []
     },
@@ -670,7 +595,6 @@
     }
     nextBtn.textContent = (order[idx + 1] === "result") ? "See recommendation →" : "Next →";
     refreshNextEnabled();
-    if (name === "q3") setupGeoFields();
     window.scrollTo({ top: root.offsetTop - 20, behavior: "smooth" });
   }
 
@@ -697,7 +621,6 @@
           var labels = groupEl.querySelectorAll(".lul-selector__option");
           for (var j = 0; j < labels.length; j++) labels[j].classList.remove("is-selected");
           this.parentNode.classList.add("is-selected");
-          if (name === "q3_scope") setupGeoFields();
         } else {
           var arr = state.answers[name];
           if (this.checked) {
@@ -748,42 +671,6 @@
     nextBtn.disabled = !ok;
   }
 
-  // ---------- Geographic fields ----------
-  function setupGeoFields() {
-    var scope = state.answers.q3_scope;
-    var parcelBox = document.getElementById("lul-geo-parcel");
-    var stateOnly = document.getElementById("lul-geo-state-only");
-    var stateSub = document.getElementById("lul-geo-state-sub");
-    parcelBox.classList.remove("is-active");
-    stateOnly.classList.remove("is-active");
-    stateSub.classList.remove("is-active");
-
-    if (scope === "A") parcelBox.classList.add("is-active");
-    else if (scope === "B" || scope === "F") stateOnly.classList.add("is-active");
-    else if (scope === "C" || scope === "D" || scope === "E") {
-      stateSub.classList.add("is-active");
-      var subLabel = document.getElementById("lul-geo-sub-label");
-      var subInput = document.getElementById("lul-geo-sub-input");
-      if (scope === "C") { subLabel.textContent = "Jurisdiction"; subInput.placeholder = "e.g., City of Springfield"; }
-      if (scope === "D") { subLabel.textContent = "County";       subInput.placeholder = "e.g., Sangamon County"; }
-      if (scope === "E") { subLabel.textContent = "Metro Area (CBSA)"; subInput.placeholder = "e.g., Springfield, IL Metro Area"; }
-    }
-  }
-
-  function populateStateSelects() {
-    var selects = [document.getElementById("lul-geo-state-only-select"), document.getElementById("lul-geo-state-sub-select")];
-    selects.forEach(function (sel) {
-      STATES.forEach(function (s) {
-        var opt = document.createElement("option");
-        opt.value = s[0];
-        opt.textContent = s[1];
-        sel.appendChild(opt);
-      });
-      sel.addEventListener("change", function () { state.answers.q3_state = this.value; });
-    });
-    document.getElementById("lul-geo-sub-input").addEventListener("input", function () { state.answers.q3_sub = this.value; });
-  }
-
   // ---------- Algorithm ----------
   function recommend(a) {
     var notes = {
@@ -819,8 +706,8 @@
       B: { tables: 5, slices: 5 },
       // C, D, F: no weights specified
       E: { tables: 5 },
-      G: { tables: 10 }
-      // H: no weights specified (was Attributes-only)
+      G: { tables: 10 },
+      H: { slices: 5 }
     };
     if (q1W[a.q1]) Object.keys(q1W[a.q1]).forEach(function (p) { scores[p] += q1W[a.q1][p]; });
 
@@ -892,10 +779,13 @@
         if (sorted[i][0] === "districts") dIdx = i;
         if (sorted[i][0] === "slices") sIdx = i;
       }
-      if (dIdx !== -1 && sIdx !== -1 && Math.abs(sorted[dIdx][1] - sorted[sIdx][1]) <= 5 && sIdx > dIdx) {
-        var tmp = sorted[dIdx];
-        sorted[dIdx] = sorted[sIdx];
-        sorted[sIdx] = tmp;
+      if (dIdx !== -1 && sIdx !== -1 && Math.abs(sorted[dIdx][1] - sorted[sIdx][1]) <= 5) {
+        // Swap if Districts is ranked above Slices; flag the downsell note either way.
+        if (sIdx > dIdx) {
+          var tmp = sorted[dIdx];
+          sorted[dIdx] = sorted[sIdx];
+          sorted[sIdx] = tmp;
+        }
         notes.downsell = true;
       }
     }
@@ -968,8 +858,8 @@
 
     var rankLabel;
     if (rec.picks.length === 1) rankLabel = "Recommended";
-    else if (idx === 0) rankLabel = "Top recommendation";
-    else if (idx === 1) rankLabel = "Also consider";
+    else if (idx === 0) rankLabel = "Recommended";
+    else if (idx === 1) rankLabel = "Also Consider";
     else rankLabel = "Complementary";
 
     var noteHtml = "";
@@ -1001,7 +891,7 @@
       '</div>' +
       '<div class="lul-rec-card__section-title">Best for</div>' +
       '<ul class="lul-rec-card__list">' + bestFor + '</ul>' +
-      '<div class="lul-rec-card__section-title">What it is and is not</div>' +
+      '<div class="lul-rec-card__section-title">More details</div>' +
       '<p class="lul-rec-card__not">' + p.notText + '</p>' +
       noteHtml +
       '<a class="lul-rec-card__cta" href="' + ctaHref + '">' + p.cta + ' ' + arrow + '</a>';
@@ -1013,7 +903,6 @@
   function init() {
     var groups = root.querySelectorAll("[data-input]");
     for (var i = 0; i < groups.length; i++) bindOptionGroup(groups[i]);
-    populateStateSelects();
     backBtn.addEventListener("click", function () { go(-1); });
     nextBtn.addEventListener("click", function () { go(1); });
     showPage("q1");
