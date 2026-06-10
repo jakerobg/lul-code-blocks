@@ -1,0 +1,149 @@
+<style>
+    .lul-usecases {
+        background: #393348;
+        padding: 40px 40px;
+    }
+    .lul-usecases-inner {
+        max-width: 1180px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .lul-usecases-label {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55) !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .lul-chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .lul-chip-wrap {
+        position: relative;
+        display: inline-block;
+        z-index: 1;
+    }
+    .lul-chip-wrap:hover,
+    .lul-chip-wrap.lul-active {
+        z-index: 1000;
+    }
+    .lul-chip {
+        display: inline-block;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15.5px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.1);
+        padding: 7px 16px;
+        border-radius: 20px;
+        cursor: default;
+        border: 1px solid rgba(255, 255, 255, 0);
+        transition:
+            background 0.15s,
+            border-color 0.15s;
+        user-select: none;
+    }
+    .lul-chip-wrap:hover .lul-chip,
+    .lul-chip-wrap.lul-active .lul-chip {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+    .lul-tooltip {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #fff;
+        color: #393348;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        font-weight: 400;
+        padding: 12px 16px;
+        border-radius: 6px;
+        width: 240px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        z-index: 999;
+    }
+    .lul-tooltip::after {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-bottom-color: #fff;
+    }
+    .lul-chip-wrap:hover .lul-tooltip,
+    .lul-chip-wrap.lul-active .lul-tooltip {
+        opacity: 1;
+    }
+</style>
+
+<div class="lul-usecases">
+    <div class="lul-usecases-inner">
+        <span class="lul-usecases-label">Built for</span>
+        <div class="lul-chips">
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Due Diligence</span>
+                <div class="lul-tooltip">
+                    Before acquiring a property, know exactly what zoning rules apply. A Parcel Report gives you
+                    districts, allowed uses, and dimensional requirements for any address in minutes.
+                </div>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Development Feasibility</span>
+                <div class="lul-tooltip">
+                    Quickly assess whether a site can support your intended use — housing type, building size, parking
+                    minimums — before investing in full plans.
+                </div>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Conformity Analysis</span>
+                <div class="lul-tooltip">
+                    Determine whether an existing structure or use complies with current zoning. Essential for property
+                    sales, refinancing, or legal review.
+                </div>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Risk Mitigation</span>
+                <div class="lul-tooltip">
+                    Catch zoning issues early — nonconforming uses, overlay restrictions, special permit requirements —
+                    before they become costly surprises.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll(".lul-chip-wrap").forEach(function (wrap) {
+        wrap.addEventListener("click", function () {
+            var isActive = wrap.classList.contains("lul-active");
+            document.querySelectorAll(".lul-chip-wrap").forEach(function (w) {
+                w.classList.remove("lul-active");
+            });
+            if (!isActive) wrap.classList.add("lul-active");
+        });
+    });
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest(".lul-chip-wrap")) {
+            document.querySelectorAll(".lul-chip-wrap").forEach(function (w) {
+                w.classList.remove("lul-active");
+            });
+        }
+    });
+</script>

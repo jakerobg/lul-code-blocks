@@ -1,0 +1,447 @@
+<style>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+    .form-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(57, 51, 72, 0.6);
+    }
+    .form-input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 0.9rem;
+        padding: 11px 15px;
+        border: 1.5px solid rgba(57, 51, 72, 0.15);
+        border-radius: 5px;
+        background: #fff;
+        color: #393348;
+        outline: none;
+        width: 100%;
+        transition: border-color 0.15s;
+        -webkit-appearance: none;
+        box-sizing: border-box;
+    }
+    .form-input:focus {
+        border-color: #393348;
+    }
+    .form-hint {
+        font-size: 0.78rem;
+        color: rgba(57, 51, 72, 0.6);
+        margin-top: 4px;
+    }
+    .btn-submit {
+        width: 100%;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: 16px 26px;
+        border-radius: 0;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        border: 1px solid #393347;
+        background: #393347;
+        color: #ffffff;
+        cursor: pointer;
+        transition:
+            background 0.25s ease,
+            gap 0.25s ease;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+    .btn-submit:hover {
+        opacity: 0.85;
+    }
+    .btn-submit:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .form-note {
+        font-size: 0.8rem;
+        color: rgba(57, 51, 72, 0.6);
+        text-align: center;
+        margin-top: 10px;
+    }
+    .lul-msg {
+        padding: 14px 16px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 14px;
+    }
+    .lul-msg p {
+        margin-bottom: 8px;
+    }
+    .lul-msg p:last-child {
+        margin-bottom: 0;
+    }
+    .lul-ok {
+        background: #e0e5c2;
+        color: #393348;
+    }
+    .lul-warn {
+        background: #fff;
+        border: 1.5px solid rgba(57, 51, 72, 0.15);
+        color: #393348;
+    }
+    .lul-error {
+        background: #fff3f3;
+        border: 1.5px solid rgba(180, 0, 0, 0.2);
+        color: #7a0000;
+    }
+    .lul-fineprint {
+        font-size: 0.8rem;
+        color: rgba(57, 51, 72, 0.6);
+        text-align: center;
+        margin-top: 10px;
+    }
+    .lul-fineprint a {
+        color: #393348;
+        text-decoration: underline;
+    }
+    .lul-lead {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .lul-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    .lul-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .lul-flex-2 {
+        grid-column: span 2;
+    }
+    .lul-spinner-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        color: rgba(57, 51, 72, 0.6);
+        padding: 10px 0;
+    }
+    .lul-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(57, 51, 72, 0.15);
+        border-top-color: #393348;
+        border-radius: 50%;
+        animation: lul-spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes lul-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div id="lul-order">
+    <div id="lul-address-panel">
+        <div class="form-group">
+            <label class="form-label" for="lul-address">Search Street Address (include city and state)</label>
+            <input
+                id="lul-address"
+                class="form-input"
+                type="text"
+                placeholder="e.g. 360 State Street, New Haven, CT 06510"
+                autocomplete="street-address"
+            />
+        </div>
+        <button class="btn-submit" onclick="lulCheckCoverage(this)">Check Coverage &amp; Order →</button>
+        <p class="form-note">$250 per report · PDF delivery</p>
+    </div>
+    <div id="lul-result" style="display: none; margin-top: 20px"></div>
+</div>
+
+<script>
+    (function () {
+        const API_BASE = "https://products-api.landuselabs.com";
+        let _lat = null,
+            _lon = null,
+            _parcelAddress = null;
+        const US_STATES = [
+            "Alabama",
+            "Alaska",
+            "Arizona",
+            "Arkansas",
+            "California",
+            "Colorado",
+            "Connecticut",
+            "Delaware",
+            "District of Columbia",
+            "Florida",
+            "Georgia",
+            "Hawaii",
+            "Idaho",
+            "Illinois",
+            "Indiana",
+            "Iowa",
+            "Kansas",
+            "Kentucky",
+            "Louisiana",
+            "Maine",
+            "Maryland",
+            "Massachusetts",
+            "Michigan",
+            "Minnesota",
+            "Mississippi",
+            "Missouri",
+            "Montana",
+            "Nebraska",
+            "Nevada",
+            "New Hampshire",
+            "New Jersey",
+            "New Mexico",
+            "New York",
+            "North Carolina",
+            "North Dakota",
+            "Ohio",
+            "Oklahoma",
+            "Oregon",
+            "Pennsylvania",
+            "Rhode Island",
+            "South Carolina",
+            "South Dakota",
+            "Tennessee",
+            "Texas",
+            "Utah",
+            "Vermont",
+            "Virginia",
+            "Washington",
+            "West Virginia",
+            "Wisconsin",
+            "Wyoming",
+        ];
+
+        async function lulCheckCoverage(btn) {
+            const address = document.getElementById("lul-address").value.trim();
+            if (!address) {
+                showResult(errHtml("Please enter a street address."));
+                return;
+            }
+            btn.disabled = true;
+            showResult(loadingHtml("Checking coverage&hellip;"));
+            try {
+                const res = await fetch(API_BASE + "/check-coverage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ mode: "address", address }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showResult(errHtml(data.error || "Server error. Please try again."));
+                    return;
+                }
+                _lat = data.lat;
+                _lon = data.lon;
+                _parcelAddress = data.parcel_address;
+                if (data.covered) {
+                    renderCovered();
+                } else {
+                    switch (data.reason) {
+                        case "nonresidential":
+                            renderNonresidential();
+                            break;
+                        case "unzoned_jurisdiction":
+                            renderUnzonedJurisdiction();
+                            break;
+                        case "unzoned_district":
+                            renderUnzonedDistrict(data.jurisdiction, data.state);
+                            break;
+                        default:
+                            renderNoCoverage(data.jurisdiction, data.state);
+                            break;
+                    }
+                }
+            } catch (e) {
+                showResult(errHtml("Connection error. Please check your connection and try again."));
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Search Another Parcel →";
+                btn.onclick = lulResetSearch;
+            }
+        }
+
+        function lulResetSearch() {
+            var btn = document.querySelector("#lul-address-panel .btn-submit");
+            btn.textContent = "Check Coverage & Order →";
+            btn.onclick = function () {
+                lulCheckCoverage(btn);
+            };
+            var el = document.getElementById("lul-result");
+            el.innerHTML = "";
+            el.style.display = "none";
+            _lat = null;
+            _lon = null;
+            _parcelAddress = null;
+            var input = document.getElementById("lul-address");
+            input.focus();
+            input.select();
+        }
+
+        function renderCovered() {
+            showResult(`
+      <div class="lul-msg lul-ok">
+        <p><strong>Great news &mdash; we have zoning data for this parcel.</strong></p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Buy Parcel Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderNonresidential() {
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>This parcel lies in a zoning district that does not allow residential uses as principal uses. A Parcel Report will reveal the most common nonresidential use, confirm residential principal uses are not allowed, and highlight any permissions for accessory dwelling units.</p>
+        <p>Would you still like to purchase a Parcel Report?</p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Yes, Purchase Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderUnzonedJurisdiction() {
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>This parcel lies in a jurisdiction that we have confirmed does not exercise its zoning authority. A Parcel Report will confirm that Land Use Labs LLC has conducted a diligent search and determined that this jurisdiction has declined to exercise zoning authority.</p>
+        <p>Would you still like to purchase a Parcel Report?</p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Yes, Purchase Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderUnzonedDistrict(jurisdiction, state) {
+            const place = jurisdiction && state ? jurisdiction + ", " + state : jurisdiction || "This jurisdiction";
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>This parcel lies in a jurisdiction that exercises its zoning authority, but has not assigned this parcel to a zoning district. A Parcel Report will confirm that ${place} has zoning, but has not zoned this specific parcel.</p>
+        <p>Would you still like to purchase a Parcel Report?</p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Yes, Purchase Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderNoCoverage(jurisdiction, state) {
+            const place = jurisdiction && state ? jurisdiction + ", " + state : jurisdiction || null;
+            const locationStr = place ? "for " + place : "for this location";
+            const stateOptions = US_STATES.map(function (s) {
+                return '<option value="' + s + '"' + (s === state ? " selected" : "") + ">" + s + "</option>";
+            }).join("");
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>We&rsquo;re sorry, we have not yet published zoning data ${locationStr}. We&rsquo;re working every day to complete nationwide coverage of the <a href="https://www.zoningatlas.org" target="_blank" rel="noopener">National Zoning Atlas</a>.</p>
+        <p>Leave your info below and we&rsquo;ll alert you when coverage is available.</p>
+      </div>
+      <div class="lul-lead">
+        <div class="lul-row">
+          <div class="lul-field">
+            <label class="form-label" for="lul-first">First Name</label>
+            <input id="lul-first" class="form-input" type="text" placeholder="First name" />
+          </div>
+          <div class="lul-field">
+            <label class="form-label" for="lul-last">Last Name</label>
+            <input id="lul-last" class="form-input" type="text" placeholder="Last name" />
+          </div>
+        </div>
+        <div class="lul-field">
+          <label class="form-label" for="lul-email">Email</label>
+          <input id="lul-email" class="form-input" type="email" placeholder="your@email.com" />
+        </div>
+        <div class="lul-row">
+          <div class="lul-field lul-flex-2">
+            <label class="form-label" for="lul-jur">Jurisdiction</label>
+            <input id="lul-jur" class="form-input" type="text" placeholder="e.g. Town of Bloomfield" value="${jurisdiction || ""}" />
+          </div>
+          <div class="lul-field">
+            <label class="form-label" for="lul-state">State</label>
+            <select id="lul-state" class="form-input">
+              <option value="">State</option>
+              ${stateOptions}
+            </select>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="lulSubmitLead(this)">Send Request →</button>
+        <div id="lul-lead-status" style="margin-top:10px;"></div>
+      </div>
+    `);
+        }
+
+        async function lulProceedToCheckout(btn) {
+            if (_lat == null || _lon == null) {
+                showResult(errHtml("Session expired. Please re-enter your address and check coverage again."));
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = "Redirecting to payment\u2026";
+            try {
+                const res = await fetch(API_BASE + "/create-checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ lat: _lat, lon: _lon, parcel_address: _parcelAddress }),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.url) throw new Error(data.error || "Could not start checkout.");
+                window.location.href = data.url;
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = "Yes, Purchase Report — $250 →";
+                var statusEl = document.createElement("div");
+                statusEl.innerHTML = errHtml(e.message || "Payment setup failed. Please try again.");
+                btn.parentNode.insertBefore(statusEl, btn.nextSibling);
+            }
+        }
+
+        async function lulSubmitLead(btn) {
+            var statusEl = document.getElementById("lul-lead-status");
+            var first = (document.getElementById("lul-first") || {}).value || "";
+            var email = (document.getElementById("lul-email") || {}).value || "";
+            if (!first.trim() || !email.trim()) {
+                statusEl.innerHTML = errHtml("Please enter at least your first name and email address.");
+                return;
+            }
+            btn.disabled = true;
+            statusEl.innerHTML =
+                '<div class="lul-msg lul-ok"><p>Thank you &mdash; we\'ll be in touch when coverage is available for this jurisdiction.</p></div>';
+        }
+
+        function showResult(html) {
+            var el = document.getElementById("lul-result");
+            el.innerHTML = html;
+            el.style.display = "block";
+        }
+        function loadingHtml(msg) {
+            return '<div class="lul-spinner-wrap"><div class="lul-spinner"></div>' + msg + "</div>";
+        }
+        function errHtml(msg) {
+            return '<div class="lul-msg lul-error"><p>' + msg + "</p></div>";
+        }
+
+        document.getElementById("lul-address").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                var btn = document.querySelector("#lul-address-panel .btn-submit");
+                lulCheckCoverage(btn);
+            }
+        });
+
+        window.lulCheckCoverage = lulCheckCoverage;
+        window.lulResetSearch = lulResetSearch;
+        window.lulProceedToCheckout = lulProceedToCheckout;
+        window.lulSubmitLead = lulSubmitLead;
+    })();
+</script>
