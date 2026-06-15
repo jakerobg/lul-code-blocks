@@ -1,182 +1,370 @@
 <style>
-  .lul-pt * { box-sizing: border-box; }
-  .lul-pt {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    width: 100%;
-    color: #393348;
-  }
-  .lul-pt table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .lul-pt thead tr {
-    outline: 1px solid rgba(57,51,72,.18);
-  }
-  .lul-pt thead th {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: rgba(57,51,72,.4);
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid rgba(57,51,72,.15);
-    white-space: nowrap;
-  }
-  .lul-pt thead th:first-child { padding-left: 16px; }
-  .lul-pt tbody {
-    border: 1px solid rgba(57,51,72,.2);
-    border-radius: 0 0 8px 8px;
-    display: table-row-group;
-  }
-  .lul-pt tbody tr {
-    border-bottom: 1px solid rgba(57,51,72,.1);
-    transition: background .15s;
-  }
-  .lul-pt tbody tr:last-child { border-bottom: none; }
-  .lul-pt tbody tr:first-child td:first-child { border-top-left-radius: 8px; }
-  .lul-pt tbody tr:first-child td:last-child  { border-top-right-radius: 8px; }
-  .lul-pt tbody tr:last-child  td:first-child { border-bottom-left-radius: 8px; }
-  .lul-pt tbody tr:last-child  td:last-child  { border-bottom-right-radius: 8px; }
-  .lul-pt tbody tr:hover { background: rgba(57,51,72,.03); }
-  .lul-pt tbody td {
-    padding: 26px 16px;
-    vertical-align: top;
-    font-size: 14px;
-    line-height: 1.6;
-    color: rgba(57,51,72,.75);
-  }
-  .lul-pt tbody td:first-child { padding-left: 16px; }
-  .lul-pt .lul-pt__badge {
-    display: inline-block;
-    font-size: 9.5px;
-    font-weight: 600;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-bottom: 8px;
-    white-space: nowrap;
-  }
-  .lul-pt .lul-pt__badge--doc     { background: #ddd9ee; color: #3e3070; }
-  .lul-pt .lul-pt__badge--summary { background: #c8d9b0; color: #2d4a1e; }
-  .lul-pt .lul-pt__badge--gis  { background: #bfcfde; color: #1e3550; }
-  .lul-pt .lul-pt__badge--raster { background: #dfd4c0; color: #5a3e1e; }
-  .lul-pt .lul-pt__name {
-    display: block;
-    font-size: 15px;
-    font-weight: 500;
-    color: #393348;
-    line-height: 1.3;
-    white-space: nowrap;
-  }
-  .lul-pt .lul-pt__here {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: rgba(57,51,72,.45);
-    border: 1px solid rgba(57,51,72,.2);
-    border-radius: 3px;
-    padding: 1px 6px;
-    margin-top: 4px;
-  }
-  .lul-pt .lul-pt__formats { display: flex; flex-wrap: wrap; gap: 5px; }
-  .lul-pt .lul-pt__fmt {
-    font-size: 11.5px;
-    background: rgba(57,51,72,.07);
-    color: rgba(57,51,72,.7);
-    padding: 2px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
-  .lul-pt .lul-pt__price { font-weight: 500; color: #393348; white-space: nowrap; }
-  .lul-pt .lul-pt__row--current td { background: rgba(57,51,72,.04); }
-  .lul-pt tbody tr:first-child { outline: 1px solid rgba(57,51,72,.18); }
-  .lul-pt em { font-style: italic; }
-  .lul-pt .lul-pt__row--link { cursor: pointer; }
-  .lul-pt .lul-pt__row--link:hover td { background: rgba(57,51,72,.05); }
+    .lul-pt * {
+        box-sizing: border-box;
+    }
+    .lul-pt {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        width: 100%;
+        color: #393348;
+    }
+    .lul-pt table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .lul-pt thead tr {
+        outline: 1px solid rgba(57, 51, 72, 0.18);
+    }
+    .lul-pt thead th {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(57, 51, 72, 0.4);
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid rgba(57, 51, 72, 0.15);
+        white-space: nowrap;
+    }
+    .lul-pt thead th:first-child {
+        padding-left: 16px;
+    }
+    .lul-pt tbody {
+        border: 1px solid rgba(57, 51, 72, 0.2);
+        border-radius: 0 0 8px 8px;
+        display: table-row-group;
+    }
+    .lul-pt tbody tr {
+        border-bottom: 1px solid rgba(57, 51, 72, 0.1);
+        transition: background 0.15s;
+    }
+    .lul-pt tbody tr:last-child {
+        border-bottom: none;
+    }
+    .lul-pt tbody tr:first-child td:first-child {
+        border-top-left-radius: 8px;
+    }
+    .lul-pt tbody tr:first-child td:last-child {
+        border-top-right-radius: 8px;
+    }
+    .lul-pt tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 8px;
+    }
+    .lul-pt tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 8px;
+    }
+    .lul-pt tbody tr:hover {
+        background: rgba(57, 51, 72, 0.03);
+    }
+    .lul-pt tbody td {
+        padding: 26px 16px;
+        vertical-align: top;
+        font-size: 14px;
+        line-height: 1.6;
+        color: rgba(57, 51, 72, 0.75);
+    }
+    .lul-pt tbody td:first-child {
+        padding-left: 16px;
+    }
+    .lul-pt .lul-pt__badge {
+        display: inline-block;
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+        white-space: nowrap;
+    }
+    .lul-pt .lul-pt__badge--doc {
+        background: #ddd9ee;
+        color: #3e3070;
+    }
+    .lul-pt .lul-pt__badge--summary {
+        background: #c8d9b0;
+        color: #2d4a1e;
+    }
+    .lul-pt .lul-pt__badge--gis {
+        background: #bfcfde;
+        color: #1e3550;
+    }
+    .lul-pt .lul-pt__badge--raster {
+        background: #dfd4c0;
+        color: #5a3e1e;
+    }
+    .lul-pt .lul-pt__name {
+        display: block;
+        font-size: 15px;
+        font-weight: 500;
+        color: #393348;
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+    .lul-pt .lul-pt__here {
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(57, 51, 72, 0.45);
+        border: 1px solid rgba(57, 51, 72, 0.2);
+        border-radius: 3px;
+        padding: 1px 6px;
+        margin-top: 4px;
+    }
+    .lul-pt .lul-pt__formats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .lul-pt .lul-pt__break {
+        flex-basis: 100%;
+        height: 0;
+    }
+    .lul-pt .lul-pt__fmt {
+        font-size: 11.5px;
+        background: rgba(57, 51, 72, 0.07);
+        color: rgba(57, 51, 72, 0.7);
+        padding: 2px 8px;
+        border-radius: 4px;
+        white-space: nowrap;
+    }
+    .lul-pt .lul-pt__price {
+        font-weight: 500;
+        color: #393348;
+        white-space: normal;
+        max-width: 140px;
+    }
+    .lul-pt .lul-pt__row--current td {
+        background: rgba(57, 51, 72, 0.04);
+    }
+    .lul-pt tbody tr:first-child {
+        outline: 1px solid rgba(57, 51, 72, 0.18);
+    }
+    .lul-pt em {
+        font-style: italic;
+    }
+    .lul-pt .lul-pt__row--link {
+        cursor: pointer;
+    }
+    .lul-pt .lul-pt__row--link:hover td {
+        background: rgba(57, 51, 72, 0.05);
+    }
+
+    /* Mobile layout */
+    @media (max-width: 768px) {
+        .lul-pt table,
+        .lul-pt thead,
+        .lul-pt tbody,
+        .lul-pt tr,
+        .lul-pt th,
+        .lul-pt td {
+            display: block;
+            width: 100%;
+        }
+        .lul-pt thead {
+            display: none;
+        }
+        .lul-pt tbody {
+            border-radius: 8px;
+        }
+        .lul-pt tbody tr {
+            padding: 20px 16px;
+        }
+        .lul-pt tbody tr:first-child,
+        .lul-pt tbody tr:last-child {
+            border-radius: 0;
+        }
+        .lul-pt tbody tr:first-child td:first-child,
+        .lul-pt tbody tr:first-child td:last-child,
+        .lul-pt tbody tr:last-child td:first-child,
+        .lul-pt tbody tr:last-child td:last-child {
+            border-radius: 0;
+        }
+        .lul-pt tbody tr:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+        .lul-pt tbody tr:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+        .lul-pt tbody td {
+            padding: 6px 0;
+        }
+        .lul-pt tbody td:first-child {
+            padding: 0 0 14px;
+        }
+        .lul-pt tbody td:not(:first-child)::before {
+            content: attr(data-label);
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(57, 51, 72, 0.4);
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        .lul-pt .lul-pt__price {
+            max-width: none;
+        }
+        .lul-pt .lul-pt__break {
+            display: none;
+        }
+    }
 </style>
-
 <div class="lul-pt">
-  <table>
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>What you get</th>
-        <th>Best for</th>
-        <th>Unit of analysis</th>
-        <th>Format</th>
-        <th>Pricing</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="lul-pt__row--current">
-        <td>
-          <span class="lul-pt__badge lul-pt__badge--doc">Document</span><br>
-          <span class="lul-pt__name">Parcel Reports</span>
-          <span class="lul-pt__here">You are here</span>
-        </td>
-        <td>A PDF detailing all the zoning rules your selected parcel, including allowed uses, dimensional requirements, district names, and more.</td>
-        <td>Due diligence on a specific address. Quick one-off lookups for developers, lawyers, consultants.</td>
-        <td>Individual parcel</td>
-        <td><div class="lul-pt__formats"><span class="lul-pt__fmt">PDF</span></div></td>
-        <td class="lul-pt__price">$250 per report</td>
-      </tr>
-      <tr data-href="https://www.landuselabs.com/districts" class="lul-pt__row--link">
-        <td>
-          <span class="lul-pt__badge lul-pt__badge--gis">GIS layer</span><br>
-          <span class="lul-pt__name">Zoning Districts</span>
-        </td>
-        <td>GIS layers showing how each district regulates, rule by rule.</td>
-        <td>Policy research, regulatory comparison, academic analysis. When you need to understand <em>the rules themselves</em>.</td>
-        <td>Zoning district</td>
-        <td><div class="lul-pt__formats"><span class="lul-pt__fmt">CSV</span><span class="lul-pt__fmt">GeoJSON</span><span class="lul-pt__fmt">GeoDatabase</span></div></td>
-        <td class="lul-pt__price">Per-district, per-variable pricing</td>
-      </tr>
-      <tr data-href="https://www.landuselabs.com/slices" class="lul-pt__row--link">
-        <td>
-          <span class="lul-pt__badge lul-pt__badge--gis">GIS layer</span><br>
-          <span class="lul-pt__name">Zoning Slices</span>
-        </td>
-        <td>Pre-flattened GIS layers showing the <em>outcome</em> after base + overlay districts are combined, showing one set of rules per polygon.</td>
-        <td>Site selection, data pipelines, scenario planning. When you need <em>regulatory outcomes<em>.
-        <td>Zoning Slice (unique base-overlay combination)</td>
-        <td><div class="lul-pt__formats"><span class="lul-pt__fmt">GeoJSON</span><span class="lul-pt__fmt">GeoDatabase</span></div></td>
-        <td class="lul-pt__price">Per-slice, per-variable pricing</td>
-      </tr>
-      <tr data-href="https://www.landuselabs.com/rasters" class="lul-pt__row--link">
-        <td>
-          <span class="lul-pt__badge lul-pt__badge--raster">Raster layer</span><br>
-          <span class="lul-pt__name">Zoning Rasters</span>
-        </td>
-        <td>30x30 grid cells with categorized, standardized information about residential and nonresidential uses.</td>
-        <td>Environmental analysis, land use modeling, integration with other geospatial datasets (e.g. USGS layers).</td>
-        <td>30×30m grid cell</td>
-        <td><div class="lul-pt__formats"><span class="lul-pt__fmt">GeoTIFF</span></div></td>
-        <td class="lul-pt__price">Per-acreage, per category pricing</td>
-      </tr>
-      <tr data-href="https://www.landuselabs.com/tables" class="lul-pt__row--link">
-        <td>
-          <span class="lul-pt__badge lul-pt__badge--summary">Summary Data</span><br>
-          <span class="lul-pt__name">Zoning Tables</span>
-        </td>
-        <td>A database of summary statistics for nearly fifty land cover, demographic, housing, and zoning characteristics.</td>
-        <td>Cross-geography comparisons, housing research, zoning reform advocacy. No GIS required.</td>
-        <td>Selected geographic area</td>
-        <td><div class="lul-pt__formats"><span class="lul-pt__fmt">CSV</span><span </div></td>
-        <td class="lul-pt__price">Per-geographic unit</td>
-      </tr>
-    </tbody>
-  </table>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>What you get</th>
+                <th>Best for</th>
+                <th>Unit of analysis</th>
+                <th>Format</th>
+                <th>Pricing</th>
+            </tr>
+        </thead>
+        <tbody id="lul-pt-body"></tbody>
+    </table>
 </div>
-
 <script>
-document.querySelectorAll('.lul-pt__row--link').forEach(function(row) {
-  row.addEventListener('click', function() {
-    window.location.href = row.getAttribute('data-href');
-  });
-});
+    /* ============================================================
+       EDIT HERE
+       1. LUL_PT_ORDER controls the row order. The FIRST id in the
+          list is always the highlighted "You are here" row.
+          Just rearrange the ids to reorder the table.
+       2. LUL_PT_PRODUCTS holds the content for each product.
+          In "formats", use the string "break" to force a line
+          break between format chips (used for Zoning Districts).
+       ============================================================ */
+    var LUL_PT_ORDER = ["reports", "slices", "districts", "tables", "rasters"];
+
+    var LUL_PT_PRODUCTS = {
+        reports: {
+            badge: "Document",
+            badgeClass: "lul-pt__badge--doc",
+            name: "Parcel Reports",
+            href: "https://www.landuselabs.com/reports",
+            whatYouGet:
+                "A PDF detailing all the zoning rules your selected parcel, including allowed uses, dimensional requirements, district names, and more.",
+            bestFor:
+                "Due diligence on a specific address. Quick one-off lookups for developers, lawyers, consultants. For when you need comprehensive zoning rules for a single parcel.",
+            unit: "Individual parcel",
+            formats: ["PDF"],
+            price: "$250 per report",
+        },
+        slices: {
+            badge: "GIS Vector layer",
+            badgeClass: "lul-pt__badge--gis",
+            name: "Zoning Slices",
+            href: "https://www.landuselabs.com/slices",
+            whatYouGet:
+                "Pre-flattened GIS layers showing the <em>outcome</em> after base + overlay districts are combined, containing one set of rules per polygon.",
+            bestFor:
+                "Site selection, data pipelines, scenario planning, policy research, regulatory comparison, academic analysis. For when you need regulatory outcomes.",
+            unit: "Zoning Slice (unique base-overlay combination)",
+            formats: ["GeoJSON", "GeoDatabase"],
+            price: "Per-slice, per-variable pricing",
+        },
+        districts: {
+            badge: "GIS Vector layer",
+            badgeClass: "lul-pt__badge--gis",
+            name: "Zoning Districts",
+            href: "https://www.landuselabs.com/districts",
+            whatYouGet: "GIS layers showing how each base and overlay district regulates, rule by rule.",
+            bestFor: "Regulatory comparisons, map display. For when you need regulatory layers.",
+            unit: "Zoning district",
+            formats: ["CSV", "break", "GeoJSON", "GeoDatabase"],
+            price: "Per-district, per-variable pricing",
+        },
+        tables: {
+            badge: "Summary Data",
+            badgeClass: "lul-pt__badge--summary",
+            name: "Zoning Tables",
+            href: "https://www.landuselabs.com/tables",
+            whatYouGet:
+                "A database of summary statistics for nearly fifty land cover, demographic, housing, and zoning characteristics.",
+            bestFor:
+                "Cross-geography comparisons, housing research, zoning reform advocacy. For when you need regulatory summaries for a neighborhood, city, or region.",
+            unit: "Selected geographic area",
+            formats: ["CSV", "GeoJSON (optional)"],
+            price: "Per-geographic unit",
+        },
+        rasters: {
+            badge: "GIS Raster layer",
+            badgeClass: "lul-pt__badge--raster",
+            name: "Zoning Rasters",
+            href: "https://www.landuselabs.com/rasters",
+            whatYouGet:
+                "30x30 grid cells with categorized, standardized information about residential and nonresidential uses.",
+            bestFor:
+                "Environmental analysis, land use modeling, integration with other geospatial datasets (e.g. USGS layers).When you need regulatory categories.",
+            unit: "30×30m grid cell",
+            formats: ["GeoTIFF"],
+            price: "Per-acreage, per category pricing",
+        },
+    };
+
+    /* ---- rendering (no need to edit below) ---- */
+    (function () {
+        function formatsHtml(formats) {
+            return formats
+                .map(function (f) {
+                    return f === "break"
+                        ? '<span class="lul-pt__break"></span>'
+                        : '<span class="lul-pt__fmt">' + f + "</span>";
+                })
+                .join("");
+        }
+
+        var body = document.getElementById("lul-pt-body");
+        var html = LUL_PT_ORDER.map(function (id, i) {
+            var p = LUL_PT_PRODUCTS[id];
+            var isCurrent = i === 0;
+            var rowAttrs = isCurrent
+                ? ' class="lul-pt__row--current"'
+                : ' data-href="' + p.href + '" class="lul-pt__row--link"';
+            var here = isCurrent ? '<span class="lul-pt__here">You are here</span>' : "";
+            return (
+                "<tr" +
+                rowAttrs +
+                ">" +
+                "<td>" +
+                '<span class="lul-pt__badge ' +
+                p.badgeClass +
+                '">' +
+                p.badge +
+                "</span><br />" +
+                '<span class="lul-pt__name">' +
+                p.name +
+                "</span>" +
+                here +
+                "</td>" +
+                '<td data-label="What you get">' +
+                p.whatYouGet +
+                "</td>" +
+                '<td data-label="Best for">' +
+                p.bestFor +
+                "</td>" +
+                '<td data-label="Unit of analysis">' +
+                p.unit +
+                "</td>" +
+                '<td data-label="Format"><div class="lul-pt__formats">' +
+                formatsHtml(p.formats) +
+                "</div></td>" +
+                '<td class="lul-pt__price" data-label="Pricing">' +
+                p.price +
+                "</td>" +
+                "</tr>"
+            );
+        }).join("");
+        body.innerHTML = html;
+
+        body.querySelectorAll(".lul-pt__row--link").forEach(function (row) {
+            row.addEventListener("click", function () {
+                window.location.href = row.getAttribute("data-href");
+            });
+        });
+    })();
 </script>
