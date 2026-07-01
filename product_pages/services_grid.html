@@ -1,0 +1,107 @@
+<style>
+    .lul-services {
+        padding: 0px 0vw;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .lul-services-inner {
+        max-width: 1070px;
+        margin: 0 auto;
+    }
+    .lul-services-eyebrow {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(57, 51, 72, 0.6);
+        margin-bottom: 20px;
+    }
+    /* 1px gap over a line-colored background draws clean dividers between
+       cells no matter how many wrap onto each row. */
+    .lul-services-grid {
+        display: grid;
+        /* wraps based on the actual block width (not the viewport), so it
+           shrinks correctly inside a narrow Squarespace column. the 300px
+           minimum means a 4th column never fits within the 1180px max-width,
+           capping it at 3 per row (then 2, then 1 as it shrinks). */
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+        gap: 1px;
+        background: #efedec;
+        border: 1px solid rgba(57, 51, 72, 0.15);
+        overflow: hidden;
+    }
+    .lul-service-card {
+        background: #ffffff;
+        /* min-height keeps a squarish feel; cards grow to fit text instead
+           of a fixed aspect-ratio that would clip longer descriptions */
+        min-height: 100px;
+        padding: 30px 28px;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.2s ease;
+    }
+    .lul-service-card:hover {
+        background: #faf9f6;
+    }
+    .lul-service-title {
+        font-size: 19px;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        color: #393348;
+        margin: 0 0 14px;
+    }
+    .lul-service-desc {
+        font-size: 0.92rem;
+        color: #5a5663;
+        line-height: 1.6;
+        margin: 0;
+    }
+</style>
+<div class="lul-services">
+    <div class="lul-services-inner">
+        <p class="lul-services-eyebrow">Available Services</p>
+        <div class="lul-services-grid">
+            <div class="lul-service-card">
+                <p class="lul-service-title">Spatial and Demographic Analyses</p>
+                <p class="lul-service-desc">
+                    Analysis of the relationship between zoning and existing/future land uses, development, and
+                    population patterns.
+                </p>
+            </div>
+            <div class="lul-service-card">
+                <p class="lul-service-title">Projections</p>
+                <p class="lul-service-desc">
+                    Modeling of future growth scenarios relating to zoning, land uses, housing, and population.
+                </p>
+            </div>
+            <div class="lul-service-card">
+                <p class="lul-service-title">Parcel-Level Analyses</p>
+                <p class="lul-service-desc">
+                    Site-specific assessment of feasibility, development potential, zoning constraints, and regulatory
+                    context; spatial joins to parcel data of our Districts and Slices.
+                </p>
+            </div>
+            <div class="lul-service-card">
+                <p class="lul-service-title">Impact Studies</p>
+                <p class="lul-service-desc">
+                    In-depth analysis of the relationship between zoning and mobility, transit access, environmental
+                    impacts, infrastructure capacity, and more.
+                </p>
+            </div>
+            <div class="lul-service-card">
+                <p class="lul-service-title">Policy Reviews</p>
+                <p class="lul-service-desc">
+                    Assessment of the impact and utility of current or proposed policy interventions, such as zoning
+                    amendments.
+                </p>
+            </div>
+            <div class="lul-service-card">
+                <p class="lul-service-title">Graphics and Data Visualization</p>
+                <p class="lul-service-desc">
+                    Custom charts, infographics, maps, and dashboards that make complicated zoning and land use data
+                    accessible to any audience.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

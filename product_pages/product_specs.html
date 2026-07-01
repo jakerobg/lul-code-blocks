@@ -1,0 +1,150 @@
+<style>
+    .lul-specs {
+        padding: 0px 0vw;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .lul-specs-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+    .lul-specs-eyebrow {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(57, 51, 72, 0.6);
+        margin-bottom: 20px;
+    }
+    .lul-specs-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        border: 1px solid rgba(57, 51, 72, 0.15);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .lul-spec-card {
+        padding: 28px 24px;
+        border-right: 1px solid rgba(57, 51, 72, 0.15);
+    }
+    .lul-spec-card:last-child {
+        border-right: none;
+    }
+    .lul-spec-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(57, 51, 72, 0.6);
+        margin-bottom: 10px;
+    }
+    .lul-spec-value {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.5;
+        color: #393348;
+    }
+    .lul-spec-sub {
+        font-size: 0.82rem;
+        color: #3d3d3d;
+        margin-top: 6px;
+        line-height: 1.55;
+    }
+    .lul-spec-list {
+        font-size: 0.82rem;
+        color: #3d3d3d;
+        margin-top: 6px;
+        line-height: 1.55;
+        padding-left: 14px;
+    }
+    .lul-spec-list li {
+        margin-bottom: 3px;
+    }
+    .lul-spec-list ul {
+        padding-left: 14px;
+        margin-top: 3px;
+    }
+    .lul-spec-chips {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .lul-spec-chip {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #393348;
+        background: rgba(57, 51, 72, 0.08);
+        border: 1px solid rgba(57, 51, 72, 0.15);
+        border-radius: 20px;
+        padding: 5px 12px;
+        line-height: 1.3;
+    }
+    @media (max-width: 860px) {
+        .lul-specs-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .lul-spec-card {
+            border-right: none;
+            border-bottom: 1px solid rgba(57, 51, 72, 0.15);
+        }
+        .lul-spec-card:last-child {
+            border-bottom: none;
+        }
+    }
+    @media (max-width: 560px) {
+        .lul-specs-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+<div class="lul-specs">
+    <div class="lul-specs-inner">
+        <p class="lul-specs-eyebrow">Product Specifications</p>
+        <div class="lul-specs-grid">
+            <div class="lul-spec-card">
+                <p class="lul-spec-label">Coverage</p>
+                <p class="lul-spec-value">Over 1.4 billion acres</p>
+                <p class="lul-spec-sub">
+                    Available for purchase by jurisdiction, county, CBSA, or state on this website;
+                    <a href="https://www.landuselabs.com/contact" style="text-decoration: underline">contact us</a> for
+                    purchase by CBSA, state, or region, or for national coverage.
+                </p>
+            </div>
+            <div class="lul-spec-card">
+                <p class="lul-spec-label">Unit of Analysis</p>
+                <p class="lul-spec-value">30x30 meter raster cells</p>
+                <p class="lul-spec-sub">
+                    Rasters classifying general uses (7 classes), residential uses (15 classes), and nonresidential uses
+                    (32 classes) are available through this website;
+                    <a href="https://www.landuselabs.com/contact" style="text-decoration: underline">contact us</a> for
+                    Zoning Rasters with a different classification scheme or resolution.
+                </p>
+            </div>
+            <div class="lul-spec-card">
+                <p class="lul-spec-label">What's Included</p>
+                <p class="lul-spec-value">A map of allowable land uses</p>
+                <p class="lul-spec-sub">
+                    Your choice of one of three zoning rasters classifying general residential and nonresidential uses
+                    (7 classes), residential density categories (15 classes), or nonresidential use categories (32
+                    classes), as further defined in our
+                    <a
+                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=112307427#gid=112307427"
+                        style="text-decoration: underline"
+                        >data dictionary</a
+                    >. <br /><br />A license to use delivered information internally; for external or display purposes,
+                    <a href="https://www.landuselabs.com/contact" style="text-decoration: underline">contact us</a> for
+                    a custom license.
+                </p>
+            </div>
+            <div class="lul-spec-card">
+                <p class="lul-spec-label">Format</p>
+                <p class="lul-spec-value">Analysis-ready files</p>
+                <div class="lul-spec-chips">
+                    <span class="lul-spec-chip">GeoTIFF</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

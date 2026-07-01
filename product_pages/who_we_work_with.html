@@ -1,0 +1,83 @@
+<style>
+    .lul-usecases {
+        background: #393348;
+        padding: 40px 40px;
+    }
+    .lul-usecases-inner {
+        max-width: 1180px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .lul-usecases-label {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55) !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .lul-chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .lul-chip-wrap {
+        position: relative;
+        display: inline-block;
+    }
+    .lul-chip {
+        display: inline-block;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15.5px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 16px;
+        border-radius: 20px;
+        cursor: default;
+        border: 1px solid rgba(255, 255, 255, 0);
+        transition:
+            background 0.15s,
+            border-color 0.15s;
+        user-select: none;
+    }
+    .lul-chip-wrap:hover .lul-chip {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+</style>
+<div class="lul-usecases">
+    <div class="lul-usecases-inner">
+        <span class="lul-usecases-label">Who We Work With</span>
+        <div class="lul-chips">
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Government Agencies</span>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Advocacy Organizations</span>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Law Firms</span>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Environmental and Transportation Consultants</span>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Policymakers</span>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Real Estate Professionals</span>
+            </div>
+            <div class="lul-chip-wrap">
+                <span class="lul-chip">Media and Journalists</span>
+            </div>
+        </div>
+    </div>
+</div>

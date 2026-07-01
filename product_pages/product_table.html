@@ -153,7 +153,7 @@
     }
 
     /* Mobile layout */
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
         .lul-pt table,
         .lul-pt thead,
         .lul-pt tbody,
@@ -230,15 +230,15 @@
 </div>
 <script>
     /* ============================================================
-       EDIT HERE
-       1. LUL_PT_ORDER controls the row order. The FIRST id in the
-          list is always the highlighted "You are here" row.
-          Just rearrange the ids to reorder the table.
-       2. LUL_PT_PRODUCTS holds the content for each product.
-          In "formats", use the string "break" to force a line
-          break between format chips (used for Zoning Districts).
-       ============================================================ */
-    var LUL_PT_ORDER = ["reports", "slices", "districts", "tables", "rasters"];
+           EDIT HERE
+           1. LUL_PT_ORDER controls the row order. The FIRST id in the
+              list is always the highlighted "You are here" row.
+              Just rearrange the ids to reorder the table.
+           2. LUL_PT_PRODUCTS holds the content for each product.
+              In "formats", use the string "break" to force a line
+              break between format chips (used for Zoning Districts).
+           ============================================================ */
+    var LUL_PT_ORDER = ["reports", "districts", "rasters", "slices", "tables"];
 
     var LUL_PT_PRODUCTS = {
         reports: {
@@ -247,7 +247,7 @@
             name: "Parcel Reports",
             href: "https://www.landuselabs.com/reports",
             whatYouGet:
-                "A PDF detailing all the zoning rules your selected parcel, including allowed uses, dimensional requirements, district names, and more.",
+                "A PDF detailing the zoning rules that apply to your selected parcel, including allowed uses, dimensional requirements, district names, and more.",
             bestFor:
                 "Due diligence on a specific address. Quick one-off lookups for developers, lawyers, consultants. For when you need comprehensive zoning rules for a single parcel.",
             unit: "Individual parcel",
@@ -260,11 +260,11 @@
             name: "Zoning Slices",
             href: "https://www.landuselabs.com/slices",
             whatYouGet:
-                "Pre-flattened GIS layers showing the <em>outcome</em> after base + overlay districts are combined, containing one set of rules per polygon.",
+                "Flattened GIS layers showing the outcome after base and overlay districts are combined, containing one set of rules per polygon.",
             bestFor:
                 "Site selection, data pipelines, scenario planning, policy research, regulatory comparison, academic analysis. For when you need regulatory outcomes.",
-            unit: "Zoning Slice (unique base-overlay combination)",
-            formats: ["GeoJSON", "GeoDatabase"],
+            unit: "Block group, census tract, jurisdiction, or custom geography",
+            formats: ["GeoJSON", "Geodatabase", "GeoPackage"],
             price: "Per-slice, per-variable pricing",
         },
         districts: {
@@ -272,10 +272,10 @@
             badgeClass: "lul-pt__badge--gis",
             name: "Zoning Districts",
             href: "https://www.landuselabs.com/districts",
-            whatYouGet: "GIS layers showing how each base and overlay district regulates, rule by rule.",
+            whatYouGet: "GIS layers summarizing how each base and overlay district regulates, rule by rule.",
             bestFor: "Regulatory comparisons, map display. For when you need regulatory layers.",
             unit: "Zoning district",
-            formats: ["CSV", "break", "GeoJSON", "GeoDatabase"],
+            formats: ["break", "GeoJSON", "Geodatabase", "GeoPackage"],
             price: "Per-district, per-variable pricing",
         },
         tables: {
@@ -284,25 +284,24 @@
             name: "Zoning Tables",
             href: "https://www.landuselabs.com/tables",
             whatYouGet:
-                "A database of summary statistics for nearly fifty land cover, demographic, housing, and zoning characteristics.",
+                "A table of summary statistics for nearly fifty land cover, demographic, housing, and zoning characteristics.",
             bestFor:
                 "Cross-geography comparisons, housing research, zoning reform advocacy. For when you need regulatory summaries for a neighborhood, city, or region.",
             unit: "Selected geographic area",
-            formats: ["CSV", "GeoJSON (optional)"],
-            price: "Per-geographic unit",
+            formats: ["CSV", "GeoJSON (optional)", "GeoPackage (optional)"],
+            price: "Per-geographic unit pricing",
         },
         rasters: {
             badge: "GIS Raster layer",
             badgeClass: "lul-pt__badge--raster",
             name: "Zoning Rasters",
             href: "https://www.landuselabs.com/rasters",
-            whatYouGet:
-                "30x30 grid cells with categorized, standardized information about residential and nonresidential uses.",
+            whatYouGet: "30x30m grid cells with residential and nonresidential use categories.",
             bestFor:
-                "Environmental analysis, land use modeling, integration with other geospatial datasets (e.g. USGS layers).When you need regulatory categories.",
-            unit: "30×30m grid cell",
+                "Environmental analysis, land use modeling, integration with other geospatial datasets. For when you need land use regulations.",
+            unit: "30×30m grid cells",
             formats: ["GeoTIFF"],
-            price: "Per-acreage, per category pricing",
+            price: "Per-acreage, per-category pricing",
         },
     };
 

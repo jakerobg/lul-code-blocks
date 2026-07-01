@@ -1,0 +1,174 @@
+<style>
+    .lul-data-actions {
+        --lul-data-header: #393348;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--lul-data-header);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+    .lul-data-actions *,
+    .lul-data-actions *::before,
+    .lul-data-actions *::after {
+        box-sizing: border-box;
+    }
+
+    .lul-data-actions .lul-data__dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .lul-data-actions .lul-data__btn {
+        -webkit-appearance: none;
+        appearance: none;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 1.2;
+        padding: 14px 26px;
+        border-radius: 0;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        border: 1px solid #393347;
+        cursor: pointer;
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            gap 0.25s ease;
+    }
+    .lul-data-actions .lul-data__btn--primary {
+        background: #393347;
+        color: #ffffff;
+    }
+    .lul-data-actions .lul-data__btn--primary:hover {
+        background: #4c4460;
+        border-color: #4c4460;
+        gap: 12px;
+    }
+    .lul-data-actions .lul-data__btn--secondary {
+        background: transparent;
+        color: #393347;
+    }
+    .lul-data-actions .lul-data__btn--secondary:hover {
+        background: #393347;
+        color: #ffffff;
+        gap: 12px;
+    }
+    .lul-data-actions .lul-data__or {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--lul-data-header);
+        font-size: 1rem;
+        opacity: 0.7;
+    }
+    .lul-data-actions .lul-data__btn svg {
+        width: 14px;
+        height: 14px;
+        transition: transform 0.25s ease;
+    }
+    .lul-data-actions .lul-data__dropdown.lul-is-open .lul-data__btn svg {
+        transform: rotate(180deg);
+    }
+
+    /* Dropdown menu */
+    .lul-data-actions .lul-data__menu {
+        position: absolute;
+        top: calc(100% - 1px);
+        left: 0;
+        min-width: 100%;
+        background: #ffffff;
+        border: 1px solid #393347;
+        z-index: 50;
+        display: none;
+        flex-direction: column;
+    }
+    .lul-data-actions .lul-data__dropdown.lul-is-open .lul-data__menu {
+        display: flex;
+    }
+    .lul-data-actions .lul-data__option {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: #393347;
+        text-decoration: none;
+        white-space: nowrap;
+        padding: 14px 26px;
+        border-bottom: 1px solid rgba(57, 51, 71, 0.15);
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
+    }
+    .lul-data-actions .lul-data__option:last-child {
+        border-bottom: none;
+    }
+    .lul-data-actions .lul-data__option:hover {
+        background: #393347;
+        color: #ffffff;
+    }
+</style>
+
+<div class="lul-data-actions">
+    <div class="lul-data__dropdown">
+        <a href="#" role="button" class="lul-data__btn lul-data__btn--primary lul-data__toggle">
+            View Data Dictionary
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                    d="M5 8l5 5 5-5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+        </a>
+        <div class="lul-data__menu">
+            <a
+                class="lul-data__option"
+                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=112307427#gid=112307427"
+                >General</a
+            >
+            <a
+                class="lul-data__option"
+                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1343210928#gid=1343210928"
+                >Residential</a
+            >
+            <a
+                class="lul-data__option"
+                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=421718271#gid=421718271"
+                >Nonresidential</a
+            >
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var dropdowns = document.querySelectorAll(".lul-data-actions .lul-data__dropdown");
+
+        dropdowns.forEach(function (dd) {
+            var toggle = dd.querySelector(".lul-data__toggle");
+            toggle.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var isOpen = dd.classList.contains("lul-is-open");
+                dropdowns.forEach(function (other) {
+                    other.classList.remove("lul-is-open");
+                });
+                if (!isOpen) dd.classList.add("lul-is-open");
+            });
+        });
+
+        document.addEventListener("click", function () {
+            dropdowns.forEach(function (dd) {
+                dd.classList.remove("lul-is-open");
+            });
+        });
+    })();
+</script>

@@ -1,0 +1,475 @@
+<style>
+    .lul-dicts {
+        --lul-header: #393348;
+        --lul-text: #333333;
+        --lul-card: #ffffff;
+        --lul-border: rgba(57, 51, 72, 0.08);
+        --lul-bg: rgb(239, 237, 236);
+        /* vertical padding for the dropdown button — bump this up if the
+           dropdown still looks thinner than the plain buttons */
+        --lul-dx-btn-py: 14px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--lul-text);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+    .lul-dicts *,
+    .lul-dicts *::before,
+    .lul-dicts *::after {
+        box-sizing: border-box;
+    }
+
+    /* Cards reflow to fewer columns before they ever get narrow enough to
+     clip the button text — each card never drops below ~240px wide. */
+    .lul-dicts__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        justify-content: center;
+        gap: 24px;
+        max-width: 1620px;
+        margin: 0 auto;
+        padding: 12px 15px 16px;
+    }
+
+    .lul-card {
+        background: var(--lul-card);
+        border: 1px solid var(--lul-border);
+        border-radius: 0;
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        transition:
+            transform 0.1s ease,
+            box-shadow 0.2s ease;
+        box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+    }
+    .lul-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(57, 51, 72, 0.08);
+    }
+    .lul-card:has(.lul-dx__dropdown.lul-dx-open) {
+        z-index: 100;
+    }
+
+    .lul-card__media {
+        width: 100%;
+        aspect-ratio: 5 / 4;
+        overflow: hidden;
+        position: relative;
+        background: #ffffff;
+        padding: 16px;
+    }
+    .lul-card__img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .lul-card__body {
+        padding: 28px 25px 32px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .lul-card__title {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 1.55rem;
+        font-weight: 500;
+        color: var(--lul-header);
+        margin: 0 0 60px;
+        letter-spacing: -0.015em;
+        line-height: 1.2;
+        /* allow the title to wrap to a second line instead of truncating */
+        white-space: normal;
+        overflow-wrap: break-word;
+        flex: 1;
+    }
+    .lul-card__action {
+        align-self: stretch;
+    }
+
+    /* plain button (button.html style) */
+    .lul-card__btn {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #393347;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: 14px 26px;
+        border-radius: 0;
+        border: 1px solid #393347;
+        transition:
+            background 0.25s ease,
+            gap 0.25s ease;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+    }
+    .lul-card__btn:hover {
+        background: #4c4460;
+        gap: 12px;
+    }
+    .lul-card__btn svg {
+        width: 14px;
+        height: 14px;
+        flex: none;
+        transition: transform 0.25s ease;
+    }
+    .lul-card__btn:hover svg {
+        transform: translateX(2px);
+    }
+
+    /* dropdown buttons (data_sample / raster dropdown style), full width inside cards */
+    .lul-dicts .lul-dx-actions {
+        display: block !important;
+        width: 100% !important;
+        gap: 0;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__dropdown {
+        position: relative;
+        display: block !important;
+        width: 100% !important;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__btn {
+        -webkit-appearance: none;
+        appearance: none;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 1rem;
+        /* match the plain button's line-height (inherited) so heights line up,
+           then fine-tune thickness with --lul-dx-btn-py above */
+        padding: var(--lul-dx-btn-py) 26px;
+        border-radius: 0;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        border: 1px solid #393347;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            gap 0.25s ease;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__btn--primary {
+        background: #393347;
+        color: #ffffff;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__btn--primary:hover {
+        background: #4c4460;
+        border-color: #4c4460;
+        gap: 12px;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__btn svg {
+        width: 14px;
+        height: 14px;
+        flex: none;
+        transition: transform 0.25s ease;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__dropdown.lul-dx-open .lul-dx__btn svg {
+        transform: rotate(180deg);
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__menu {
+        position: absolute;
+        top: calc(100% - 1px);
+        left: 0;
+        min-width: 100%;
+        background: #ffffff;
+        border: 1px solid #393347;
+        z-index: 50;
+        display: none;
+        flex-direction: column;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__dropdown.lul-dx-open .lul-dx__menu {
+        display: flex;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__option {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: #393347;
+        text-decoration: none;
+        white-space: nowrap;
+        padding: 14px 26px;
+        border-bottom: 1px solid rgba(57, 51, 71, 0.15);
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__option:last-child {
+        border-bottom: none;
+    }
+    .lul-dicts .lul-dx-actions .lul-dx__option:hover {
+        background: #393347;
+        color: #ffffff;
+    }
+
+    @media (max-width: 620px) {
+        .lul-dicts__grid {
+            gap: 16px;
+            padding: 8px 16px 12px;
+        }
+        .lul-card__body {
+            padding: 22px 22px 26px;
+        }
+        .lul-card__title {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+        }
+    }
+</style>
+
+<section class="lul-dicts" aria-label="Dictionaries">
+    <div class="lul-dicts__grid">
+        <article class="lul-card">
+            <div class="lul-card__media">
+                <img
+                    class="lul-card__img"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/592c4834-4b25-421d-a74b-270a03218671/reports_screenshot.png?content-type=image%2Fpng"
+                    alt="Parcel Reports"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-card__body">
+                <h3 class="lul-card__title">Parcel Reports</h3>
+                <div class="lul-card__action">
+                    <a class="lul-card__btn" href="/glossary" target="_blank" rel="noopener"
+                        >Glossary
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </article>
+        <article class="lul-card">
+            <div class="lul-card__media">
+                <img
+                    class="lul-card__img"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/dc78b34e-1408-4cef-b574-84fd38b0dd2b/districts_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Districts"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-card__body">
+                <h3 class="lul-card__title">Zoning Districts</h3>
+                <div class="lul-card__action">
+                    <a
+                        class="lul-card__btn"
+                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1394472999#gid=1394472999"
+                        target="_blank"
+                        rel="noopener"
+                        >Data Dictionary
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <article class="lul-card">
+            <div class="lul-card__media">
+                <img
+                    class="lul-card__img"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9671bbad-dba6-4203-8886-1fa2147caaa1/rasters_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Rasters"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-card__body">
+                <h3 class="lul-card__title">Zoning Rasters</h3>
+                <div class="lul-card__action">
+                    <div class="lul-dx-actions">
+                        <div class="lul-dx__dropdown">
+                            <a href="#" role="button" class="lul-dx__btn lul-dx__btn--primary lul-dx__toggle"
+                                >Data Dictionary
+                                <svg
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M5 8l5 5 5-5"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </a>
+                            <div class="lul-dx__menu">
+                                <a
+                                    class="lul-dx__option"
+                                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=112307427#gid=112307427"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >General</a
+                                >
+                                <a
+                                    class="lul-dx__option"
+                                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1343210928#gid=1343210928"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Residential</a
+                                >
+                                <a
+                                    class="lul-dx__option"
+                                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=421718271#gid=421718271"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Nonresidential</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="lul-card">
+            <div class="lul-card__media">
+                <img
+                    class="lul-card__img"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/e08b5585-d93c-43ab-aeee-037cbd0fe141/slices_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Slices"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-card__body">
+                <h3 class="lul-card__title">Zoning Slices</h3>
+                <div class="lul-card__action">
+                    <a
+                        class="lul-card__btn"
+                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1642345933#gid=1642345933"
+                        target="_blank"
+                        rel="noopener"
+                        >Data Dictionary
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <article class="lul-card">
+            <div class="lul-card__media">
+                <img
+                    class="lul-card__img"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/0d6778fe-9005-4aa7-98e9-a57cca1022c9/tables_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Tables"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-card__body">
+                <h3 class="lul-card__title">Zoning Tables</h3>
+                <div class="lul-card__action">
+                    <div class="lul-dx-actions">
+                        <div class="lul-dx__dropdown">
+                            <a href="#" role="button" class="lul-dx__btn lul-dx__btn--primary lul-dx__toggle"
+                                >Data Dictionary
+                                <svg
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M5 8l5 5 5-5"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </a>
+                            <div class="lul-dx__menu">
+                                <a
+                                    class="lul-dx__option"
+                                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=386090160#gid=386090160"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Jurisdictions</a
+                                >
+                                <a
+                                    class="lul-dx__option"
+                                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1992686153#gid=1992686153"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Census Tracts</a
+                                >
+                                <a
+                                    class="lul-dx__option"
+                                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=594917890#gid=594917890"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >Block Groups</a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+
+<script>
+    (function () {
+        var dropdowns = document.querySelectorAll(".lul-dicts .lul-dx-actions .lul-dx__dropdown");
+        dropdowns.forEach(function (dd) {
+            var toggle = dd.querySelector(".lul-dx__toggle");
+            toggle.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var isOpen = dd.classList.contains("lul-dx-open");
+                dropdowns.forEach(function (other) {
+                    other.classList.remove("lul-dx-open");
+                });
+                if (!isOpen) dd.classList.add("lul-dx-open");
+            });
+        });
+        document.addEventListener("click", function () {
+            dropdowns.forEach(function (dd) {
+                dd.classList.remove("lul-dx-open");
+            });
+        });
+    })();
+</script>
