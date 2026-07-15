@@ -1,0 +1,98 @@
+<style>
+    .lul-figcard {
+        --lul-header: #393348;
+        --lul-text: #333333;
+        --lul-card: #fafaf7;
+        --lul-border: rgba(57, 51, 72, 0.08);
+
+        /* ---- Sizing knobs: tweak these to match a card sitting beside it ---- */
+        --card-max: 720px; /* max width of the card */
+        --img-ratio: 7/8; /* e.g. 16/9, 4/3, 1/1 — crops the image to this box; auto = natural */
+        --img-pos: center; /* which part of the image to keep when cropping, e.g. "center top" */
+        --scale: 1; /* shrink the caption to match: e.g. 0.9, 0.85 */
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--lul-text);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        margin: 0;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+    .lul-figcard *,
+    .lul-figcard *::before,
+    .lul-figcard *::after {
+        box-sizing: border-box;
+    }
+
+    .lul-figcard__card {
+        max-width: var(--card-max, 820px);
+        margin: 0 auto;
+        background: var(--lul-card);
+        border: 1px solid var(--lul-border);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+    }
+
+    /* Image is emphasized: spans the full card width, never squished */
+    .lul-figcard__media {
+        width: 100%;
+        display: block;
+        aspect-ratio: var(--img-ratio, auto);
+        overflow: hidden;
+    }
+    .lul-figcard__media img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: var(--img-pos, center);
+    }
+
+    .lul-figcard__caption {
+        margin: 0;
+        padding: calc(18px * var(--scale)) calc(24px * var(--scale)) calc(22px * var(--scale));
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: calc(0.95rem * var(--scale));
+        line-height: 1.55;
+        font-style: italic;
+        color: var(--lul-text);
+        border-top: 1px solid var(--lul-border);
+    }
+    .lul-figcard__caption strong {
+        font-weight: 600;
+        font-style: italic;
+    }
+    .lul-figcard__link {
+        color: var(--lul-header);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    .lul-figcard__link:hover {
+        text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+        .lul-figcard__caption {
+            padding: 16px 18px 18px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<figure class="lul-figcard">
+    <div class="lul-figcard__card">
+        <div class="lul-figcard__media">
+            <img
+                src="https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/ebdfcc50-9a3d-4f4e-8b77-15f2d0c94299/Zoneomics+pie+chart+la.png?format=1500w"
+                alt="Land Allocation Breakdown"
+                loading="lazy"
+            />
+        </div>
+        <figcaption class="lul-figcard__caption">
+            A “Land Allocation Breakdown” in Los Angeles published by a major zoning data provider.
+        </figcaption>
+    </div>
+</figure>

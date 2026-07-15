@@ -1,0 +1,465 @@
+<style>
+    .lul-ddt {
+        --lul-header: #393348;
+        --lul-text: #333333;
+        --lul-bg: #ffffff;
+        --lul-purple: #393348;
+        --lul-purple-hover: #4c4460;
+        --lul-btn-fg: #ffffff;
+        --pad-left: 40px;
+        --edge: 10px;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: var(--lul-text);
+        background: var(--lul-bg);
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+    }
+    .lul-ddt *,
+    .lul-ddt *::before,
+    .lul-ddt *::after {
+        box-sizing: border-box;
+    }
+
+    /* ---------- Tab bar ---------- */
+    .lul-ddt__bar {
+        display: flex;
+        width: 100%;
+    }
+    .lul-ddt__tab {
+        flex: 1 1 0;
+        appearance: none;
+        background: transparent;
+        border: 1px solid var(--lul-purple);
+        color: var(--lul-header);
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+        line-height: 1.25;
+        padding: 20px 18px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
+    }
+    .lul-ddt__tab + .lul-ddt__tab {
+        border-left: none;
+    }
+    .lul-ddt__tab:hover {
+        background: rgba(57, 51, 72, 0.06);
+    }
+    .lul-ddt__tab.is-active,
+    .lul-ddt__tab.is-active:hover {
+        background: var(--lul-purple);
+        color: #ffffff;
+    }
+
+    /* ---------- Connector line ---------- */
+    .lul-ddt__connector {
+        display: block;
+        width: 100%;
+        height: 100px;
+        overflow: visible;
+    }
+    .lul-ddt__connector path {
+        fill: none;
+        stroke: var(--lul-purple);
+        stroke-width: 1.5;
+    }
+
+    /* ---------- Panels ---------- */
+    .lul-ddt__panels {
+        display: grid;
+        overflow: hidden;
+        padding: 8px calc(var(--pad-left) + var(--edge)) 56px calc(var(--pad-left) + var(--edge));
+    }
+    .lul-ddt__panel {
+        grid-area: 1 / 1;
+        display: flex;
+        align-items: flex-start;
+        gap: 44px;
+    }
+    /* Only the active panel is rendered, so the panel area fits its own
+       height instead of the tallest tab's — no leftover space below. */
+    .lul-ddt__panel:not(.is-active) {
+        display: none;
+    }
+    .lul-ddt__panel.is-active .lul-ddt__text,
+    .lul-ddt__panel.is-active .lul-ddt__media {
+        animation: lulDdtSwipe 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    }
+    .lul-ddt__panel.is-active .lul-ddt__media {
+        animation-delay: 0.06s;
+    }
+    @keyframes lulDdtSwipe {
+        from {
+            opacity: 0;
+            transform: translateX(60px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .lul-ddt__text {
+        flex: 2 1 0;
+        min-width: 340px;
+        max-width: 920px;
+    }
+    .lul-ddt__title {
+        font-size: 1.9rem;
+        font-weight: 500;
+        color: var(--lul-header);
+        letter-spacing: -0.015em;
+        line-height: 1.15;
+        margin: 0 0 16px;
+    }
+    .lul-ddt__body {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: var(--lul-text);
+        margin: 0 0 18px;
+    }
+    .lul-ddt__body:last-of-type {
+        margin-bottom: 32px;
+    }
+    .lul-ddt__media {
+        flex: 0 2 500px;
+        min-width: 0;
+        align-self: flex-start;
+        margin-left: auto;
+    }
+    .lul-ddt__media img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border: none;
+    }
+
+    /* ---------- Buttons ---------- */
+    .lul-ddt__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    .lul-ddt__btn {
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 26px;
+        font-weight: 500;
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+        border-radius: 0;
+        cursor: pointer;
+        text-decoration: none;
+        border: 1px solid var(--lul-purple);
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            gap 0.25s ease;
+        white-space: nowrap;
+    }
+    .lul-ddt__btn--solid {
+        background: var(--lul-purple);
+        color: var(--lul-btn-fg);
+    }
+    .lul-ddt__btn--solid:hover {
+        background: var(--lul-purple-hover);
+        border-color: var(--lul-purple-hover);
+        gap: 12px;
+    }
+    .lul-ddt__btn--outline {
+        background: transparent;
+        color: var(--lul-purple);
+    }
+    .lul-ddt__btn--outline:hover {
+        background: var(--lul-purple);
+        color: var(--lul-btn-fg);
+    }
+    .lul-ddt__btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    @media (max-width: 1175px) {
+        .lul-ddt {
+            --pad-left: 24px;
+            --edge: 0px;
+        }
+        .lul-ddt__bar {
+            flex-wrap: wrap;
+        }
+        .lul-ddt__tab {
+            flex: 1 1 50%;
+            border-bottom: 1px solid rgba(57, 51, 72, 0.1);
+        }
+        .lul-ddt__connector {
+            display: none;
+        }
+        .lul-ddt__panels {
+            padding: 32px 24px 10px;
+        }
+        .lul-ddt__panel {
+            flex-direction: column;
+            gap: 32px;
+        }
+        .lul-ddt__text {
+            min-width: 0;
+            max-width: none;
+        }
+        .lul-ddt__media {
+            min-width: 0;
+            max-width: 480px;
+            align-self: center;
+            margin-left: 0;
+            max-height: 430px;
+        }
+
+        .lul-ddt__title {
+            font-size: 1.65rem;
+        }
+    }
+</style>
+
+<div class="lul-ddt">
+    <div class="lul-ddt__bar" role="tablist">
+        <button class="lul-ddt__tab is-active" role="tab" data-panel="jurisdictions">Jurisdictions</button>
+        <button class="lul-ddt__tab" role="tab" data-panel="districts">Zoning Districts</button>
+        <button class="lul-ddt__tab" role="tab" data-panel="slices">Zoning Slices</button>
+    </div>
+
+    <svg class="lul-ddt__connector" aria-hidden="true" preserveAspectRatio="none">
+        <path d="" />
+    </svg>
+
+    <div class="lul-ddt__panels">
+        <div class="lul-ddt__panel is-active" role="tabpanel" data-panel="jurisdictions">
+            <div class="lul-ddt__text">
+                <h3 class="lul-ddt__title">Jurisdictions</h3>
+                <p class="lul-ddt__body">
+                    When the National Zoning Atlas began, no one knew how many jurisdictions could exercise zoning in
+                    the U.S because there was no centralized national database. So we built one.
+                </p>
+                <p class="lul-ddt__body">
+                    Our team stewards the first and only fully integrated dataset that has identified all 33,000+
+                    jurisdictions with zoning authority in the country — complete with their geographic boundaries,
+                    population and housing unit counts, and land cover statistics.
+                </p>
+                <p class="lul-ddt__body">
+                    If you're looking for comparisons of zoning across geographies, including summary stats of zoning
+                    regulations in tabular format at the scale of the jurisdiction (and several other geographic
+                    scales), you might want our Zoning Tables.
+                </p>
+                <div class="lul-ddt__actions">
+                    <a class="lul-ddt__btn lul-ddt__btn--solid" href="/tables">
+                        Explore Tables
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="lul-ddt__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/a396c08e-0759-41c1-b62e-33e491f23134/jurisdictions%2Bmap+copy.png?content-type=image%2Fpng"
+                    alt="Map of U.S. jurisdictions with zoning authority"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <div class="lul-ddt__panel" role="tabpanel" data-panel="districts">
+            <div class="lul-ddt__text">
+                <h3 class="lul-ddt__title">Zoning Districts</h3>
+                <p class="lul-ddt__body">
+                    To build Zoning Districts, our team of trained analysts uses a standardized methodology designed to
+                    translate complex local regulations into consistent, comparable data. We log that data at the scale
+                    of districts: defined regulated areas within (and sometimes outside) the city, town, county, or
+                    other type of jurisdiction that administers the zoning code.
+                </p>
+                <p class="lul-ddt__body">
+                    We find these districts by painstakingly reviewing the full zoning code: both text and map. Our team
+                    digitizes and spatially aligns district boundaries, and encodes regulatory attributes specifying
+                    use, lot, and structure requirements into our structured data schema.
+                </p>
+                <p class="lul-ddt__body">
+                    If you need zoning data to conduct regulatory analysis or do certain types of due diligence, Zoning
+                    Districts (our premium product) may be what you're looking for.
+                </p>
+                <div class="lul-ddt__actions">
+                    <a class="lul-ddt__btn lul-ddt__btn--solid" href="/districts">
+                        Explore Districts
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="lul-ddt__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/dc78b34e-1408-4cef-b574-84fd38b0dd2b/districts_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Districts"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <div class="lul-ddt__panel" role="tabpanel" data-panel="slices">
+            <div class="lul-ddt__text">
+                <h3 class="lul-ddt__title">Zoning Slices</h3>
+                <p class="lul-ddt__body">
+                    Comparing zoning rules across jurisdictions would be straightforward if districts never overlapped.
+                    But they do. Many zoning codes layer base districts and overlay districts on top of one another, so
+                    two or more sets of regulations can apply to the same piece of land at once. Ignoring that
+                    complexity doesn't simplify analysis. It breaks it.
+                </p>
+                <p class="lul-ddt__body">
+                    Zoning Slices are Land Use Labs’s solution to this problem. A Slice is the unique geometric
+                    combination of base and overlay districts that reflect how zoning rules actually operate. Our Zoning
+                    Slices product applies our tested processes to show regulatory outcomes. The output appears like a
+                    stained-glass mosaic, where each Slice represents a distinct set of zoning rules that apply to the
+                    underlying land.
+                </p>
+                <p class="lul-ddt__body">
+                    If you need zoning data to calculate area statistics, run comparative analyses, or conduct scenario
+                    planning, Zoning Slices are what you're looking for.
+                </p>
+                <div class="lul-ddt__actions">
+                    <a class="lul-ddt__btn lul-ddt__btn--solid" href="/slices">
+                        Explore Slices
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="lul-ddt__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/e08b5585-d93c-43ab-aeee-037cbd0fe141/slices_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Slices"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var root = document.currentScript.previousElementSibling;
+        while (root && !(root.classList && root.classList.contains("lul-ddt"))) {
+            root = root.previousElementSibling;
+        }
+        if (!root) return;
+
+        var tabs = root.querySelectorAll(".lul-ddt__tab");
+        var panels = root.querySelectorAll(".lul-ddt__panel");
+        var svg = root.querySelector(".lul-ddt__connector");
+        var path = svg.querySelector("path");
+        var anchorX = 0;
+        var activeTab = root.querySelector(".lul-ddt__tab.is-active");
+
+        function measure() {
+            // Padding is fixed in CSS now; the connector anchors to the text's
+            // real left edge in draw(), so nothing to compute here.
+        }
+
+        function draw(tab, animate) {
+            if (getComputedStyle(svg).display === "none") return;
+            var rootRect = root.getBoundingClientRect();
+            var tRect = tab.getBoundingClientRect();
+            var cx = tRect.left - rootRect.left + tRect.width / 2;
+            // Anchor the line to the text block's real left edge so it stays
+            // correct regardless of the panel margin.
+            var target = tab.getAttribute("data-panel");
+            var txt = root.querySelector('.lul-ddt__panel[data-panel="' + target + '"] .lul-ddt__text');
+            var ax = anchorX;
+            if (txt) {
+                ax = txt.getBoundingClientRect().left - rootRect.left;
+            }
+            var h = svg.clientHeight || 46;
+            var mid = h * 0.5;
+            var d;
+            if (Math.abs(cx - ax) < 1.5) {
+                d = "M " + cx + " 0 V " + h;
+            } else {
+                d = "M " + cx + " 0 V " + mid + " H " + ax + " V " + h;
+            }
+            path.setAttribute("d", d);
+
+            var len = path.getTotalLength();
+            path.style.transition = "none";
+            path.style.strokeDasharray = len;
+            path.style.strokeDashoffset = animate ? len : 0;
+            if (animate) {
+                // force reflow, then animate the draw
+                path.getBoundingClientRect();
+                path.style.transition = "stroke-dashoffset 0.45s ease";
+                path.style.strokeDashoffset = 0;
+            }
+        }
+
+        function select(tab, animate) {
+            activeTab = tab;
+            var target = tab.getAttribute("data-panel");
+            tabs.forEach(function (t) {
+                t.classList.toggle("is-active", t === tab);
+            });
+            panels.forEach(function (p) {
+                var on = p.getAttribute("data-panel") === target;
+                if (on && animate) {
+                    // restart the swipe animation
+                    p.classList.remove("is-active");
+                    void p.offsetWidth;
+                }
+                p.classList.toggle("is-active", on);
+            });
+            draw(tab, animate);
+        }
+
+        tabs.forEach(function (tab) {
+            tab.addEventListener("click", function () {
+                select(tab, true);
+            });
+        });
+
+        measure();
+        draw(activeTab, false);
+
+        var rt;
+        window.addEventListener("resize", function () {
+            clearTimeout(rt);
+            rt = setTimeout(function () {
+                measure();
+                draw(activeTab, false);
+            }, 120);
+        });
+    })();
+</script>

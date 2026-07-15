@@ -1,0 +1,30 @@
+# Policymakers/Government
+
+## Marketing Hook
+
+- Is [state] falling behind on zoning?
+- Debating reform? Benchmark your zoning before the vote.
+
+## Body
+
+Zoning decides what gets built and where. But it's effectively unreadable at scale: thousands of jurisdictions, each with its own code and decades of amendments. Legislators debate reform without knowing how their rules compare to the state next door, and reforms pass with no baseline to measure them against. Land Use Labs turns sprawling local codes into standardized data so you can benchmark your community and target reform with evidence instead of anecdotes.
+
+### Make informed policy with Zoning Districts
+
+GIS layers that reveal how each base and overlay district regulates uses and lots. Drop them into your GIS to see where constraints bind, model zoning reform before it goes to council, and compare regulations across districts. Public display of your zoning is available under a custom license.
+
+### Compare your jurisdiction with Zoning Tables
+
+Summary statistics on zoning, housing, land cover, and demographics at any scale, from a single jurisdiction to an entire state or CBSA. They power regulatory comparison and land use research, using hard numbers to make the case for zoning reform.
+
+### Model reform scenarios with Zoning Slices
+
+Slices flatten every overlapping base and overlay district into individual, non-overlapping polygons, each carrying exactly one set of prevailing rules. They show what zoning actually requires across a whole study area, ready for scenario planning and policy research.
+
+### See what's buildable with Zoning Rasters
+
+A standardized 30×30m grid of allowable residential and nonresidential uses across a billion-plus acres, a continuous surface of what zoning permits rather than what's already built. Rasters suit environmental analysis and land use research, and integrate directly with your own data pipeline.
+
+### Need custom analysis?
+
+When an off-the-shelf dataset isn't enough, our team builds tailored studies, from reform scenarios to buildout-capacity and impact analyses. You bring the question; we handle the analysis.

@@ -1,108 +1,108 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            body {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-            }
-            .scene {
-                position: relative;
-                width: 100%;
-                max-width: 1100px;
-                padding: 32px;
-            }
-            .map-wrap {
-                position: relative;
-                width: 100%;
-            }
-            .map-wrap svg {
-                width: 100%;
-                height: auto;
-                display: block;
-                overflow: visible;
-            }
-            .parcel {
-                fill: rgb(218, 214, 210);
-                stroke: rgb(165, 158, 152);
-                stroke-width: 0.6px;
-                stroke-miterlimit: 10;
-                transition:
-                    fill 0.25s ease,
-                    stroke 0.25s ease,
-                    stroke-width 0.25s ease;
-            }
-            .card {
-                position: absolute;
-                width: 215px;
-                background: white;
-                border-radius: 12px;
-                padding: 18px 20px;
-                box-shadow:
-                    0 8px 32px rgba(0, 0, 0, 0.13),
-                    0 2px 8px rgba(0, 0, 0, 0.07);
-                opacity: 0;
-                pointer-events: none;
-                border-top: 3px solid #ccc;
-                transition: opacity 0.25s ease;
-            }
-            .card.visible {
-                opacity: 1;
-            }
-            .card-zone {
-                font-size: 11px;
-                font-weight: 700;
-                letter-spacing: 0.08em;
-                text-transform: uppercase;
-                margin-bottom: 3px;
-            }
-            .card-desc {
-                font-size: 12px;
-                color: #555;
-                margin-bottom: 12px;
-                line-height: 1.35;
-            }
-            .card-address {
-                font-size: 20px;
-                font-weight: 800;
-                color: #222;
-                margin-bottom: 12px;
-                line-height: 1.2;
-            }
-            .card-divider {
-                height: 1px;
-                background: #eee;
-                margin-bottom: 12px;
-            }
-            .card-row {
-                margin-bottom: 7px;
-            }
-            .card-label {
-                font-size: 10px;
-                font-weight: 600;
-                letter-spacing: 0.06em;
-                text-transform: uppercase;
-                color: #aaa;
-                margin-bottom: 2px;
-            }
-            .card-value {
-                font-size: 12px;
-                color: #333;
-                line-height: 1.35;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="scene">
+<!--
+  Reports — animated hero graphic (Squarespace Code Block).
+  Laid out like slices_graphic.html: a self-contained, left-aligned
+  block (not centered in the viewport), all styles scoped under
+  .lul-reports-anim so they can't collide with the page's own CSS.
+-->
+<div class="lul-reports-anim">
+    <style>
+        .lul-reports-anim,
+        .lul-reports-anim * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .lul-reports-anim {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+            width: 100%;
+            max-width: 720px;
+            background: #efedec; /* matches product-tabs bg */
+        }
+        .lul-reports-anim .scene {
+            position: relative;
+            width: 100%;
+            padding: 32px;
+        }
+        .lul-reports-anim .map-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .lul-reports-anim .map-wrap svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            overflow: visible;
+        }
+        .lul-reports-anim .parcel {
+            fill: rgb(218, 214, 210);
+            stroke: rgb(165, 158, 152);
+            stroke-width: 0.6px;
+            stroke-miterlimit: 10;
+            transition:
+                fill 0.25s ease,
+                stroke 0.25s ease,
+                stroke-width 0.25s ease;
+        }
+        .lul-reports-anim .card {
+            position: absolute;
+            width: 215px;
+            background: white;
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.13),
+                0 2px 8px rgba(0, 0, 0, 0.07);
+            opacity: 0;
+            pointer-events: none;
+            border-top: 3px solid #ccc;
+            transition: opacity 0.25s ease;
+        }
+        .lul-reports-anim .card.visible {
+            opacity: 1;
+        }
+        .lul-reports-anim .card-zone {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .lul-reports-anim .card-desc {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 12px;
+            line-height: 1.35;
+        }
+        .lul-reports-anim .card-address {
+            font-size: 20px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+        .lul-reports-anim .card-divider {
+            height: 1px;
+            background: #eee;
+            margin-bottom: 12px;
+        }
+        .lul-reports-anim .card-row {
+            margin-bottom: 7px;
+        }
+        .lul-reports-anim .card-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 2px;
+        }
+        .lul-reports-anim .card-value {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.35;
+        }
+    </style>
+    <div class="scene">
             <div class="map-wrap" id="mapWrap">
                 <svg id="mainSvg" viewBox="0 0 290.22 247.69" xmlns="http://www.w3.org/2000/svg">
                     <g id="Layer_1-2" data-name="Layer 1">
@@ -1926,5 +1926,4 @@
 
             setTimeout(next, 600);
         </script>
-    </body>
-</html>
+    </div>

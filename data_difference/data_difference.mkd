@@ -1,0 +1,31 @@
+# Jurisdictions
+
+When the National Zoning Atlas began, no one knew how many jurisdictions could exercise zoning in the U.S because there was no centralized national database. So we built one.
+
+Our team stewards the first and only fully integrated dataset that has identified all 33,000+ jurisdictions with zoning authority in the country — complete with their geographic boundaries, population and housing unit counts, and land cover statistics.
+
+(no button for this one)
+
+(image url: https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/b8cde40b-c075-44ea-9924-392c9a1c78bf/jurisdictions+map.png?format=2500w)
+
+# Zoning Districts
+
+To build Zoning Districts, our team of trained analysts uses a standardized methodology designed to translate complex local regulations into consistent, comparable data. We log that data at the scale of districts: defined regulated areas within (and sometimes outside) the city, town, county, or other type of jurisdiction that administers the zoning code.
+
+We find these districts by painstakingly reviewing the full zoning code: both text and map. Our team digitizes and spatially aligns district boundaries, and encodes regulatory attributes specifying use, lot, and structure requirements into our structured data schema.
+
+Internal reviews confirm alignment between mapped boundaries and written regulations, evaluate data entries for consistency, and document how ambiguities are resolved. Districts are only included in the final dataset after passing these checks.
+
+If you need zoning data to conduct regulatory analysis or do certain types of due diligence, Zoning Districts (our premium product) may be what you’re looking for.
+
+(then have an Explore Districts button)
+
+# Zoning Slices
+
+Comparing zoning rules across jurisdictions would be straightforward if districts never overlapped. But they do. Many zoning codes layer base districts and overlay districts on top of one another, so two or more sets of regulations can apply to the same piece of land at once. Ignoring that complexity doesn't simplify analysis. It breaks it.
+
+Zoning Slices are Land Use Labs’s solution to this problem. A Slice is the unique geometric combination of base and overlay districts that reflect how zoning rules actually operate. Our Zoning Slices product applies our tested processes to show regulatory outcomes. The output appears like a stained-glass mosaic, where each Slice represents a distinct set of zoning rules that apply to the underlying land.
+
+If you need zoning data to calculate area statistics, run comparative analyses, or conduct scenario planning, Zoning Slices are what you're looking for.
+
+(explore slices button)

@@ -1,0 +1,93 @@
+<style>
+    .lul-figimg {
+        --figimg-header: #393348;
+        --figimg-text: #333333;
+        --figimg-card: #fafaf7;
+        --figimg-border: rgba(57, 51, 72, 0.08);
+
+        /* ---- Sizing knob: card width. Image keeps its natural aspect ratio ---- */
+        --figimg-max: 820px;
+
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--figimg-text);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        margin: 0;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+    .lul-figimg *,
+    .lul-figimg *::before,
+    .lul-figimg *::after {
+        box-sizing: border-box;
+    }
+
+    .lul-figimg__card {
+        max-width: var(--figimg-max, 820px);
+        margin: 0 auto;
+        background: var(--figimg-card);
+        border: 1px solid var(--figimg-border);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+    }
+
+    /* Image is emphasized and shown at its natural aspect ratio (never cropped) */
+    .lul-figimg__media {
+        width: 100%;
+        display: block;
+    }
+    .lul-figimg__media img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .lul-figimg__caption {
+        margin: 0;
+        padding: 18px 24px 22px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 0.95rem;
+        line-height: 1.55;
+        font-style: italic;
+        color: var(--figimg-text);
+        border-top: 1px solid var(--figimg-border);
+    }
+    .lul-figimg__caption strong {
+        font-weight: 600;
+        font-style: italic;
+    }
+    .lul-figimg__link {
+        color: var(--figimg-header);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    .lul-figimg__link:hover {
+        text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+        .lul-figimg__caption {
+            padding: 16px 18px 18px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<figure class="lul-figimg">
+    <div class="lul-figimg__card">
+        <div class="lul-figimg__media">
+            <img
+                src="https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/0aeafa13-b9eb-4777-a425-d9c2f4801a64/Editor+screenshot.png?format=1500w"
+                alt="National Zoning Atlas Editor interface"
+                loading="lazy"
+            />
+        </div>
+        <figcaption class="lul-figimg__caption">
+            View of the <strong>National Zoning Atlas Editor</strong> interface, the backend data-collection tool that
+            facilitates standardized data entry per the NZA methodology.
+        </figcaption>
+    </div>
+</figure>

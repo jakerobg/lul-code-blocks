@@ -1,0 +1,289 @@
+<style>
+    .lul-dd {
+        --lul-header: #393348;
+        --lul-text: #333333;
+        --lul-card: #fafaf7;
+        --lul-border: rgba(57, 51, 72, 0.08);
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--lul-text);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        margin: 0;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+    .lul-dd *,
+    .lul-dd *::before,
+    .lul-dd *::after {
+        box-sizing: border-box;
+    }
+
+    .lul-dd__grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 340px));
+        justify-content: center;
+        align-items: start;
+        gap: 28px;
+        padding: 12px 15px 16px;
+    }
+
+    .lul-dd__card {
+        background: var(--lul-card);
+        border: 1px solid var(--lul-border);
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+        transition:
+            transform 0.35s ease,
+            box-shadow 0.35s ease;
+    }
+    .lul-dd__card:hover {
+        z-index: 10;
+        transform: translateY(-6px);
+        box-shadow: 0 14px 34px rgba(57, 51, 72, 0.16);
+    }
+
+    .lul-dd__media {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        position: relative;
+    }
+    .lul-dd__media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+    .lul-dd__card:hover .lul-dd__media img {
+        transform: scale(1.04);
+    }
+
+    .lul-dd__body {
+        padding: 26px 26px 28px;
+        display: flex;
+        flex-direction: column;
+    }
+    .lul-dd__title {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 1.55rem;
+        font-weight: 500;
+        color: var(--lul-header);
+        margin: 0 0 12px;
+        letter-spacing: -0.015em;
+        line-height: 1.2;
+    }
+    .lul-dd__lead {
+        font-size: 1rem;
+        line-height: 1.55;
+        color: var(--lul-text);
+        margin: 0;
+    }
+
+    /* Collapsed extra content — expands on hover */
+    .lul-dd__more {
+        display: grid;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transition:
+            grid-template-rows 0.4s ease,
+            opacity 0.3s ease;
+    }
+    .lul-dd__more-inner {
+        overflow: hidden;
+        min-height: 0;
+    }
+    .lul-dd__card:hover .lul-dd__more,
+    .lul-dd__card:focus-within .lul-dd__more {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+    .lul-dd__more p {
+        font-size: 1rem;
+        line-height: 1.55;
+        color: var(--lul-text);
+        margin: 14px 0 0;
+    }
+
+    .lul-dd__btn {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 22px;
+        background: #393347;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: 13px 22px;
+        border-radius: 0;
+        border: 1px solid #393347;
+        cursor: pointer;
+        letter-spacing: 0.02em;
+        transition:
+            background 0.25s ease,
+            gap 0.25s ease;
+    }
+    .lul-dd__btn:hover {
+        background: #4c4460;
+        border-color: #4c4460;
+        gap: 12px;
+    }
+    .lul-dd__btn svg {
+        width: 16px;
+        height: 16px;
+        transition: transform 0.25s ease;
+    }
+
+    @media (max-width: 900px) {
+        .lul-dd__grid {
+            grid-template-columns: minmax(0, 460px);
+            gap: 20px;
+        }
+        /* No hover on touch — reveal everything by default */
+        .lul-dd__more {
+            grid-template-rows: 1fr;
+            opacity: 1;
+        }
+        .lul-dd__card:hover {
+            transform: none;
+        }
+    }
+</style>
+
+<section class="lul-dd" aria-label="Jurisdictions, districts, and slices">
+    <div class="lul-dd__grid">
+        <!-- Jurisdictions -->
+        <article class="lul-dd__card" tabindex="0">
+            <div class="lul-dd__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/b8cde40b-c075-44ea-9924-392c9a1c78bf/jurisdictions+map.png?format=2500w"
+                    alt="Map of U.S. jurisdictions with zoning authority"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-dd__body">
+                <h3 class="lul-dd__title">Jurisdictions</h3>
+                <p class="lul-dd__lead">
+                    When the National Zoning Atlas began, no one knew how many jurisdictions could exercise zoning in the
+                    U.S because there was no centralized national database. So we built one.
+                </p>
+                <div class="lul-dd__more">
+                    <div class="lul-dd__more-inner">
+                        <p>
+                            Our team stewards the first and only fully integrated dataset that has identified all
+                            33,000+ jurisdictions with zoning authority in the country — complete with their geographic
+                            boundaries, population and housing unit counts, and land cover statistics.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Zoning Districts -->
+        <article class="lul-dd__card" tabindex="0">
+            <div class="lul-dd__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/dc78b34e-1408-4cef-b574-84fd38b0dd2b/districts_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Districts data"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-dd__body">
+                <h3 class="lul-dd__title">Zoning Districts</h3>
+                <p class="lul-dd__lead">
+                    To build Zoning Districts, our team of trained analysts uses a standardized methodology designed to
+                    translate complex local regulations into consistent, comparable data. We log that data at the scale
+                    of districts: defined regulated areas within (and sometimes outside) the city, town, county, or other
+                    type of jurisdiction that administers the zoning code.
+                </p>
+                <div class="lul-dd__more">
+                    <div class="lul-dd__more-inner">
+                        <p>
+                            We find these districts by painstakingly reviewing the full zoning code: both text and map.
+                            Our team digitizes and spatially aligns district boundaries, and encodes regulatory
+                            attributes specifying use, lot, and structure requirements into our structured data schema.
+                        </p>
+                        <p>
+                            Internal reviews confirm alignment between mapped boundaries and written regulations,
+                            evaluate data entries for consistency, and document how ambiguities are resolved. Districts
+                            are only included in the final dataset after passing these checks.
+                        </p>
+                        <p>
+                            If you need zoning data to conduct regulatory analysis or do certain types of due diligence,
+                            Zoning Districts (our premium product) may be what you’re looking for.
+                        </p>
+                        <a class="lul-dd__btn" href="/districts"
+                            >Explore Districts
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path
+                                    d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Zoning Slices -->
+        <article class="lul-dd__card" tabindex="0">
+            <div class="lul-dd__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/e08b5585-d93c-43ab-aeee-037cbd0fe141/slices_screenshot.png?content-type=image%2Fpng"
+                    alt="Zoning Slices data"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-dd__body">
+                <h3 class="lul-dd__title">Zoning Slices</h3>
+                <p class="lul-dd__lead">
+                    Comparing zoning rules across jurisdictions would be straightforward if districts never overlapped.
+                    But they do. Many zoning codes layer base districts and overlay districts on top of one another, so
+                    two or more sets of regulations can apply to the same piece of land at once. Ignoring that complexity
+                    doesn't simplify analysis. It breaks it.
+                </p>
+                <div class="lul-dd__more">
+                    <div class="lul-dd__more-inner">
+                        <p>
+                            Zoning Slices are Land Use Labs’s solution to this problem. A Slice is the unique geometric
+                            combination of base and overlay districts that reflect how zoning rules actually operate. Our
+                            Zoning Slices product applies our tested processes to show regulatory outcomes. The output
+                            appears like a stained-glass mosaic, where each Slice represents a distinct set of zoning
+                            rules that apply to the underlying land.
+                        </p>
+                        <p>
+                            If you need zoning data to calculate area statistics, run comparative analyses, or conduct
+                            scenario planning, Zoning Slices are what you're looking for.
+                        </p>
+                        <a class="lul-dd__btn" href="/slices"
+                            >Explore Slices
+                            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path
+                                    d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>

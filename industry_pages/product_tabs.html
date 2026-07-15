@@ -1,0 +1,356 @@
+<style>
+    .lul-tabs {
+        --lul-header: #393348;
+        --lul-text: #333333;
+        --lul-bg: #efedec;
+        --lul-purple: #393348;
+        --lul-purple-hover: #4c4460;
+        --lul-btn-fg: #ffffff;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: var(--lul-text);
+        background: var(--lul-bg);
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .lul-tabs *,
+    .lul-tabs *::before,
+    .lul-tabs *::after {
+        box-sizing: border-box;
+    }
+
+    /* ---------- Tab bar ---------- */
+    .lul-tabs__bar {
+        display: flex;
+        width: 100%;
+        border-bottom: 1px solid rgba(57, 51, 72, 0.12);
+    }
+    .lul-tabs__tab {
+        flex: 1 1 0;
+        appearance: none;
+        background: transparent;
+        border: 1px solid var(--lul-purple);
+        color: var(--lul-header);
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+        line-height: 1.25;
+        padding: 20px 18px;
+        text-align: center;
+        cursor: pointer;
+        transition:
+            background 0.2s ease,
+            color 0.2s ease;
+    }
+    .lul-tabs__tab + .lul-tabs__tab {
+        border-left: none;
+    }
+    .lul-tabs__tab:hover {
+        background: rgba(57, 51, 72, 0.06);
+    }
+    .lul-tabs__tab.is-active,
+    .lul-tabs__tab.is-active:hover {
+        background: var(--lul-purple);
+        color: #ffffff;
+    }
+
+    /* ---------- Panels ---------- */
+    .lul-tabs__panels {
+        display: grid;
+        padding: 48px 40px 56px;
+    }
+    .lul-tabs__panel {
+        grid-area: 1 / 1;
+        display: flex;
+        align-items: flex-start;
+        gap: 40px;
+        visibility: hidden;
+    }
+    .lul-tabs__panel.is-active {
+        visibility: visible;
+    }
+    .lul-tabs__text {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 620px;
+    }
+    .lul-tabs__media {
+        flex: 0 1 440px;
+        min-width: 0;
+        align-self: center;
+        margin-left: auto;
+    }
+    .lul-tabs__media img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border: none;
+    }
+    .lul-tabs__title {
+        font-size: 1.9rem;
+        font-weight: 500;
+        color: var(--lul-header);
+        letter-spacing: -0.015em;
+        line-height: 1.15;
+        margin: 0 0 16px;
+        padding-top: 16px;
+    }
+    .lul-tabs__body {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: var(--lul-text);
+        margin: 0 0 32px;
+    }
+
+    /* ---------- Buttons ---------- */
+    .lul-tabs__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+    .lul-tabs__btn {
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 26px;
+        font-weight: 500;
+        font-size: 1rem;
+        letter-spacing: 0.02em;
+        border-radius: 0;
+        cursor: pointer;
+        text-decoration: none;
+        border: 1px solid var(--lul-purple);
+        transition:
+            background 0.25s ease,
+            color 0.25s ease,
+            gap 0.25s ease;
+        white-space: nowrap;
+    }
+    .lul-tabs__btn--solid {
+        background: var(--lul-purple);
+        color: var(--lul-btn-fg);
+    }
+    .lul-tabs__btn--solid:hover {
+        background: var(--lul-purple-hover);
+        border-color: var(--lul-purple-hover);
+        gap: 12px;
+    }
+    .lul-tabs__btn--outline {
+        background: transparent;
+        color: var(--lul-purple);
+    }
+    .lul-tabs__btn--outline:hover {
+        background: var(--lul-purple);
+        color: var(--lul-btn-fg);
+    }
+    .lul-tabs__btn svg {
+        width: 14px;
+        height: 14px;
+        transition: transform 0.25s ease;
+    }
+
+    @media (max-width: 930px) {
+        .lul-tabs__bar {
+            flex-wrap: wrap;
+        }
+        .lul-tabs__tab {
+            flex: 1 1 50%;
+            border-bottom: 1px solid rgba(57, 51, 72, 0.1);
+        }
+        .lul-tabs__panels {
+            padding: 36px 24px 40px;
+        }
+        .lul-tabs__panel {
+            flex-direction: column;
+            gap: 24px;
+        }
+        .lul-tabs__text,
+        .lul-tabs__media {
+            flex: 1 1 auto;
+            max-width: none;
+        }
+        .lul-tabs__media {
+            align-self: stretch;
+            padding-left: 100px;
+            padding-right: 100px;
+        }
+        .lul-tabs__title {
+            font-size: 1.6rem;
+            padding-top: 0;
+        }
+    }
+</style>
+
+<div class="lul-tabs">
+    <div class="lul-tabs__bar" role="tablist">
+        <button class="lul-tabs__tab is-active" role="tab" data-panel="districts">
+            Can I add another unit to my property?
+        </button>
+        <button class="lul-tabs__tab" role="tab" data-panel="tables">Can I add an extension to my property?</button>
+        <button class="lul-tabs__tab" role="tab" data-panel="slices">See How Districts Regulate</button>
+        <button class="lul-tabs__tab" role="tab" data-panel="rasters">Can I rent out my ADU?</button>
+    </div>
+
+    <div class="lul-tabs__panels">
+        <div class="lul-tabs__panel is-active" role="tabpanel" data-panel="districts">
+            <div class="lul-tabs__text">
+                <h3 class="lul-tabs__title">Can I add another unit to my property?</h3>
+                <p class="lul-tabs__body">
+                    Whether you can add a unit depends on a lot of factors. Not only does a jurisdiction have to allow
+                    the unit to be built, but lot size and overlay rules matter too. Your Parcel Report pulls every rule
+                    that applies to your lot, so you'll know whether a second unit is realistic before you spend a penny
+                    on plans.
+                </p>
+                <div class="lul-tabs__actions">
+                    <a class="lul-tabs__btn lul-tabs__btn--solid" href="/reports">
+                        Explore Reports
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                    <a class="lul-tabs__btn lul-tabs__btn--outline" href="/contact">Contact Us</a>
+                </div>
+            </div>
+            <div class="lul-tabs__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
+                    alt="Parcel Reports"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <div class="lul-tabs__panel" role="tabpanel" data-panel="tables">
+            <div class="lul-tabs__text">
+                <h3 class="lul-tabs__title">Can I add an extension to my property?</h3>
+                <p class="lul-tabs__body">
+                    Every family could use more space, but zoning dictates whether it's allowed. A Parcel Report gives
+                    you height limits, setbacks, and lot coverage requirements so you can see what's feasible with your
+                    home.
+                </p>
+                <div class="lul-tabs__actions">
+                    <a class="lul-tabs__btn lul-tabs__btn--solid" href="/reports">
+                        Explore Reports
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                    <a class="lul-tabs__btn lul-tabs__btn--outline" href="/contact">Contact Us</a>
+                </div>
+            </div>
+            <div class="lul-tabs__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
+                    alt="Parcel Reports"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <div class="lul-tabs__panel" role="tabpanel" data-panel="slices">
+            <div class="lul-tabs__text">
+                <h3 class="lul-tabs__title">Can I add an accessory dwelling unit (ADU)?</h3>
+                <p class="lul-tabs__body">
+                    Sometimes called casitas or granny flats, ADUs let seniors downsize while staying close to family,
+                    or allow kids to move back home and still be independent. ADUs can also bring in income toward the
+                    mortgage or retirement. Your Parcel Report shows whether you can build one and who can occupy it,
+                    before you call an architect.
+                </p>
+                <div class="lul-tabs__actions">
+                    <a class="lul-tabs__btn lul-tabs__btn--solid" href="/reports">
+                        Explore Reports
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                    <a class="lul-tabs__btn lul-tabs__btn--outline" href="/contact">Contact Us</a>
+                </div>
+            </div>
+            <div class="lul-tabs__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
+                    alt="Parcel Reports"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <div class="lul-tabs__panel" role="tabpanel" data-panel="rasters">
+            <div class="lul-tabs__text">
+                <h3 class="lul-tabs__title">Can I rent out my ADU?</h3>
+                <p class="lul-tabs__body">
+                    Localities often limit who can occupy an ADU and whether you can rent it at all. Your Parcel Report
+                    captures these occupancy and rental rules, so you can plan with confidence.
+                </p>
+                <div class="lul-tabs__actions">
+                    <a class="lul-tabs__btn lul-tabs__btn--solid" href="/reports">
+                        Explore Reports
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </a>
+                    <a class="lul-tabs__btn lul-tabs__btn--outline" href="/contact">Contact Us</a>
+                </div>
+            </div>
+            <div class="lul-tabs__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
+                    alt="Parcel Reports"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var root = document.currentScript.previousElementSibling;
+        while (root && !(root.classList && root.classList.contains("lul-tabs"))) {
+            root = root.previousElementSibling;
+        }
+        if (!root) return;
+        var tabs = root.querySelectorAll(".lul-tabs__tab");
+        var panels = root.querySelectorAll(".lul-tabs__panel");
+        tabs.forEach(function (tab) {
+            tab.addEventListener("click", function () {
+                var target = tab.getAttribute("data-panel");
+                tabs.forEach(function (t) {
+                    t.classList.toggle("is-active", t === tab);
+                });
+                panels.forEach(function (p) {
+                    p.classList.toggle("is-active", p.getAttribute("data-panel") === target);
+                });
+            });
+        });
+    })();
+</script>

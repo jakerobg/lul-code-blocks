@@ -1,0 +1,158 @@
+<style>
+    .lul-figcard {
+        --lfp-header: #393348;
+        --lfp-text: #333333;
+        --lfp-card: #fafaf7;
+        --lfp-border: rgba(57, 51, 72, 0.08);
+
+        /* ---- Sizing knobs (apply to both cards) ---- */
+        --lfp-card-max: 620px; /* max width of a single card */
+        --lfp-img-ratio: 3/4; /* crops each image to this box so both match; auto = natural */
+        --lfp-img-pos: center; /* which part of the image to keep when cropping */
+        --lfp-scale: 1; /* shrink the caption to match: e.g. 0.9, 0.85 */
+        /* ---- Row knobs ---- */
+        --lfp-gap: 28px; /* space between the two cards */
+        --lfp-stack-below: 620px; /* cards stack vertically below this container width */
+        --lfp-stack-max: 360px; /* width of each card once stacked (keep <= --lfp-stack-below) */
+
+        font-family: Arial, Helvetica, sans-serif;
+        color: var(--lfp-text);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        margin: 0;
+        padding: 8px 0;
+        box-sizing: border-box;
+    }
+    .lul-figcard *,
+    .lul-figcard *::before,
+    .lul-figcard *::after {
+        box-sizing: border-box;
+    }
+
+    /* ---- Row: two cards side by side, wrap to stacked when narrow ---- */
+    .lul-figrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--lfp-gap, 28px);
+        align-items: flex-start;
+        width: 100%;
+        margin: 0;
+        padding: 8px 0;
+        box-sizing: border-box;
+        container-type: inline-size;
+        container-name: lfprow;
+    }
+    .lul-figrow .lul-figcard {
+        flex: 1 1 calc((var(--lfp-stack-below, 820px) - var(--lfp-gap, 28px)) / 2);
+        min-width: 0;
+        width: auto;
+        padding: 0;
+    }
+
+    .lul-figcard__card {
+        max-width: var(--lfp-card-max, 820px);
+        margin: 0 auto;
+        background: var(--lfp-card);
+        border: 1px solid var(--lfp-border);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+    }
+    /* In the row, let each card fill its half of the row */
+    .lul-figrow .lul-figcard__card {
+        max-width: none;
+    }
+
+    /* Image is emphasized: spans the full card width */
+    .lul-figcard__media {
+        width: 100%;
+        display: block;
+        aspect-ratio: var(--lfp-img-ratio, auto);
+        overflow: hidden;
+    }
+    .lul-figcard__media img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: var(--lfp-img-pos, center);
+    }
+
+    .lul-figcard__caption {
+        margin: 0;
+        padding: calc(18px * var(--lfp-scale)) calc(24px * var(--lfp-scale)) calc(22px * var(--lfp-scale));
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: calc(0.95rem * var(--lfp-scale));
+        line-height: 1.55;
+        font-style: italic;
+        color: var(--lfp-text);
+        border-top: 1px solid var(--lfp-border);
+    }
+    .lul-figcard__caption strong {
+        font-weight: 600;
+        font-style: italic;
+    }
+    .lul-figcard__link {
+        color: var(--lfp-header);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    .lul-figcard__link:hover {
+        text-decoration: none;
+    }
+
+    /* Once the cards stack, shrink each one a bit. Uses a container query so it
+       tracks the row's own width (works inside a Squarespace column, unlike a
+       viewport media query). If you change --lfp-stack-below, update 620px here. */
+    @container lfprow (max-width: 620px) {
+        .lul-figrow .lul-figcard__card {
+            max-width: var(--lfp-stack-max, 460px);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .lul-figcard__caption {
+            padding: 16px 18px 18px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<div class="lul-figrow">
+    <figure class="lul-figcard">
+        <div class="lul-figcard__card">
+            <div class="lul-figcard__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/ebdfcc50-9a3d-4f4e-8b77-15f2d0c94299/Zoneomics+pie+chart+la.png?format=1500w"
+                    alt="Land Allocation Breakdown"
+                    loading="lazy"
+                />
+            </div>
+            <figcaption class="lul-figcard__caption">
+                A “Land Allocation Breakdown” in Los Angeles published by a major zoning data provider.
+            </figcaption>
+        </div>
+    </figure>
+
+    <figure class="lul-figcard">
+        <div class="lul-figcard__card">
+            <div class="lul-figcard__media">
+                <img
+                    src="https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/b7b8a69f-a4b6-40e5-a0aa-8b8164c11cb2/Screenshot+2026-04-06+at+10.21.30.png?format=1500w"
+                    alt="Residential land in Los Angeles shown in purple on the National Zoning Atlas"
+                    loading="lazy"
+                />
+            </div>
+            <figcaption class="lul-figcard__caption">
+                Residential land in Los Angeles shown in purple on the
+                <a
+                    class="lul-figcard__link"
+                    href="https://www.zoningatlas.org/atlas/?state_id=64&amp;cbsa_id=71&amp;county_id=3540&amp;jurisdiction_id=14946&amp;lat=34.02869&amp;lng=-118.26833&amp;zoom=9.290&amp;overlays=tribal-lands%2Cprotected-lands&amp;filters=%7B%7D"
+                    >National Zoning Atlas</a
+                >.
+            </figcaption>
+        </div>
+    </figure>
+</div>
