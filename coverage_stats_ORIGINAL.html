@@ -42,11 +42,11 @@
         .lul-cov__card {
             background: var(--lul-card);
             border-radius: 0;
-            padding: 25px 20px 28px 22px;
+            padding: 28px 20px 22px 22px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            min-height: 160px; /* taller card -> bigger number-to-text gap */
+            min-height: 170px; /* taller card -> bigger number-to-text gap */
             box-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
             text-align: left;
             align-items: flex-start;
@@ -60,7 +60,6 @@
             letter-spacing: -0.03em;
             color: var(--lul-header);
             margin: 0;
-            margin-top: auto; /* number sits at the bottom, label on top */
         }
         .lul-cov__plus {
             font-size: 0.6em; /* a little smaller than the number */
@@ -89,17 +88,21 @@
         }
 
         /* uppercase label — same treatment as uppercase_label.html.
-           Sits at the TOP of the card; the number is pushed to the bottom. */
+           margin-top:auto pins it to the bottom of the card; min-height
+           reserves 2 text lines so a 1-line label sits on the SAME top
+           line as a 2-line label (labels align by their first line). */
         .lul-cov__sub {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             line-height: 1.4;
             color: #393348;
             opacity: 0.8;
             margin: 0;
+            margin-top: auto; /* push label block to the bottom */
+            min-height: 2.8em; /* = 2 lines (line-height 1.4 × 2) */
         }
 
         @media (max-width: 820px) {
@@ -176,7 +179,6 @@
                     fallback: 10509,
                     dp: 1,
                     unit: "K",
-                    plus: false,
                 },
                 pages: { field: "pages_analyzed", sub: "zoning pages read", fallback: 1261957, dp: 1 },
                 housing_units: {
@@ -231,8 +233,7 @@
                         field: m.field,
                         sub: m.sub,
                         fallback: m.fallback,
-                        // per-metric plus override (falls back to global SHOW_PLUS)
-                        plus: m.plus !== undefined ? m.plus : SHOW_PLUS,
+                        plus: SHOW_PLUS,
                         dp: m.dp,
                         unit: m.unit,
                     };
@@ -257,8 +258,8 @@
                 num.textContent = "—";
                 var sub = document.createElement("p");
                 sub.className = "lul-cov__sub";
-                card.appendChild(sub);
                 card.appendChild(num);
+                card.appendChild(sub);
                 grid.appendChild(card);
                 records.push({ el: num, subEl: sub, def: def, target: null });
             });
