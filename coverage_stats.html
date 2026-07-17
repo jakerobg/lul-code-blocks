@@ -42,7 +42,7 @@
         .lul-cov__card {
             background: var(--lul-card);
             border-radius: 0;
-            padding: 25px 20px 28px 22px;
+            padding: 28px 20px 28px 20px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -74,8 +74,9 @@
            text so it reads as a different class of figure using one palette. */
         .lul-cov__card--accent {
             background: transparent;
-            box-shadow: none;
-            border: 2px solid rgba(238, 236, 239, 0.45);
+            /* inset ring instead of a real border, so it doesn't shift the
+               content down by the border width like a border-box border would */
+            box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
         }
         .lul-cov__card--accent .lul-cov__num {
             color: #eeecef;
@@ -92,7 +93,7 @@
            Sits at the TOP of the card; the number is pushed to the bottom. */
         .lul-cov__sub {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -135,10 +136,10 @@
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
             var SELECTED = [
-                { value: 90000000, label: "parcels analyzed", plus: true, accent: false },
-                "acres",
-                "districts",
-                { value: 100, label: "of top-100 cities analyzed", plus: false, accent: false },
+                "jurisdictions",
+                "census_tracts",
+                "block_groups",
+                { value: 90, label: "summary stats offered", plus: false, accent: true },
             ];
 
             /* Show the "+" marker after each number? true = on, false = off.
@@ -176,7 +177,6 @@
                     fallback: 10509,
                     dp: 1,
                     unit: "K",
-                    plus: false,
                 },
                 pages: { field: "pages_analyzed", sub: "zoning pages read", fallback: 1261957, dp: 1 },
                 housing_units: {
