@@ -50,6 +50,7 @@
             box-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
             text-align: left;
             align-items: flex-start;
+            border: solid 1px rgba(57, 51, 72, 0.3);
         }
 
         .lul-cov__num {
@@ -135,12 +136,7 @@
                       (optional per-card flags: plus:false, accent:true → transparent tile)
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
-            var SELECTED = [
-                "jurisdictions",
-                "census_tracts",
-                "block_groups",
-                { value: 90, label: "summary stats offered", plus: false, accent: true },
-            ];
+            var SELECTED = ["jurisdictions", "districts", "slices", "population"];
 
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
@@ -162,31 +158,31 @@
                     fallback: 216798958,
                     dp: 0,
                 },
-                acres: { field: "acres_covered", sub: "acres covered", fallback: 1416006966, dp: 1 },
+                acres: { field: "acres_covered", sub: "acres", fallback: 1416006966, dp: 1 },
                 census_tracts: {
                     field: "tracts_covered",
-                    sub: "census tracts covered",
+                    sub: "census tracts",
                     fallback: 50547,
                     dp: 0,
                     unit: "K",
                 },
-                block_groups: { field: "blockgroups_covered", sub: "block groups covered", fallback: 142719, dp: 0 },
+                block_groups: { field: "blockgroups_covered", sub: "block groups", fallback: 142719, dp: 0 },
                 jurisdictions: {
                     field: "jurisdictions_covered",
-                    sub: "jurisdictions analyzed",
+                    sub: "jurisdictions",
                     fallback: 10509,
                     dp: 1,
                     unit: "K",
                 },
-                pages: { field: "pages_analyzed", sub: "zoning pages read", fallback: 1261957, dp: 1 },
+                pages: { field: "pages_analyzed", sub: "zoning pages", fallback: 1261957, dp: 1 },
                 housing_units: {
                     field: "housing_units_covered",
                     sub: "housing units",
                     fallback: 92236215,
                     dp: 0,
                 },
-                slices: { field: "slices_total", sub: "slices analyzed", fallback: 169240, dp: 0 },
-                districts: { field: "districts_published", sub: "zoning districts analyzed", fallback: 114355, dp: 0 },
+                slices: { field: "slices_total", sub: "slices", fallback: 169240, dp: 0 },
+                districts: { field: "districts_published", sub: "zoning districts", fallback: 114355, dp: 0 },
             };
 
             var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;

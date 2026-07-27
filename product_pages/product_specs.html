@@ -17,7 +17,7 @@
     }
     .lul-specs-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         border: 1px solid rgba(57, 51, 72, 0.15);
         border-radius: 5px;
         overflow: hidden;
@@ -81,7 +81,7 @@
         padding: 5px 12px;
         line-height: 1.3;
     }
-    @media (max-width: 860px) {
+    @media (max-width: 1px) {
         .lul-specs-grid {
             grid-template-columns: 1fr 1fr;
         }
@@ -97,6 +97,13 @@
         .lul-specs-grid {
             grid-template-columns: 1fr;
         }
+        .lul-spec-card {
+            border-right: none;
+            border-bottom: 1px solid rgba(57, 51, 72, 0.15);
+        }
+        .lul-spec-card:last-child {
+            border-bottom: none;
+        }
     }
 </style>
 <div class="lul-specs">
@@ -104,45 +111,41 @@
         <p class="lul-specs-eyebrow">Product Specifications</p>
         <div class="lul-specs-grid">
             <div class="lul-spec-card">
-                <p class="lul-spec-label">Coverage</p>
-                <p class="lul-spec-value">Over 1.4 billion acres</p>
-                <p class="lul-spec-sub">
-                    Available for purchase by jurisdiction, county, CBSA, or state on this website;
-                    <a href="https://www.landuselabs.com/contact" style="text-decoration: underline">contact us</a> for
-                    purchase by CBSA, state, or region, or for national coverage.
-                </p>
-            </div>
-            <div class="lul-spec-card">
                 <p class="lul-spec-label">Unit of Analysis</p>
-                <p class="lul-spec-value">30x30 meter raster cells</p>
+                <p class="lul-spec-value">Geographic unit</p>
                 <p class="lul-spec-sub">
-                    Rasters classifying general uses (7 classes), residential uses (15 classes), and nonresidential uses
-                    (32 classes) are available through this website;
+                    Block group, census tract, and jurisdiction level on this website;
                     <a href="https://www.landuselabs.com/contact" style="text-decoration: underline">contact us</a> for
-                    Zoning Rasters with a different classification scheme or resolution.
+                    purchase by a different geography (e.g., zip code or Congressional district).
                 </p>
             </div>
             <div class="lul-spec-card">
                 <p class="lul-spec-label">What's Included</p>
-                <p class="lul-spec-value">A map of allowable land uses</p>
+                <p class="lul-spec-value">Selected variables</p>
                 <p class="lul-spec-sub">
-                    Your choice of one of three zoning rasters classifying general residential and nonresidential uses
-                    (7 classes), residential density categories (15 classes), or nonresidential use categories (32
-                    classes), as further defined in our
+                    Demographic characteristics for each selected geography, zoning code summary details, and land area
+                    in each selected geography subject to specific zoning rules as further described in our
                     <a
-                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=112307427#gid=112307427"
+                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=386090160#gid=386090160"
                         style="text-decoration: underline"
                         >data dictionary</a
-                    >. <br /><br />A license to use delivered information internally; for external or display purposes,
+                    ><br /><br />
+                    A license to use delivered information internally; for external or display purposes,
                     <a href="https://www.landuselabs.com/contact" style="text-decoration: underline">contact us</a> for
-                    a custom license.
+                    a custom license. <br /><br />
                 </p>
             </div>
             <div class="lul-spec-card">
                 <p class="lul-spec-label">Format</p>
-                <p class="lul-spec-value">Analysis-ready files</p>
+                <p class="lul-spec-value">Analysis-ready tables</p>
                 <div class="lul-spec-chips">
-                    <span class="lul-spec-chip">GeoTIFF</span>
+                    <span class="lul-spec-chip">CSV</span>
+                </div>
+                <p class="lul-spec-sub" style="margin-top: 12px">With geospatial add-on:</p>
+                <div class="lul-spec-chips">
+                    <span class="lul-spec-chip">Geodatabase</span>
+                    <span class="lul-spec-chip">GeoJSON</span>
+                    <span class="lul-spec-chip">GeoPackage</span>
                 </div>
             </div>
         </div>

@@ -20,7 +20,8 @@
         transition:
             background 0.25s ease,
             gap 0.25s ease;
-        white-space: nowrap;
+        max-width: 100%; /* never wider than the container → stays centered */
+        text-align: center;
     }
     .lul-btn-primary:hover {
         background: #4c4460;
@@ -33,7 +34,7 @@
     }
 </style>
 
-<div style="text-align: center">
+<div style="display: flex; justify-content: center">
     <a class="lul-btn-primary" href="#"
         >Data Dictionary
         <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

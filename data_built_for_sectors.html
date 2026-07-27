@@ -1,0 +1,176 @@
+<!--
+  Zoning data for [sector] — one-line hero with a looping vertical PEEK reel
+  of the six sectors (Squarespace Code Block). The current sector is centered
+  and full-strength; the previous and next sectors show fully above/below it,
+  just dimmed via opacity (no mask/fade). Each sector links to /[slug].
+  JS-driven so we can tag the centered row; classes prefixed lul-scz-.
+
+  ▶ Tuning: --scz-h = row height/step. --scz-dim = neighbor opacity
+    (higher = darker/blacker). HOLD_MS / SLIDE_MS in the script = timing.
+-->
+<section class="lul-scz" aria-label="Zoning data for your sector">
+    <style>
+        .lul-scz {
+            --lul-header: #393348;
+            --lul-accent: #97a24f; /* sage-green used on hover */
+            --scz-h: 1.2em; /* one sector row height / scroll step */
+            --scz-dim: 0.6; /* previous/next sector opacity (raise = darker) */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--lul-header);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 36px 24px 44px;
+            text-align: center;
+        }
+        .lul-scz *,
+        .lul-scz *::before,
+        .lul-scz *::after {
+            box-sizing: border-box;
+        }
+
+        /* flex keeps the label + reel on one line and vertically centers the
+           reel, so the CURRENT (center) sector lines up with the label. */
+        .lul-scz__headline {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.4em;
+            white-space: nowrap;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 500;
+            font-size: clamp(1.35rem, 4.2vw, 2.6rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin: 0;
+            color: var(--lul-header);
+        }
+
+        /* 3-row window: previous / current / next */
+        .lul-scz__carousel {
+            display: block;
+            overflow: hidden;
+            height: calc(var(--scz-h) * 3);
+        }
+        .lul-scz__strip {
+            display: block;
+            will-change: transform;
+        }
+        .lul-scz__item {
+            display: block;
+            height: var(--scz-h);
+            line-height: var(--scz-h);
+            white-space: nowrap; /* each sector always on one line */
+            opacity: var(--scz-dim); /* neighbors dimmed... */
+            transition: opacity 0.4s ease;
+        }
+        .lul-scz__item.is-current {
+            opacity: 1; /* ...current sector full-strength */
+        }
+        .lul-scz__word {
+            color: inherit;
+            text-decoration: none;
+            font-style: italic;
+            transition: color 0.2s ease;
+        }
+        .lul-scz__word:hover {
+            color: var(--lul-accent); /* turns sage-green on hover */
+        }
+
+        .lul-scz__subhead {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 500;
+            font-size: clamp(1rem, 1.4vw, 1.1rem);
+            line-height: 1.5;
+            color: rgba(57, 51, 72, 0.75);
+            margin: clamp(16px, 2vw, 24px) auto 0;
+            max-width: 640px;
+            letter-spacing: -0.005em;
+        }
+
+        @media (max-width: 800px) {
+            .lul-scz {
+                padding: 26px 14px 32px;
+            }
+            /* smaller floor so the widest sentence still fits one line on phones */
+            .lul-scz__headline {
+                font-size: clamp(0.95rem, 4.6vw, 2.2rem);
+            }
+        }
+    </style>
+
+    <h1 class="lul-scz__headline">
+        <span class="lul-scz__label">Powering</span>
+        <span class="lul-scz__carousel">
+            <span class="lul-scz__strip">
+                <!-- clone of the LAST sector, for the peek above the first -->
+                <span class="lul-scz__item"><a class="lul-scz__word" href="/research">Researchers</a></span>
+                <span class="lul-scz__item"
+                    ><a class="lul-scz__word" href="/financial-services">Financial Services Professionals</a></span
+                >
+                <span class="lul-scz__item"><a class="lul-scz__word" href="/developers">Developers</a></span>
+                <span class="lul-scz__item"><a class="lul-scz__word" href="/policymakers">Policymakers</a></span>
+                <span class="lul-scz__item"><a class="lul-scz__word" href="/owners">Property Owners</a></span>
+                <span class="lul-scz__item"
+                    ><a class="lul-scz__word" href="/real-estate">Real Estate Professionals</a></span
+                >
+                <span class="lul-scz__item"><a class="lul-scz__word" href="/researchers">Researchers</a></span>
+                <!-- clones of the first two, for a seamless reset + bottom peek -->
+                <span class="lul-scz__item"
+                    ><a class="lul-scz__word" href="/financial-services">Financial Services Professionals</a></span
+                >
+                <span class="lul-scz__item"><a class="lul-scz__word" href="/developers">Developers</a></span>
+            </span>
+        </span>
+    </h1>
+
+    <script>
+        (function () {
+            var root = document.currentScript.closest(".lul-scz");
+            if (!root) return;
+            var strip = root.querySelector(".lul-scz__strip");
+            if (!strip) return;
+            var items = strip.children; // [cloneLast, s0..s5, cloneFirst, cloneSecond] = 9
+            var N = 6; // real sectors
+
+            var HOLD_MS = 1700; // time each sector stays centered
+            var SLIDE_MS = 550; // slide duration
+
+            // Center the sector at real index p: strip index p+1 sits in the
+            // middle row → translateY = -p * row height (in em, so it scales).
+            function apply(p, animate) {
+                strip.style.transition = animate ? "transform " + SLIDE_MS + "ms cubic-bezier(0.7,0,0.3,1)" : "none";
+                strip.style.transform = "translateY(calc(var(--scz-h) * " + -p + "))";
+                for (var i = 0; i < items.length; i++) {
+                    items[i].classList.toggle("is-current", i === p + 1);
+                }
+            }
+
+            var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            if (reduce) {
+                apply(0, false);
+                return;
+            }
+
+            var p = 0;
+            apply(0, false);
+            function next() {
+                p++;
+                apply(p, true);
+                if (p >= N) {
+                    // slid onto the first sector's clone (identical view) — after
+                    // the slide, snap back to the real first with no transition.
+                    setTimeout(function () {
+                        p = 0;
+                        apply(0, false);
+                        setTimeout(next, HOLD_MS);
+                    }, SLIDE_MS);
+                } else {
+                    setTimeout(next, SLIDE_MS + HOLD_MS);
+                }
+            }
+            setTimeout(next, HOLD_MS);
+        })();
+    </script>
+</section>

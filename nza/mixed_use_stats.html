@@ -1,0 +1,42 @@
+<div class="stats-section">
+    <div class="stats-box">
+        <div class="stats-content">
+            <span id="national_allowed">--</span>
+        </div>
+        <div class="stats-label">Nationally</div>
+    </div>
+
+    <div class="stats-box">
+        <div class="stats-content">
+            <span id="cities_allowed">--</span>
+        </div>
+        <div class="stats-label">In Cities*</div>
+    </div>
+
+    <div class="stats-box">
+        <div class="stats-content">
+            <span id="exclusive_allowed">--</span>
+        </div>
+        <div class="stats-label">In Suburbs**</div>
+    </div>
+</div>
+<script type="text/javascript" style="display: none">
+    async function displayAPIData() {
+        const response = await fetch(`https://api.zoningatlas.org/mixedusestats`, {
+            headers: {
+                Accept: "application/vnd.pgrst.object+json",
+            },
+        });
+        const data = await response.json();
+
+        const pct_formatter = new Intl.NumberFormat("en-US", { style: "percent" });
+
+        document.getElementById("national_allowed").textContent = pct_formatter.format(data.national_pct);
+        document.getElementById("exclusive_allowed").textContent = pct_formatter.format(data.suburbs_pct);
+        document.getElementById("cities_allowed").textContent = pct_formatter.format(data.cities_pct);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        displayAPIData().catch(console.error);
+    });
+</script>
