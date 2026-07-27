@@ -367,12 +367,13 @@
     <div class="lul-selector__options" data-input="radio" data-name="q1">
       <label class="lul-selector__option"><input type="radio" name="q1" value="A"><span class="lul-selector__option-text">Administrator of a GIS platform</span></label>
       <label class="lul-selector__option"><input type="radio" name="q1" value="B"><span class="lul-selector__option-text">Data aggregator</span></label>
-      <label class="lul-selector__option"><input type="radio" name="q1" value="C"><span class="lul-selector__option-text">Developer or real estate professional</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="C"><span class="lul-selector__option-text">Developer</span></label>
       <label class="lul-selector__option"><input type="radio" name="q1" value="D"><span class="lul-selector__option-text">Environmental or planning consultant</span></label>
-      <label class="lul-selector__option"><input type="radio" name="q1" value="E"><span class="lul-selector__option-text">Government staff member</span></label>
-      <label class="lul-selector__option"><input type="radio" name="q1" value="F"><span class="lul-selector__option-text">Lawyer or legal professional</span></label>
-      <label class="lul-selector__option"><input type="radio" name="q1" value="G"><span class="lul-selector__option-text">Researcher</span></label>
-      <label class="lul-selector__option"><input type="radio" name="q1" value="H"><span class="lul-selector__option-text">Site selection professional</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="E"><span class="lul-selector__option-text">Policymaker or government staff</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="F"><span class="lul-selector__option-text">Legal professional</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="G"><span class="lul-selector__option-text">Real estate professional</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="H"><span class="lul-selector__option-text">Researcher</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q1" value="I"><span class="lul-selector__option-text">Site selection professional</span></label>
     </div>
   </div>
 
@@ -382,9 +383,9 @@
     <p class="lul-selector__subtitle">Select up to 3.</p>
     <div class="lul-selector__options lul-selector__options--single" data-input="checkbox" data-name="q2" data-max="3">
       <label class="lul-selector__option"><input type="checkbox" name="q2" value="A"><span class="lul-selector__option-text">Assessing development feasibility or conducting due diligence</span></label>
-      <label class="lul-selector__option"><input type="checkbox" name="q2" value="B"><span class="lul-selector__option-text">Conducting statistical analysis or policy research</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="B"><span class="lul-selector__option-text">Conducting land use or policy research</span></label>
       <label class="lul-selector__option"><input type="checkbox" name="q2" value="C"><span class="lul-selector__option-text">Creating demographic cross-tabs</span></label>
-      <label class="lul-selector__option"><input type="checkbox" name="q2" value="D"><span class="lul-selector__option-text">Enhancing an existing data pipeline</span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q2" value="D"><span class="lul-selector__option-text">Integrating with an existing data pipeline</span></label>
       <label class="lul-selector__option"><input type="checkbox" name="q2" value="E"><span class="lul-selector__option-text">Looking up zoning rules for a specific property</span></label>
       <label class="lul-selector__option"><input type="checkbox" name="q2" value="F"><span class="lul-selector__option-text">Selecting sites</span></label>
       <label class="lul-selector__option"><input type="checkbox" name="q2" value="G"><span class="lul-selector__option-text">Understanding district-specific rules and/or boundaries</span></label>
@@ -406,6 +407,7 @@
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="E"><span class="lul-selector__option-text">Metropolitan or micropolitan area (CBSA)</span></label>
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="F"><span class="lul-selector__option-text">State(s)</span></label>
       <label class="lul-selector__option"><input type="radio" name="q3_scope" value="G"><span class="lul-selector__option-text">Whole country</span></label>
+      <label class="lul-selector__option"><input type="radio" name="q3_scope" value="H"><span class="lul-selector__option-text">Custom</span></label>
     </div>
   </div>
 
@@ -429,8 +431,8 @@
     <p class="lul-selector__subtitle">Select all that apply.</p>
     <div class="lul-selector__options lul-selector__options--single" data-input="checkbox" data-name="q5">
       <label class="lul-selector__option"><input type="checkbox" name="q5" value="A"><span class="lul-selector__option-text">Internal analysis</span></label>
-      <label class="lul-selector__option"><input type="checkbox" name="q5" value="B"><span class="lul-selector__option-text">Incorporated into a subscription product or platform for third-party users <em>(*this will require a negotiated licensing agreement)</em></span></label>
-      <label class="lul-selector__option"><input type="checkbox" name="q5" value="C"><span class="lul-selector__option-text">Displayed publicly <em>(*this will require a negotiated licensing agreement)</em></span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q5" value="B"><span class="lul-selector__option-text">Incorporated into a subscription product or platform for third-party users <em>(*this will require a custom license)</em></span></label>
+      <label class="lul-selector__option"><input type="checkbox" name="q5" value="C"><span class="lul-selector__option-text">Displayed publicly <em>(*this will require a custom license)</em></span></label>
     </div>
   </div>
 
@@ -697,7 +699,8 @@
       capNote: false,
       downsell: false,
       rastersSecondary: false,
-      servicesSecondary: false
+      servicesSecondary: false,
+      parcelReportsSecondary: false
     };
 
     function attachConditionalNotes() {
@@ -713,8 +716,8 @@
       if (a.q2.indexOf("E") === -1) attachConditionalNotes();
       return { picks: ["parcel_reports"], notes: notes, terminal: true };
     }
-    // Zoning Tables: Q1 ∈ {E,G} AND Q2 includes C
-    if ((a.q1 === "E" || a.q1 === "G") && a.q2.indexOf("C") !== -1) {
+    // Zoning Tables: Q1 ∈ {E,H} AND Q2 includes C
+    if ((a.q1 === "E" || a.q1 === "H") && a.q2.indexOf("C") !== -1) {
       attachConditionalNotes();
       return { picks: ["tables"], notes: notes, terminal: true };
     }
@@ -723,10 +726,10 @@
     var q1W = {
       A: { slices: 5 },
       B: { tables: 5, slices: 5 },
-      // C, D, F: no weights specified
+      // C, D, F, G: no weights specified
       E: { tables: 5 },
-      G: { tables: 10 },
-      H: { slices: 5 }
+      H: { tables: 10 },
+      I: { slices: 5 }
     };
     if (q1W[a.q1]) Object.keys(q1W[a.q1]).forEach(function (p) { scores[p] += q1W[a.q1][p]; });
 
@@ -772,11 +775,11 @@
     if (q3W[a.q3_scope]) Object.keys(q3W[a.q3_scope]).forEach(function (p) { scores[p] += q3W[a.q3_scope][p]; });
 
     // ----- Step 6: Special rules -----
-    var q1ForServices = ["C","D","F","H"].indexOf(a.q1) !== -1;
+    var q1ForServices = ["C","D","F","G","I"].indexOf(a.q1) !== -1;
     var q2ForServices = ["A","F","H","I"].some(function (c) { return a.q2.indexOf(c) !== -1; });
     if (q1ForServices && q2ForServices) notes.servicesSecondary = true;
 
-    var q1ForRasters = a.q1 === "A" || a.q1 === "H";
+    var q1ForRasters = a.q1 === "A" || a.q1 === "I";
     if (q1ForRasters && a.q2.indexOf("H") !== -1) notes.rastersSecondary = true;
 
     if (a.q5.indexOf("B") !== -1 || a.q5.indexOf("C") !== -1) notes.license = true;
@@ -790,7 +793,7 @@
       return STABLE_ORDER.indexOf(x[0]) - STABLE_ORDER.indexOf(y[0]);
     });
 
-    var downsellQ1 = ["C","D","E","F","G"].indexOf(a.q1) !== -1;
+    var downsellQ1 = ["C","D","E","F","G","H"].indexOf(a.q1) !== -1;
     if (downsellQ1) {
       var dIdx = -1, sIdx = -1;
       for (var i = 0; i < sorted.length; i++) {
@@ -846,6 +849,16 @@
       }
     }
 
+    // Parcel Reports injection: "Selecting sites" (Q2=F) users often still want
+    // per-parcel due diligence, but Parcel Reports never scores on its own outside
+    // the hard overrides above. Tack it on as a lower-priority pick if it's missing.
+    var needParcelReports = a.q2.indexOf("F") !== -1 && picks.indexOf("parcel_reports") === -1;
+    if (needParcelReports) {
+      notes.parcelReportsSecondary = true;
+      if (picks.length >= 3) picks[2] = "parcel_reports";
+      else picks.push("parcel_reports");
+    }
+
     return { picks: picks, notes: notes, terminal: false };
   }
 
@@ -887,8 +900,11 @@
     if (key === "rasters" && rec.notes.rastersSecondary && idx > 0) {
       noteHtml += '<div class="lul-rec-card__note">Zoning Rasters can complement other products by helping users visualize land-use patterns at scale.</div>';
     }
+    if (key === "parcel_reports" && rec.notes.parcelReportsSecondary && idx > 0) {
+      noteHtml += '<div class="lul-rec-card__note">If your site selection process narrows to specific properties, a Parcel Report can confirm zoning rules for each one.</div>';
+    }
     if (idx === 0 && rec.notes.license) {
-      noteHtml += '<div class="lul-rec-card__note">The Data Licensing Agreement offered for direct-from-website purchases prohibits incorporation of any product into a subscription product or platform for third-party users, or any other types of public display. If you plan to use the product for these purposes, please be in touch so we can coordinate a negotiated licensing agreement.</div>';
+      noteHtml += '<div class="lul-rec-card__note">The Data Licensing Agreement offered for direct-from-website purchases prohibits incorporation of any product into a subscription product or platform for third-party users, or any other types of public display. If you plan to use the product for these purposes, please be in touch so we can coordinate a custom license.</div>';
     }
     if (idx === 0 && rec.notes.capNote) {
       noteHtml += '<div class="lul-rec-card__note">Direct-from-website purchases are capped as to geography. If you are unable to complete the purchase of your desired geographies, or if you would like to purchase data covering the whole country, please be in touch directly.</div>';
