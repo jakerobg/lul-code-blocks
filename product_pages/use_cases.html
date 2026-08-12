@@ -24,7 +24,9 @@
     }
     .lul-chips {
         display: flex;
-        gap: 10px;
+        /* wider column gap than the old pills needed — without a filled
+           background the items need whitespace to read as separate */
+        gap: 10px 22px;
         flex-wrap: wrap;
         justify-content: center;
     }
@@ -36,25 +38,26 @@
     .lul-chip-wrap:hover {
         z-index: 1000;
     }
+    /* Styled as underlined text rather than a pill/button. */
     .lul-chip {
         display: inline-block;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size: 15.5px;
         font-weight: 500;
         color: rgba(255, 255, 255, 0.85);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 2px 16px;
-        border-radius: 20px;
         cursor: default;
-        border: 1px solid rgba(255, 255, 255, 0);
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 255, 255, 0.35);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.22em;
         transition:
-            background 0.15s,
-            border-color 0.15s;
+            color 0.15s,
+            text-decoration-color 0.15s;
         user-select: none;
     }
     .lul-chip-wrap:hover .lul-chip {
-        background: rgba(255, 255, 255, 0.18);
-        border-color: rgba(255, 255, 255, 0.25);
+        color: #fff;
+        text-decoration-color: #fff;
     }
     .lul-tooltip {
         position: absolute;

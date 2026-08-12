@@ -1,0 +1,610 @@
+<!--
+  Zoning Slices order form.
+
+  Styling lives in site-wide Squarespace Custom CSS — the matrix rules
+  are in the "Districts form: variable-set matrix" section of
+  `squarespace/custom-css.css` (shared with the Districts form).
+
+  Flow:
+    pick scope (single jurisdiction / county / CBSA / state)
+    → pick the specific geography (typeahead or state dropdown)
+    → check off the variable sets you want from the matrix
+    → live price → terms → buy
+
+  Pricing model (from catalog/slices/pricing.py): per-slice rate ×
+  slice count + population adjustment that scales with the number of
+  selected variable sets, rounded UP to the nearest $100.
+  See scratch/LUL - Pricing - Slices.csv for the canonical examples.
+
+  Variable-set registry is loaded once from /slices/variable-sets/ on
+  mount. Matrix axes (use_type rows × regulation_type columns) come
+  from the response order — adding a new variable set on the backend
+  appears here automatically. A few cells contain multiple variable
+  sets and render as stacked sub-checkboxes (e.g. Min/Max Lot Size).
+-->
+<!-- `.lul-wide` opts out of the global 560px cap on `#lul-order`; the
+     matrix needs horizontal room. See squarespace/custom-css.css. -->
+<div id="lul-order" class="lul-wide">
+
+    <!-- Step 1: scope. Always visible. -->
+    <div class="lul-step" id="lul-step-scope">
+      <span class="lul-label">I want Zoning Slices for a:</span>
+      <div class="lul-tiles" role="radiogroup" aria-label="Scope">
+        <div class="lul-tile">
+          <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-jurisdiction" value="jurisdiction">
+          <label for="lul-scope-jurisdiction">
+            <span class="lul-tile-name">Single Jurisdiction</span>
+            <span class="lul-tile-desc">Municipality, township, or unincorporated county.</span>
+          </label>
+        </div>
+        <div class="lul-tile">
+          <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-county" value="county">
+          <label for="lul-scope-county">
+            <span class="lul-tile-name">County</span>
+            <span class="lul-tile-desc">All jurisdictions in a county.</span>
+          </label>
+        </div>
+        <!-- CBSA / State scopes remain hidden pending product confirmation.
+                     Backend accepts them (expand_to_jurisdiction_ids handles all four).
+                <div class="lul-tile">
+                  <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-cbsa" value="cbsa">
+                  <label for="lul-scope-cbsa">
+                    <span class="lul-tile-name">CBSA (metro/micro area)</span>
+                    <span class="lul-tile-desc">All slices in a CBSA.</span>
+                  </label>
+                </div>
+                <div class="lul-tile">
+                  <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-state" value="state">
+                  <label for="lul-scope-state">
+                    <span class="lul-tile-name">State</span>
+                    <span class="lul-tile-desc">All slices in a state.</span>
+                  </label>
+                </div>
+                -->
+        <!-- Non-interactive: flags the unsupported scope tier and routes to
+             the contact form instead of a purchase flow. Not a real radio
+             option, so it's hidden from the radiogroup's accessible name. -->
+        <div class="lul-tile lul-tile-info" aria-hidden="true">
+          <span class="lul-tile-name">CBSA, State, or Country</span>
+          <span class="lul-tile-desc"><a href="https://www.landuselabs.com/contact">Contact us</a> for a quote.</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Step 2: pick the specific geography. Hidden until scope chosen.
+                 Typeahead for jurisdiction/county/cbsa, dropdown for state. -->
+    <div class="lul-step lul-step-hidden" id="lul-step-geopick">
+      <span class="lul-label" id="lul-geo-label">Choose Geography:</span>
+
+      <div id="lul-geo-typeahead">
+        <p class="lul-hint" id="lul-geo-hint">Type in the name of the jurisdiction (e.g., city, town, township, county)
+          without typing in the state name. Then select the jurisdiction from the results.</p>
+        <input id="lul-geo-search" class="lul-input" type="text" placeholder="Type at least 2 characters to search&hellip;"
+          autocomplete="off" />
+        <div id="lul-geo-status"></div>
+        <ul id="lul-geo-results" class="lul-results" style="display:none;"></ul>
+      </div>
+      <select id="lul-state-select" class="lul-input" style="display:none;">
+        <option value="">Select a state&hellip;</option>
+      </select>
+    </div>
+
+    <!-- Availability gate: replaces the matrix when the selected geography
+                 has no priceable data (or is an NYC borough for Slices). -->
+    <div class="lul-msg lul-warn" id="lul-availability-msg" style="display:none;"></div>
+
+    <!-- Informational spill-in notice: shown alongside the matrix when some
+         jurisdictions overlap the selection but are assigned to a neighboring
+         county and so are not included. Non-blocking — purchase still proceeds. -->
+    <div class="lul-msg lul-warn" id="lul-spillin-warning" style="display:none;"></div>
+
+    <!-- Step 3: variable-set matrix. Loads once when first revealed. -->
+    <div class="lul-step lul-step-hidden" id="lul-step-matrix">
+      <span class="lul-label">Choose data variables:</span>
+      <p class="lul-hint">
+        Use the checkboxes to select each variable (or set of related variables sold together). All variables are
+        further explained in our <a href="https://www.landuselabs.com/data-dictionary" target="_blank" rel="noopener">data
+          dictionary</a>. Each order includes all base variables listed in the data dictionary.
+        Hover over any checkbox for details.
+      </p>
+      <div id="lul-matrix-status"></div>
+      <div id="lul-matrix-wrap" style="display:none;">
+        <table id="lul-matrix"></table>
+      </div>
+      <div id="lul-matrix-summary" class="lul-hint" style="display:none;"></div>
+      </div>
+
+    <!-- Step 4: price, terms, buy. -->
+    <div class="lul-step lul-step-hidden" id="lul-step-buy">
+      <div id="lul-price-display" class="lul-price"></div>
+      <div class="lul-checkbox-wrap">
+        <input type="checkbox" id="lul-terms">
+        <label for="lul-terms">
+          I have read and agree to the
+          <a href="https://www.landuselabs.com/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.
+        </label>
+      </div>
+      <button class="lul-btn" id="lul-buy-btn" disabled onclick="lulBuySlices()">
+        Purchase &rarr;
+      </button>
+    </div>
+
+  </div>
+</div>
+<!-- Shared typeahead helper (window.lulMountGeoSearch / lulSpinner / lulErrHtml /
+     lulEscHtml) is loaded site-wide via lul-geo-search.html in
+     Settings → Advanced → Code Injection → Header. -->
+<script>
+  (function () {
+
+    // ── Configuration ────────────────────────────────────────────────────────
+
+    const API_BASE = 'https://extracts.landuselabs.com';
+
+    // ── State ────────────────────────────────────────────────────────────────
+
+    var _geoType = null;
+    var _geoId = null;
+    var _price = null;
+    var _variableSets = null;     // [{slug, use_type, regulation_type, fields:[{full_name,...}]}]
+    var _selected = new Set();    // slugs
+    var _matrixBuilt = false;
+    var _priceAbort = null;
+
+    var SCOPES = {
+      jurisdiction: { label: 'Choose Geography:', endpoint: '/jurisdictions/', hint: 'Type in the name of the jurisdiction (e.g., city, town, township, county) without typing in the state name. Then select the jurisdiction from the results.' },
+      county:       { label: 'Choose Geography:', endpoint: '/counties/',      hint: 'Type in the name of the county without typing in the state name. Then select the county from the results.' },
+      cbsa:         { label: 'Choose Geography:', endpoint: '/cbsas/',         hint: 'Type in the name of the metro area, then select from the results.' },
+      state:        { label: 'Choose Geography:', endpoint: null,              hint: '' },
+    };
+
+    // Shared typeahead/dropdown/state-select (lul-geo-search.js). Form keeps
+    // post-pick business logic via the onPick / onClear callbacks.
+    var _geoSearch = window.lulMountGeoSearch({
+      apiBase: API_BASE,
+      scopes: SCOPES,
+      onPick: function (geoType, geoId, _label) {
+        _geoId = geoId;
+        checkAvailability();
+      },
+      onClear: function () {
+        _geoId = null;
+        hideAvailability();
+        showEl('lul-step-matrix', false);
+        showEl('lul-step-buy', false);
+      },
+    });
+
+    // Utility helpers exposed by lul-geo-search.js — alias so existing inline
+    // calls below stay unchanged.
+    var spinner = window.lulSpinner;
+    var errHtml = window.lulErrHtml;
+    var escHtml = window.lulEscHtml;
+
+    // ── Wire up listeners ────────────────────────────────────────────────────
+
+    // Defeat browser autofill: Firefox in particular restores radio
+    // state across reloads, leaving a scope selected without firing
+    // `change`. Clear all scope radios + the terms checkbox on init so
+    // the form always starts fresh.
+    document.querySelectorAll('input[name="lul-scope"]').forEach(function (el) {
+      el.checked = false;
+      el.addEventListener('change', onScopeChange);
+    });
+    document.getElementById('lul-terms').checked = false;
+    document.getElementById('lul-terms').addEventListener('change', onTermsChange);
+
+    // ── Step handlers ────────────────────────────────────────────────────────
+
+    function onScopeChange(evt) {
+      _geoType = evt.target.value;
+      resetGeo();
+      _geoSearch.setScope(_geoType);
+      showEl('lul-step-geopick', true);
+    }
+    // onGeoSearch / onResultClick / onStateChange are owned by lul-geo-search.js.
+
+    // ── Availability gate ────────────────────────────────────────────────────
+
+    function hideAvailability() {
+      var el = document.getElementById('lul-availability-msg');
+      el.style.display = 'none';
+      el.textContent = '';
+      var sp = document.getElementById('lul-spillin-warning');
+      sp.style.display = 'none';
+      sp.textContent = '';
+    }
+
+    function showSpillinWarning(warnings) {
+      var sp = document.getElementById('lul-spillin-warning');
+      if (warnings && warnings.length) {
+        // Render every warning, not just the first — availability now
+        // returns both partial-coverage and spill-in warnings together.
+        sp.innerHTML = warnings.map(function (w) {
+          return '<p>' + window.lulEscHtml(w.message) + '</p>';
+        }).join('');
+        sp.style.display = '';
+      }
+    }
+
+    function showUnavailable(reason) {
+      var el = document.getElementById('lul-availability-msg');
+      el.textContent = reason;
+      el.style.display = '';
+      showEl('lul-step-matrix', false);
+      showEl('lul-step-buy', false);
+    }
+
+    function checkAvailability() {
+      hideAvailability();
+      var url = API_BASE + '/availability/'
+        + '?product=slices'
+        + '&geography_type=' + encodeURIComponent(_geoType)
+        + '&geography_id=' + _geoId;
+      fetch(url)
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          if (data.available) {
+            revealMatrix();
+            showSpillinWarning(data.warnings);
+          } else {
+            showUnavailable(data.reason || 'Price unavailable for this geography.');
+          }
+        })
+        .catch(function () {
+          revealMatrix();
+        });
+    }
+
+    function onTermsChange() {
+      updateBuyButton();
+    }
+
+    // ── Reset helpers ────────────────────────────────────────────────────────
+
+    function resetGeo() {
+      _geoId = null;
+      _geoSearch.reset();
+      hideAvailability();
+      showEl('lul-step-matrix', false);
+      showEl('lul-step-buy', false);
+    }
+
+    // ── Matrix ───────────────────────────────────────────────────────────────
+
+    function revealMatrix() {
+      showEl('lul-step-matrix', true);
+      if (_matrixBuilt) {
+        refreshPrice();
+        return;
+      }
+      loadVariableSets();
+    }
+
+    function loadVariableSets() {
+      var statusEl = document.getElementById('lul-matrix-status');
+      statusEl.innerHTML = spinner('Loading variables&hellip;');
+      fetch(API_BASE + '/slices/variable-sets/')
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (rows) {
+          _variableSets = rows;
+          statusEl.innerHTML = '';
+          buildMatrix();
+          _matrixBuilt = true;
+          refreshPrice();
+        })
+        .catch(function () {
+          statusEl.innerHTML = errHtml('Could not load variables. Please refresh and try again.');
+        });
+    }
+
+    function buildMatrix() {
+      // Derive axes from the registry's natural order. Adding a new
+      // variable set on the backend just appears here — no UI change needed.
+      var uses = [];
+      var regs = [];
+      var cells = {};  // "useType|regType" -> [variableSet, ...]
+      _variableSets.forEach(function (vs) {
+        if (uses.indexOf(vs.use_type) < 0) uses.push(vs.use_type);
+        if (regs.indexOf(vs.regulation_type) < 0) regs.push(vs.regulation_type);
+        var key = vs.use_type + '|' + vs.regulation_type;
+        (cells[key] = cells[key] || []).push(vs);
+      });
+
+      var table = document.getElementById('lul-matrix');
+      table.innerHTML = '';
+
+      // Header row: corner master toggle + one cell per regulation type.
+      var thead = document.createElement('thead');
+      var headRow = document.createElement('tr');
+      var corner = document.createElement('th');
+      corner.className = 'lul-corner';
+      corner.title = 'Select / deselect all';
+      corner.innerHTML = '<input type="checkbox" id="lul-master-toggle">';
+      headRow.appendChild(corner);
+      regs.forEach(function (reg) {
+        var th = document.createElement('th');
+        th.className = 'lul-col-toggle';
+        th.title = 'Select / deselect entire column';
+        th.innerHTML =
+          '<div>' + escHtml(reg) + '</div>' +
+          '<input type="checkbox" data-col="' + escHtml(reg) + '">';
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      // One row per use type, with leading row-toggle.
+      var tbody = document.createElement('tbody');
+      uses.forEach(function (use) {
+        var tr = document.createElement('tr');
+        var rowLabel = document.createElement('th');
+        rowLabel.className = 'lul-row-label lul-row-toggle';
+        rowLabel.title = 'Select / deselect entire row';
+        var rowDisplay = use === 'All' ? 'District-Wide Characteristics' : use;
+        rowLabel.innerHTML =
+          '<label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin:0;">' +
+          '<input type="checkbox" data-row="' + escHtml(use) + '">' +
+          '<span>' + escHtml(rowDisplay) + '</span></label>';
+        tr.appendChild(rowLabel);
+
+        regs.forEach(function (reg) {
+          var td = document.createElement('td');
+          var sets = cells[use + '|' + reg];
+          if (!sets) {
+            td.className = 'lul-cell-empty';
+          } else if (sets.length === 1) {
+            td.className = 'lul-cell-active lul-cell-single';
+            // Single-set cell: anonymous checkbox; the row + column
+            // headers already identify what this variable is. Tooltip
+            // sits on the td so the whole cell hover triggers it.
+            td.title = tooltipFor(sets[0]);
+            td.innerHTML = checkboxHtml(sets[0], { withLabel: false });
+          } else {
+            td.className = 'lul-cell-active lul-cell-multi-host';
+            // Multi-set cell: stack one labeled checkbox per set so
+            // the buyer can tell them apart at a glance.
+            td.innerHTML = '<div class="lul-cell-multi">' +
+              sets.map(function (vs) {
+                return checkboxHtml(vs, { withLabel: true });
+              }).join('') +
+              '</div>';
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      document.getElementById('lul-matrix-wrap').style.display = '';
+      document.getElementById('lul-matrix-summary').style.display = '';
+
+      // Listeners — delegate at the table level so newly-built rows
+      // don't need individual wiring.
+      table.addEventListener('change', onMatrixChange);
+      // Whole-cell click-to-toggle for single-set cells. Skip when the
+      // user clicked the input itself — the native handler already ran
+      // and we'd double-toggle.
+      table.addEventListener('click', function (e) {
+        if (e.target.tagName === 'INPUT') return;
+        var cell = e.target.closest('td.lul-cell-single');
+        if (!cell) return;
+        var input = cell.querySelector('input[type="checkbox"]');
+        if (input) input.click();
+      });
+      updateSummary();
+    }
+
+    // Use-type prefixes we strip from full_name when deriving an inline
+    // label — the matrix row already says "1-Family" etc., so repeating
+    // it in the cell label is noise. Order matters: longer prefixes
+    // first so "4+-Family" beats a hypothetical "4" prefix.
+    var LABEL_PREFIXES_TO_STRIP = [
+      '4+-Family ',
+      '1-Family ',
+      '2-Family ',
+      '3-Family ',
+      'Affordable Housing ',
+      'ADU ',
+      'PRD ',
+    ];
+
+    function shortLabel(vs) {
+      // Drop the row's use-type prefix and any trailing unit qualifier
+      // in parens. Falls back to the unmodified full_name if neither
+      // pattern matches.
+      var s = vs.fields[0].full_name;
+      for (var i = 0; i < LABEL_PREFIXES_TO_STRIP.length; i++) {
+        var p = LABEL_PREFIXES_TO_STRIP[i];
+        if (s.indexOf(p) === 0) { s = s.slice(p.length); break; }
+      }
+      return s.replace(/\s*\([^)]+\)\s*$/, '');
+    }
+
+    function tooltipFor(vs) {
+      return vs.fields.length === 1
+        ? vs.fields[0].full_name + ' (' + vs.fields[0].name + ')'
+        : 'Includes ' + vs.fields.length + ' fields: ' +
+        vs.fields.map(function (f) { return f.name; }).join(', ');
+    }
+    function checkboxHtml(vs, opts) {
+      var input = '<input type="checkbox" data-slug="' + escHtml(vs.slug) + '">';
+      if (opts && opts.withLabel) {
+        // Title on the label so the whole row's hover area shows the tooltip,
+        // not just the checkbox itself.
+        return '<label title="' + escHtml(tooltipFor(vs)) + '">' +
+          input + '<span>' + escHtml(shortLabel(vs)) + '</span></label>';
+      }
+      return input;
+    }
+    function onMatrixChange(evt) {
+      var t = evt.target;
+      if (t.dataset.slug) {
+        if (t.checked) _selected.add(t.dataset.slug);
+        else _selected.delete(t.dataset.slug);
+      } else if (t.dataset.col) {
+        var reg = t.dataset.col;
+        _variableSets.forEach(function (vs) {
+          if (vs.regulation_type !== reg) return;
+          setSlugChecked(vs.slug, t.checked);
+        });
+      } else if (t.dataset.row) {
+        var use = t.dataset.row;
+        _variableSets.forEach(function (vs) {
+          if (vs.use_type !== use) return;
+          setSlugChecked(vs.slug, t.checked);
+        });
+      } else if (t.id === 'lul-master-toggle') {
+        _variableSets.forEach(function (vs) {
+          setSlugChecked(vs.slug, t.checked);
+        });
+      }
+      syncToggleStates();
+      updateSummary();
+      refreshPrice();
+    }
+
+    function setSlugChecked(slug, checked) {
+      if (checked) _selected.add(slug); else _selected.delete(slug);
+      var cb = document.querySelector('input[data-slug="' + slug + '"]');
+      if (cb) cb.checked = checked;
+    }
+
+    function syncToggleStates() {
+      // Refresh row, column, and master tri-states based on cell state.
+      // The browser doesn't render a real third state without JS — we
+      // toggle `.indeterminate` so users see partial-selection visually.
+      var allCount = _variableSets.length;
+      var selectedCount = _selected.size;
+      var master = document.getElementById('lul-master-toggle');
+      master.checked = selectedCount === allCount && allCount > 0;
+      master.indeterminate = selectedCount > 0 && selectedCount < allCount;
+
+      document.querySelectorAll('input[data-row]').forEach(function (cb) {
+        var rowSets = _variableSets.filter(function (vs) { return vs.use_type === cb.dataset.row; });
+        var sel = rowSets.filter(function (vs) { return _selected.has(vs.slug); }).length;
+        cb.checked = sel === rowSets.length && rowSets.length > 0;
+        cb.indeterminate = sel > 0 && sel < rowSets.length;
+      });
+      document.querySelectorAll('input[data-col]').forEach(function (cb) {
+        var colSets = _variableSets.filter(function (vs) { return vs.regulation_type === cb.dataset.col; });
+        var sel = colSets.filter(function (vs) { return _selected.has(vs.slug); }).length;
+        cb.checked = sel === colSets.length && colSets.length > 0;
+        cb.indeterminate = sel > 0 && sel < colSets.length;
+      });
+    }
+
+    function updateSummary() {
+      var el = document.getElementById('lul-matrix-summary');
+      var n = _selected.size;
+      if (n === 0) {
+        el.textContent = 'Select at least one variable to see a price.';
+        return;
+      }
+      var selectedSets = _variableSets.filter(function (vs) { return _selected.has(vs.slug); });
+      var labels = selectedSets.map(function (vs) {
+        return vs.fields.map(function (f) { return f.full_name; }).join(', ');
+      });
+      var preview = labels.join('; ');
+      el.innerHTML = '<strong>' + n + ' variable set' + (n === 1 ? '' : 's') + ' selected:</strong> ' +
+        escHtml(preview);
+    }
+
+    // ── Pricing ──────────────────────────────────────────────────────────────
+
+    function refreshPrice() {
+      if (_geoId == null) return;
+      if (_selected.size === 0) {
+        _price = null;
+        showEl('lul-step-buy', false);
+        return;
+      }
+      _price = null;
+      document.getElementById('lul-price-display').textContent = '…';
+      document.getElementById('lul-buy-btn').disabled = true;
+      document.getElementById('lul-terms').checked = false;
+      showEl('lul-step-buy', true);
+
+      // Cancel any in-flight quote — a fast-typing buyer can outpace
+      // the server otherwise, and a stale response overwrites the new one.
+      if (_priceAbort) _priceAbort.abort();
+      _priceAbort = new AbortController();
+
+      fetch(API_BASE + '/price/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product: 'slices',
+          geography_type: _geoType,
+          geography_id: _geoId,
+          variable_set_slugs: Array.from(_selected),
+        }),
+        signal: _priceAbort.signal,
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          _price = data.total_cents;
+          renderPrice();
+          updateBuyButton();
+        })
+        .catch(function (err) {
+          if (err.name === 'AbortError') return;
+          document.getElementById('lul-price-display').textContent = 'Price unavailable';
+        });
+    }
+
+    function renderPrice() {
+      var fmt = new Intl.NumberFormat('en-US', {
+        style: 'currency', currency: 'USD',
+        minimumFractionDigits: 0, maximumFractionDigits: 0,
+      });
+      document.getElementById('lul-price-display').textContent = fmt.format(_price / 100);
+    }
+
+    function updateBuyButton() {
+      var ready = _price != null
+                && _geoId != null
+                && _selected.size > 0
+                && document.getElementById('lul-terms').checked;
+      document.getElementById('lul-buy-btn').disabled = !ready;
+    }
+
+    // ── Checkout redirect ────────────────────────────────────────────────────
+
+    function lulBuySlices() {
+      if (_geoId == null || _selected.size === 0) return;
+      // URLSearchParams collapses repeated keys; we want repeated
+      // `variable_set_slug=…` for the FastAPI list binding, so build
+      // by hand with append.
+      var params = new URLSearchParams();
+      params.append('product', 'slices');
+      params.append('type', _geoType);
+      params.append('id', String(_geoId));
+      _selected.forEach(function (slug) {
+        params.append('variable_set_slug', slug);
+      });
+      window.location.href = API_BASE + '/payments/checkout/?' + params.toString();
+    }
+
+    // ── Utilities ────────────────────────────────────────────────────────────
+
+    function showEl(id, visible) {
+      var el = document.getElementById(id);
+      if (visible) el.classList.remove('lul-step-hidden');
+      else el.classList.add('lul-step-hidden');
+    }
+
+    // spinner / errHtml / escHtml live in lul-geo-search.js (aliased above).
+
+    window.lulBuySlices = lulBuySlices;
+  })();
+</script>

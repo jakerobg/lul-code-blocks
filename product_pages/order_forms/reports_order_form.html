@@ -1,0 +1,699 @@
+<!--
+  ORDER CARD — parcel report coverage check + checkout (Squarespace Code Block).
+
+  Restyled to match the mockup. Logic is unchanged — same /check-coverage and
+  /create-checkout calls, same coverage branches, same lead form.
+
+  ▶ COLORS: all set as variables at the top of #lul-order.
+    --lul-accent is the button / active-step purple.
+  ▶ STEPS: the 1-2-3 indicator advances automatically — step 2 lights up when
+    a covered parcel is found, via lulSetStep().
+  ▶ PRICE: shown in two places (the pill and the button labels).
+-->
+
+<style>
+    /* ── ORDER CARD WRAPPER ── */
+    #lul-order {
+        --lul-ink: #393348;
+        --lul-accent: #594496; /* button + active step */
+        --lul-accent-dark: #3f2e70; /* button hover */
+        --lul-muted: rgba(57, 51, 72, 0.55);
+        --lul-line: rgba(57, 51, 72, 0.13);
+        --lul-chip: #eeecef; /* price pill + inactive steps */
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background: #fff;
+        padding: 24px 26px 20px;
+        border-radius: 12px;
+        box-shadow: 0 10px 36px rgba(57, 51, 72, 0.12);
+        box-sizing: border-box;
+        color: var(--lul-ink);
+        /* lets the step row size itself against the CARD's width, so the
+           1-2-3 never wraps no matter how narrow the column is */
+        container-type: inline-size;
+        container-name: lulorder;
+    }
+    #lul-order *,
+    #lul-order *::before,
+    #lul-order *::after {
+        box-sizing: border-box;
+    }
+
+    /* ── HEADER ── */
+    .order-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+        padding-bottom: 13px;
+        border-bottom: 1px solid var(--lul-line);
+    }
+    .order-card-title {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        color: var(--lul-ink);
+    }
+    .order-card-price {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--lul-ink);
+        background: var(--lul-chip);
+        padding: 7px 16px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    /* ── STEP INDICATOR ── */
+    /* One line, always — built with inline-block + vertical-align rather
+       than flexbox. Squarespace's stylesheet was breaking the flex row
+       (staggered baselines, stray underlines), and inline-block is far
+       harder for an external stylesheet to disturb. */
+    #lul-order .lul-steps {
+        display: block !important;
+        white-space: nowrap !important; /* the whole row stays on one line */
+        margin: 0 0 16px;
+        padding: 0;
+        border: 0;
+        font-size: 0; /* kills whitespace gaps between inline-blocks */
+        line-height: 1;
+        overflow: hidden;
+    }
+    #lul-order .lul-step {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+        border: 0 !important;
+        text-decoration: none !important;
+    }
+    #lul-order .lul-step__num {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--lul-chip);
+        color: var(--lul-muted);
+        margin: 0 7px 0 0;
+        padding: 0;
+        border: 0 !important;
+        transition:
+            background 0.25s ease,
+            color 0.25s ease;
+    }
+    #lul-order .lul-step__label {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: var(--lul-muted);
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+        border: 0 !important;
+        text-decoration: none !important;
+        transition: color 0.25s ease;
+    }
+    /* narrow cards: keep only the current step's label */
+    @media (max-width: 420px) {
+        #lul-order .lul-step:not(.is-active) .lul-step__label {
+            display: none !important;
+        }
+        #lul-order .lul-step__label {
+            font-size: 11px;
+        }
+    }
+    /* active step — needs the #lul-order prefix to outrank the base
+       .lul-step__num rule above, which is also id-scoped */
+    #lul-order .lul-step.is-active .lul-step__num {
+        background: var(--lul-accent) !important;
+        color: #ffffff !important;
+    }
+    #lul-order .lul-step.is-active .lul-step__label {
+        color: var(--lul-ink) !important;
+        font-weight: 700;
+    }
+    #lul-order .lul-steps__arrow {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        color: rgba(57, 51, 72, 0.3);
+        font-size: 14px;
+        line-height: 1;
+        margin: 0 10px;
+        border: 0 !important;
+        text-decoration: none !important;
+    }
+
+    /* ── FORM ── */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .form-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--lul-muted);
+    }
+    .form-input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        padding: 12px 14px;
+        border: 1px solid var(--lul-line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--lul-ink);
+        outline: none;
+        width: 100%;
+        transition: border-color 0.15s;
+        -webkit-appearance: none;
+    }
+    .form-input::placeholder {
+        color: rgba(57, 51, 72, 0.35);
+    }
+    .form-input:focus {
+        border-color: var(--lul-accent);
+    }
+
+    /* rule between the field and the call to action */
+    .lul-divider {
+        border: 0;
+        border-top: 1px solid var(--lul-line);
+        margin: 16px 0;
+    }
+
+    /* ── BUTTON ── */
+    .btn-submit {
+        width: 100%;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 14px 20px;
+        border-radius: 0;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+        border: 1px solid var(--lul-accent);
+        background: var(--lul-accent);
+        color: #ffffff;
+        cursor: pointer;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease;
+        white-space: nowrap;
+    }
+    .btn-submit:hover {
+        background: var(--lul-accent-dark);
+        border-color: var(--lul-accent-dark);
+    }
+    .btn-submit:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .form-note {
+        font-size: 13px;
+        color: var(--lul-muted);
+        text-align: center;
+        margin: 10px 0 0;
+    }
+    .lul-fineprint {
+        font-size: 13px;
+        line-height: 1.45;
+        color: var(--lul-muted);
+        text-align: center;
+        margin: 8px 0 0;
+    }
+    .lul-fineprint a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    /* ── MESSAGES ── */
+    .lul-msg {
+        padding: 16px 18px;
+        border-radius: 8px;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 16px;
+    }
+    .lul-msg p {
+        margin-bottom: 8px;
+    }
+    .lul-msg p:last-child {
+        margin-bottom: 0;
+    }
+    .lul-ok {
+        background: #e0e5c2;
+        color: var(--lul-ink);
+    }
+    .lul-warn {
+        background: #fff;
+        border: 1px solid var(--lul-line);
+        color: var(--lul-ink);
+    }
+    .lul-error {
+        background: #fff3f3;
+        border: 1px solid rgba(180, 0, 0, 0.2);
+        color: #7a0000;
+    }
+
+    /* ── LEAD FORM ── */
+    .lul-lead {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .lul-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .lul-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .lul-flex-2 {
+        grid-column: span 2;
+    }
+
+    .lul-spinner-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+        color: var(--lul-muted);
+        padding: 10px 0;
+    }
+    .lul-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--lul-line);
+        border-top-color: var(--lul-accent);
+        border-radius: 50%;
+        animation: lul-spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes lul-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @media (max-width: 640px) {
+        #lul-order {
+            padding: 26px 20px;
+        }
+        .order-card-head {
+            gap: 12px;
+        }
+        .order-card-title {
+            font-size: 20px;
+        }
+        .order-card-price {
+            font-size: 15px;
+            padding: 7px 14px;
+        }
+        .btn-submit {
+            font-size: 16px;
+            padding: 18px 20px;
+            white-space: normal;
+        }
+        .lul-row {
+            grid-template-columns: 1fr;
+        }
+        .lul-flex-2 {
+            grid-column: span 1;
+        }
+    }
+</style>
+
+<div id="lul-order">
+    <div class="order-card-head">
+        <span class="order-card-title">Get Your Report</span>
+        <span class="order-card-price">$250</span>
+    </div>
+
+    <!-- Written on ONE source line on purpose: any line break between these
+         inline-blocks becomes a whitespace gap. Inline styles repeat the CSS
+         so Squarespace's stylesheet can't break the row. -->
+    <div
+        class="lul-steps"
+        id="lul-steps"
+        style="display: block; white-space: nowrap; font-size: 0; line-height: 1; overflow: hidden"
+    >
+        <span
+            class="lul-step is-active"
+            data-step="1"
+            style="display: inline-block; vertical-align: middle; white-space: nowrap"
+            ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">1</span
+            ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                >Enter an address</span
+            ></span
+        ><span class="lul-steps__arrow" aria-hidden="true" style="display: inline-block; vertical-align: middle"
+            >&rarr;</span
+        ><span class="lul-step" data-step="2" style="display: inline-block; vertical-align: middle; white-space: nowrap"
+            ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">2</span
+            ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                >Instant payment</span
+            ></span
+        ><span class="lul-steps__arrow" aria-hidden="true" style="display: inline-block; vertical-align: middle"
+            >&rarr;</span
+        ><span class="lul-step" data-step="3" style="display: inline-block; vertical-align: middle; white-space: nowrap"
+            ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">3</span
+            ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                >Get your PDF</span
+            ></span
+        >
+    </div>
+
+    <div id="lul-address-panel">
+        <div class="form-group">
+            <label class="form-label" for="lul-address">Search street address (include city and state)</label>
+            <input
+                id="lul-address"
+                class="form-input"
+                type="text"
+                placeholder="1008 s farmer ave, tempe AZ"
+                autocomplete="street-address"
+            />
+        </div>
+        <hr class="lul-divider" />
+        <button class="btn-submit" onclick="lulCheckCoverage(this)">Check Coverage &amp; Order →</button>
+        <p class="form-note">PDF delivery</p>
+        <p class="lul-fineprint">
+            At checkout, you'll be asked to accept our
+            <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.
+        </p>
+    </div>
+
+    <div id="lul-result" style="display: none; margin-top: 24px"></div>
+</div>
+
+<script>
+    (function () {
+        const API_BASE = "https://products-api.landuselabs.com";
+        let _lat = null,
+            _lon = null,
+            _parcelAddress = null;
+        const US_STATES = [
+            "Alabama",
+            "Alaska",
+            "Arizona",
+            "Arkansas",
+            "California",
+            "Colorado",
+            "Connecticut",
+            "Delaware",
+            "District of Columbia",
+            "Florida",
+            "Georgia",
+            "Hawaii",
+            "Idaho",
+            "Illinois",
+            "Indiana",
+            "Iowa",
+            "Kansas",
+            "Kentucky",
+            "Louisiana",
+            "Maine",
+            "Maryland",
+            "Massachusetts",
+            "Michigan",
+            "Minnesota",
+            "Mississippi",
+            "Missouri",
+            "Montana",
+            "Nebraska",
+            "Nevada",
+            "New Hampshire",
+            "New Jersey",
+            "New Mexico",
+            "New York",
+            "North Carolina",
+            "North Dakota",
+            "Ohio",
+            "Oklahoma",
+            "Oregon",
+            "Pennsylvania",
+            "Rhode Island",
+            "South Carolina",
+            "South Dakota",
+            "Tennessee",
+            "Texas",
+            "Utah",
+            "Vermont",
+            "Virginia",
+            "Washington",
+            "West Virginia",
+            "Wisconsin",
+            "Wyoming",
+        ];
+
+        // highlight step 1, 2 or 3 in the indicator
+        function lulSetStep(n) {
+            var steps = document.querySelectorAll("#lul-steps .lul-step");
+            Array.prototype.forEach.call(steps, function (el) {
+                el.classList.toggle("is-active", Number(el.dataset.step) === n);
+            });
+        }
+
+        async function lulCheckCoverage(btn) {
+            const address = document.getElementById("lul-address").value.trim();
+            if (!address) {
+                showResult(errHtml("Please enter a street address."));
+                return;
+            }
+            btn.disabled = true;
+            showResult(loadingHtml("Checking coverage&hellip;"));
+            try {
+                const res = await fetch(API_BASE + "/check-coverage", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ mode: "address", address }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    showResult(errHtml(data.error || "Server error. Please try again."));
+                    return;
+                }
+                _lat = data.lat;
+                _lon = data.lon;
+                _parcelAddress = data.parcel_address;
+                if (data.covered) {
+                    renderCovered();
+                } else {
+                    switch (data.reason) {
+                        case "nonresidential":
+                            renderNonresidential();
+                            break;
+                        case "unzoned_jurisdiction":
+                            renderUnzonedJurisdiction();
+                            break;
+                        case "unzoned_district":
+                            renderUnzonedDistrict(data.jurisdiction, data.state);
+                            break;
+                        default:
+                            renderNoCoverage(data.jurisdiction, data.state);
+                            break;
+                    }
+                }
+            } catch (e) {
+                showResult(errHtml("Connection error. Please check your connection and try again."));
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Search Another Parcel →";
+                btn.onclick = lulResetSearch;
+            }
+        }
+
+        function lulResetSearch() {
+            var btn = document.querySelector("#lul-address-panel .btn-submit");
+            btn.textContent = "Check Coverage & Order →";
+            btn.onclick = function () {
+                lulCheckCoverage(btn);
+            };
+            var el = document.getElementById("lul-result");
+            el.innerHTML = "";
+            el.style.display = "none";
+            _lat = null;
+            _lon = null;
+            _parcelAddress = null;
+            lulSetStep(1);
+            var input = document.getElementById("lul-address");
+            input.focus();
+            input.select();
+        }
+
+        function renderCovered() {
+            lulSetStep(2);
+            showResult(`
+      <div class="lul-msg lul-ok">
+        <p><strong>Great news &mdash; we have zoning data for this parcel.</strong></p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Buy Parcel Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderNonresidential() {
+            lulSetStep(2);
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>This parcel lies in a zoning district that does not allow residential uses as principal uses. A Parcel Report will reveal the most common nonresidential use, confirm residential principal uses are not allowed, and highlight any permissions for accessory dwelling units.</p>
+        <p>Would you still like to purchase a Parcel Report?</p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Yes, Purchase Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderUnzonedJurisdiction() {
+            lulSetStep(2);
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>This parcel lies in a jurisdiction that we have confirmed does not exercise its zoning authority. A Parcel Report will confirm that Land Use Labs LLC has conducted a diligent search and determined that this jurisdiction has declined to exercise zoning authority.</p>
+        <p>Would you still like to purchase a Parcel Report?</p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Yes, Purchase Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderUnzonedDistrict(jurisdiction, state) {
+            lulSetStep(2);
+            const place = jurisdiction && state ? jurisdiction + ", " + state : jurisdiction || "This jurisdiction";
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>This parcel lies in a jurisdiction that exercises its zoning authority, but has not assigned this parcel to a zoning district. A Parcel Report will confirm that ${place} has zoning, but has not zoned this specific parcel.</p>
+        <p>Would you still like to purchase a Parcel Report?</p>
+      </div>
+      <button class="btn-submit" onclick="lulProceedToCheckout(this)">Yes, Purchase Report &mdash; $250 →</button>
+      <p class="lul-fineprint">At checkout, you'll be asked to accept our <a href="/license" target="_blank" rel="noopener">Data Licensing Agreement</a>.</p>
+    `);
+        }
+
+        function renderNoCoverage(jurisdiction, state) {
+            const place = jurisdiction && state ? jurisdiction + ", " + state : jurisdiction || null;
+            const locationStr = place ? "for " + place : "for this location";
+            const stateOptions = US_STATES.map(function (s) {
+                return '<option value="' + s + '"' + (s === state ? " selected" : "") + ">" + s + "</option>";
+            }).join("");
+            showResult(`
+      <div class="lul-msg lul-warn">
+        <p>We&rsquo;re sorry, we have not yet published zoning data ${locationStr}. We&rsquo;re working every day to complete nationwide coverage of the <a href="https://www.zoningatlas.org" target="_blank" rel="noopener">National Zoning Atlas</a>.</p>
+        <p>Leave your info below and we&rsquo;ll alert you when coverage is available.</p>
+      </div>
+      <div class="lul-lead">
+        <div class="lul-row">
+          <div class="lul-field">
+            <label class="form-label" for="lul-first">First Name</label>
+            <input id="lul-first" class="form-input" type="text" placeholder="First name" />
+          </div>
+          <div class="lul-field">
+            <label class="form-label" for="lul-last">Last Name</label>
+            <input id="lul-last" class="form-input" type="text" placeholder="Last name" />
+          </div>
+        </div>
+        <div class="lul-field">
+          <label class="form-label" for="lul-email">Email</label>
+          <input id="lul-email" class="form-input" type="email" placeholder="your@email.com" />
+        </div>
+        <div class="lul-row">
+          <div class="lul-field lul-flex-2">
+            <label class="form-label" for="lul-jur">Jurisdiction</label>
+            <input id="lul-jur" class="form-input" type="text" placeholder="e.g. Town of Bloomfield" value="${jurisdiction || ""}" />
+          </div>
+          <div class="lul-field">
+            <label class="form-label" for="lul-state">State</label>
+            <select id="lul-state" class="form-input">
+              <option value="">State</option>
+              ${stateOptions}
+            </select>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="lulSubmitLead(this)">Send Request →</button>
+        <div id="lul-lead-status" style="margin-top:10px;"></div>
+      </div>
+    `);
+        }
+
+        async function lulProceedToCheckout(btn) {
+            if (_lat == null || _lon == null) {
+                showResult(errHtml("Session expired. Please re-enter your address and check coverage again."));
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = "Redirecting to payment…";
+            try {
+                const res = await fetch(API_BASE + "/create-checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ lat: _lat, lon: _lon, parcel_address: _parcelAddress }),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.url) throw new Error(data.error || "Could not start checkout.");
+                window.location.href = data.url;
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = "Yes, Purchase Report — $250 →";
+                var statusEl = document.createElement("div");
+                statusEl.innerHTML = errHtml(e.message || "Payment setup failed. Please try again.");
+                btn.parentNode.insertBefore(statusEl, btn.nextSibling);
+            }
+        }
+
+        async function lulSubmitLead(btn) {
+            var statusEl = document.getElementById("lul-lead-status");
+            var first = (document.getElementById("lul-first") || {}).value || "";
+            var email = (document.getElementById("lul-email") || {}).value || "";
+            if (!first.trim() || !email.trim()) {
+                statusEl.innerHTML = errHtml("Please enter at least your first name and email address.");
+                return;
+            }
+            btn.disabled = true;
+            statusEl.innerHTML =
+                '<div class="lul-msg lul-ok"><p>Thank you &mdash; we\'ll be in touch when coverage is available for this jurisdiction.</p></div>';
+        }
+
+        function showResult(html) {
+            var el = document.getElementById("lul-result");
+            el.innerHTML = html;
+            el.style.display = "block";
+        }
+        function loadingHtml(msg) {
+            return '<div class="lul-spinner-wrap"><div class="lul-spinner"></div>' + msg + "</div>";
+        }
+        function errHtml(msg) {
+            return '<div class="lul-msg lul-error"><p>' + msg + "</p></div>";
+        }
+
+        document.getElementById("lul-address").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                var btn = document.querySelector("#lul-address-panel .btn-submit");
+                lulCheckCoverage(btn);
+            }
+        });
+
+        window.lulCheckCoverage = lulCheckCoverage;
+        window.lulResetSearch = lulResetSearch;
+        window.lulProceedToCheckout = lulProceedToCheckout;
+        window.lulSubmitLead = lulSubmitLead;
+        window.lulSetStep = lulSetStep;
+    })();
+</script>

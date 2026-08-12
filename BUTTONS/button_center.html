@@ -1,0 +1,94 @@
+<!--
+  Single primary button (filled purple), centered in its container.
+
+  ▶ Colours and padding are the vars at the top. The border always matches the
+    fill, so the button reads as a solid block.
+  ▶ Same .lul-actions block as the multi-button files — the row here just adds
+    the --center modifier, so a single button and a pair stay interchangeable.
+-->
+<style>
+    .lul-actions {
+        --lul-primary: #594496; /* primary fill + border */
+        --lul-primary-hover: #3f2e70;
+        --lul-btn-pad: 10px 26px;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+    .lul-actions--center {
+        justify-content: center;
+    }
+    .lul-actions *,
+    .lul-actions *::before,
+    .lul-actions *::after {
+        box-sizing: border-box;
+    }
+
+    /* Shared shell. Border is transparent here so each variant owns its own
+       border-colour rather than overriding a default. */
+    .lul-actions .lul-actions__btn {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: var(--lul-btn-pad);
+        border: 1px solid transparent;
+        border-radius: 0;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        max-width: 100%; /* never wider than the container → stays centered */
+        text-align: center;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease,
+            color 0.25s ease,
+            gap 0.25s ease;
+    }
+    .lul-actions .lul-actions__btn:hover {
+        gap: 12px;
+    }
+
+    .lul-actions .lul-actions__btn--primary {
+        background: var(--lul-primary);
+        border-color: var(--lul-primary);
+        color: #ffffff;
+    }
+    .lul-actions .lul-actions__btn--primary:hover {
+        background: var(--lul-primary-hover);
+        border-color: var(--lul-primary-hover);
+    }
+
+    .lul-actions .lul-actions__btn svg {
+        width: 14px;
+        height: 14px;
+        transition: transform 0.25s ease;
+    }
+    .lul-actions .lul-actions__btn:hover svg {
+        transform: translateX(2px);
+    }
+</style>
+
+<div class="lul-actions lul-actions--center">
+    <a class="lul-actions__btn lul-actions__btn--primary" href="#"
+        >Data Dictionary
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path
+                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+    </a>
+</div>

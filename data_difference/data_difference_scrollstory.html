@@ -1,0 +1,442 @@
+<!--
+  Data Difference — scroll story (NYT-style sticky stage)
+
+  Two "chapters" drive one sticky, full-height stage:
+    1. Two competitor maps side by side, headline rises up over them.
+    2. Cross-fade to the National Zoning Atlas map with the second headline.
+
+  Images are hosted on the Squarespace CDN — paste-ready as is.
+-->
+
+<style>
+    .lul-ss {
+        --lss-header: #393348;
+        --lss-mark-bg: #ffffff; /* solid swatch behind every line */
+        --lss-mark-fg: #000000; /* headline text on the swatch */
+        --lss-green: #6f7d3f; /* the emphasised words, as colour not swatch */
+
+        /* ---- Knobs ---- */
+        --lss-stage-h: 100svh; /* height of the sticky stage */
+        --lss-step-h: 110vh; /* scroll distance per chapter */
+        --lss-gap: 1px; /* hairline between the two side-by-side maps */
+        --lss-text-max: 860px; /* max width of the headline block */
+        --lss-scrim: 0.42; /* vignette strength — raise if type gets hard to read */
+
+        position: relative;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .lul-ss *,
+    .lul-ss *::before,
+    .lul-ss *::after {
+        box-sizing: border-box;
+    }
+
+    /* ---------- Sticky stage ---------- */
+    .lul-ss__stage {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: var(--lss-stage-h, 100svh);
+        overflow: hidden;
+        background: var(--lss-header);
+    }
+
+    /* ---------- Scenes (stacked, cross-faded) ---------- */
+    .lul-ss__scene {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform: scale(1.04);
+        transition:
+            opacity 0.7s ease,
+            transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: opacity, transform;
+    }
+    .lul-ss__scene.is-active {
+        opacity: 1;
+        transform: scale(1);
+    }
+    /* Scene that has already been scrolled past drifts up as it leaves */
+    .lul-ss__scene.is-past {
+        opacity: 0;
+        transform: scale(0.985) translateY(-2%);
+    }
+
+    /* Two maps side by side */
+    .lul-ss__pair {
+        display: flex;
+        gap: var(--lss-gap, 4px);
+        width: 100%;
+        height: 100%;
+    }
+    .lul-ss__pair img {
+        flex: 1 1 50%;
+        min-width: 0;
+        width: 50%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0;
+        transform: translateY(26px);
+        transition:
+            opacity 0.8s ease,
+            transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .lul-ss__scene.is-active .lul-ss__pair img {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .lul-ss__scene.is-active .lul-ss__pair img:nth-child(2) {
+        transition-delay: 0.14s;
+    }
+
+    /* Single full-bleed map */
+    .lul-ss__full {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* Subtle vignette, weighted to the bottom where the type sits.
+       All four stops scale off --lss-scrim so it is one knob. */
+    .lul-ss__scene::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to top,
+            rgba(29, 25, 38, calc(var(--lss-scrim, 0.42) * 1)) 0%,
+            rgba(29, 25, 38, calc(var(--lss-scrim, 0.42) * 0.62)) 34%,
+            rgba(29, 25, 38, calc(var(--lss-scrim, 0.42) * 0.2)) 68%,
+            rgba(29, 25, 38, calc(var(--lss-scrim, 0.42) * 0.08)) 100%
+        );
+        pointer-events: none;
+    }
+
+    /* ---------- Captions ---------- */
+    .lul-ss__captions {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        pointer-events: none;
+    }
+    .lul-ss__caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0 clamp(24px, 6vw, 88px) clamp(56px, 11vh, 120px);
+        opacity: 0;
+        transition: opacity 0.45s ease;
+    }
+    .lul-ss__caption.is-active {
+        opacity: 1;
+    }
+
+    .lul-ss__headline {
+        max-width: var(--lss-text-max, 860px);
+        margin: 0;
+        font-weight: 500;
+        font-size: clamp(1.15rem, 2vw, 1.9rem);
+        /* Generous leading so the white swatches stack with a gap between them
+           rather than butting into each other when a chunk wraps. */
+        line-height: 1.55;
+        letter-spacing: -0.015em;
+        color: var(--lss-mark-fg);
+        text-wrap: balance;
+    }
+
+    /* Each chunk masks itself; the text rises from behind the clipped edge,
+       same reveal used in the industry-page hooks. Chunks are phrase-level
+       (not hard line breaks) so they still wrap cleanly on narrow screens. */
+    .lul-ss__line {
+        display: block;
+        overflow: hidden;
+        padding: 0.1em 0; /* room for descenders + the swatch */
+    }
+    .lul-ss__reveal {
+        display: block;
+        transform: translateY(110%);
+        transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .lul-ss__caption.is-active .lul-ss__reveal {
+        transform: translateY(0);
+    }
+    /* Stagger the rise, line by line */
+    .lul-ss__caption.is-active .lul-ss__line--1 .lul-ss__reveal {
+        transition-delay: 0.12s;
+    }
+    .lul-ss__caption.is-active .lul-ss__line--2 .lul-ss__reveal {
+        transition-delay: 0.26s;
+    }
+    .lul-ss__caption.is-active .lul-ss__line--3 .lul-ss__reveal {
+        transition-delay: 0.4s;
+    }
+
+    /* The white swatch. Inline + clone so it hugs the words and repeats on
+       every wrapped line, rather than becoming one full-width block. It rides
+       up with the text, so there is no separate sweep to time. */
+    .lul-ss__mark {
+        display: inline;
+        background: var(--lss-mark-bg);
+        padding: 0.12em 0.26em;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+    }
+
+    /* Emphasised words: colour only, no second swatch */
+    .lul-ss__accent {
+        color: var(--lss-green);
+        font-style: italic;
+    }
+
+    /* ---------- Chapter progress dots ---------- */
+    .lul-ss__progress {
+        position: absolute;
+        right: clamp(18px, 3vw, 34px);
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+    }
+    .lul-ss__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.32);
+        transition:
+            background 0.35s ease,
+            transform 0.35s ease;
+    }
+    .lul-ss__dot.is-active {
+        background: var(--lss-mark-bg);
+        transform: scale(1.45);
+    }
+
+    /* ---------- Scroll triggers ---------- */
+    /* Pulled back over the sticky stage so each step owns one screen of scroll. */
+    .lul-ss__steps {
+        position: relative;
+        margin-top: -100vh;
+        margin-top: calc(-1 * var(--lss-stage-h, 100svh));
+        pointer-events: none;
+    }
+    .lul-ss__step {
+        height: var(--lss-step-h, 110vh);
+    }
+
+    /* ---------- Small screens ---------- */
+    @media (max-width: 640px) {
+        .lul-ss {
+            --lss-gap: 1px;
+        }
+        .lul-ss__headline {
+            font-size: clamp(1.05rem, 4.6vw, 1.45rem);
+        }
+        .lul-ss__progress {
+            display: none;
+        }
+    }
+
+    /* ---------- No motion: show everything, no transitions ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .lul-ss__scene,
+        .lul-ss__pair img,
+        .lul-ss__reveal,
+        .lul-ss__caption,
+        .lul-ss__dot {
+            transition: none !important;
+        }
+        .lul-ss__scene {
+            transform: none;
+        }
+        .lul-ss__pair img {
+            transform: none;
+        }
+    }
+
+    /* ---------- JS disabled / not yet run: nothing is hidden ---------- */
+    .lul-ss:not(.lul-ss--ready) .lul-ss__scene:first-of-type,
+    .lul-ss:not(.lul-ss--ready) .lul-ss__caption:first-of-type {
+        opacity: 1;
+    }
+    .lul-ss:not(.lul-ss--ready) .lul-ss__reveal {
+        transform: translateY(0);
+    }
+    .lul-ss:not(.lul-ss--ready) .lul-ss__pair img {
+        opacity: 1;
+        transform: none;
+    }
+</style>
+
+<section class="lul-ss" aria-label="How our zoning data compares">
+    <div class="lul-ss__stage">
+        <!-- Chapter 1: two competitor maps, side by side -->
+        <div class="lul-ss__scene" data-scene="0">
+            <div class="lul-ss__pair">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/c9cb3bbe-6b7e-45ff-95f1-692c4465407e/zoneomics_1.png?content-type=image%2Fpng"
+                    alt="Zoning map from another provider showing fragmented districts with gaps between boundaries"
+                    loading="lazy"
+                />
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/ae91c8b5-d3bf-4f8b-93a6-934618559346/zoneomics_2.png?content-type=image%2Fpng"
+                    alt="Zoning map from another provider showing a jurisdiction boundary that overlaps its neighbors"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <!-- Chapter 2: the National Zoning Atlas -->
+        <div class="lul-ss__scene" data-scene="1">
+            <img
+                class="lul-ss__full"
+                src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/0d0cce94-0d3b-4d7c-9bac-61bc7aeb61a0/nza_1.png?content-type=image%2Fpng"
+                alt="National Zoning Atlas map of New York City showing continuous, parcel-accurate zoning districts"
+                loading="lazy"
+            />
+        </div>
+
+        <div class="lul-ss__captions">
+            <div class="lul-ss__caption" data-caption="0">
+                <h2 class="lul-ss__headline">
+                    <span class="lul-ss__line lul-ss__line--1">
+                        <span class="lul-ss__reveal"
+                            ><span class="lul-ss__mark">Most prominent zoning providers sacrifice quality.</span></span
+                        >
+                    </span>
+                    <span class="lul-ss__line lul-ss__line--2">
+                        <span class="lul-ss__reveal"
+                            ><span class="lul-ss__mark"
+                                >This results in <span class="lul-ss__accent">broken, overlapping boundaries</span></span
+                            ></span
+                        >
+                    </span>
+                    <span class="lul-ss__line lul-ss__line--3">
+                        <span class="lul-ss__reveal"
+                            ><span class="lul-ss__mark">and unreliable data.</span></span
+                        >
+                    </span>
+                </h2>
+            </div>
+
+            <div class="lul-ss__caption" data-caption="1">
+                <h2 class="lul-ss__headline">
+                    <span class="lul-ss__line lul-ss__line--1">
+                        <span class="lul-ss__reveal"
+                            ><span class="lul-ss__mark"
+                                >Our data is <span class="lul-ss__accent">triple vetted</span>, ensuring</span
+                            ></span
+                        >
+                    </span>
+                    <span class="lul-ss__line lul-ss__line--2">
+                        <span class="lul-ss__reveal"
+                            ><span class="lul-ss__mark">accurate representation of land use.</span></span
+                        >
+                    </span>
+                    <span class="lul-ss__line lul-ss__line--3">
+                        <span class="lul-ss__reveal"
+                            ><span class="lul-ss__mark"
+                                >With constant review and data quality checks, our data is ready to fit your
+                                needs.</span
+                            ></span
+                        >
+                    </span>
+                </h2>
+            </div>
+        </div>
+
+        <div class="lul-ss__progress" aria-hidden="true">
+            <span class="lul-ss__dot"></span>
+            <span class="lul-ss__dot"></span>
+        </div>
+    </div>
+
+    <!-- Empty spacers: each one screen of scroll = one chapter -->
+    <div class="lul-ss__steps" aria-hidden="true">
+        <div class="lul-ss__step"></div>
+        <div class="lul-ss__step"></div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        var roots = document.querySelectorAll(".lul-ss:not([data-lul-ss-init])");
+
+        Array.prototype.forEach.call(roots, function (root) {
+            root.setAttribute("data-lul-ss-init", "1");
+
+            var stage = root.querySelector(".lul-ss__stage");
+            var scenes = root.querySelectorAll(".lul-ss__scene");
+            var captions = root.querySelectorAll(".lul-ss__caption");
+            var dots = root.querySelectorAll(".lul-ss__dot");
+            var count = scenes.length;
+            var current = -2;
+            var ticking = false;
+
+            function show(index) {
+                if (index === current) return;
+                current = index;
+
+                Array.prototype.forEach.call(scenes, function (scene, i) {
+                    scene.classList.toggle("is-active", i === index);
+                    scene.classList.toggle("is-past", i < index);
+                });
+                Array.prototype.forEach.call(captions, function (cap, i) {
+                    cap.classList.toggle("is-active", i === index);
+                });
+                Array.prototype.forEach.call(dots, function (dot, i) {
+                    dot.classList.toggle("is-active", i === index);
+                });
+            }
+
+            // The chapter is derived straight from how far the stage has been
+            // pinned: the pinned distance is split into equal chapters.
+            function update() {
+                ticking = false;
+
+                var rect = root.getBoundingClientRect();
+                var pinned = root.offsetHeight - stage.offsetHeight;
+                if (pinned <= 0) {
+                    show(0);
+                    return;
+                }
+
+                // Hold everything back until the stage is halfway up the screen,
+                // so the first chapter animates in as you scroll into the section.
+                if (rect.top > window.innerHeight * 0.45) {
+                    show(-1);
+                    return;
+                }
+
+                var index = Math.floor((-rect.top / pinned) * count);
+                show(Math.max(0, Math.min(count - 1, index)));
+            }
+
+            function onScroll() {
+                if (ticking) return;
+                ticking = true;
+                window.requestAnimationFrame(update);
+            }
+
+            if (!window.requestAnimationFrame) return; // fall back to the static state
+
+            root.classList.add("lul-ss--ready");
+            window.addEventListener("scroll", onScroll, { passive: true });
+            window.addEventListener("resize", onScroll);
+            update();
+        });
+    })();
+</script>

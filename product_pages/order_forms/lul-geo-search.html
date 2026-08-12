@@ -1,0 +1,230 @@
+<!--
+  lul-geo-search.html — shared geography typeahead for the storefront forms.
+
+  Paste the entire file (this comment + the <script> below) into Squarespace
+  → Settings → Advanced → Code Injection → HEADER (site-wide), OR into the
+  page-specific Header injection on each form page. Must run BEFORE the
+  form's Code Block — Header injection is the safe slot. Footer injection
+  runs after Code Blocks and will leave window.lulMountGeoSearch undefined
+  at the moment each form tries to call it.
+
+  Each form's Code Block keeps only its product-specific SCOPES table + a
+  mount call. The duplicated typeahead/dropdown/state-select code lives here.
+
+  Expects these DOM ids inside the form (already present in every form):
+    lul-geo-typeahead    wrapping <div> for input + results list
+    lul-geo-search       <input> the user types into
+    lul-geo-hint         <p> scope-specific help text
+    lul-geo-status       <div> for spinner / no-results / error messages
+    lul-geo-results      <ul> typeahead results
+    lul-state-select     <select> shown when scope=state
+    lul-geo-label        <span> step header label
+
+  Public API on window:
+    lulMountGeoSearch({ apiBase, scopes, onPick, onClear })
+      → { setScope(geoType), reset() }
+
+    scopes: { jurisdiction: {endpoint, hint, label}, county: {...},
+              cbsa: {...}, state: {endpoint: null, hint: '', label} }
+    onPick(geoType, geoId, label): called when buyer picks a result or state
+    onClear(): called when state-select cleared or scope changed
+
+  Also exposes utility helpers reused by other inline form code:
+    window.lulSpinner(msg) → HTML snippet
+    window.lulErrHtml(msg) → HTML snippet
+    window.lulEscHtml(str) → HTML-escaped text
+-->
+<script>
+    (function () {
+        "use strict";
+
+        function spinner(msg) {
+            return '<div class="lul-spinner-wrap"><div class="lul-spinner"></div>' + msg + "</div>";
+        }
+        function errHtml(msg) {
+            return '<div class="lul-msg lul-error"><p>' + msg + "</p></div>";
+        }
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        window.lulSpinner = spinner;
+        window.lulErrHtml = errHtml;
+        window.lulEscHtml = escHtml;
+
+        window.lulMountGeoSearch = function lulMountGeoSearch(opts) {
+            var apiBase = opts.apiBase;
+            var scopes = opts.scopes;
+            var onPick = opts.onPick || function () {};
+            var onClear = opts.onClear || function () {};
+
+            var searchEl = document.getElementById("lul-geo-search");
+            var resultsEl = document.getElementById("lul-geo-results");
+            var statusEl = document.getElementById("lul-geo-status");
+            var hintEl = document.getElementById("lul-geo-hint");
+            var labelEl = document.getElementById("lul-geo-label");
+            var typeaheadEl = document.getElementById("lul-geo-typeahead");
+            var stateSelectEl = document.getElementById("lul-state-select");
+
+            var currentScope = null;
+            var searchTimeout = null;
+            var searchAbort = null;
+            var statesLoaded = false;
+
+            searchEl.addEventListener("input", onGeoSearch);
+            resultsEl.addEventListener("click", onResultClick);
+            stateSelectEl.addEventListener("change", onStateChange);
+
+            function onGeoSearch() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(fetchGeographies, 300);
+            }
+
+            function onResultClick(evt) {
+                var btn = evt.target.closest("button[data-id]");
+                if (!btn) return;
+                var id = parseInt(btn.dataset.id);
+                // Collapse the dropdown and reflect the selection in the search box.
+                // The input handler re-shows the list on the next keystroke.
+                searchEl.value = btn.textContent;
+                resultsEl.style.display = "none";
+                onPick(currentScope, id, btn.textContent);
+            }
+
+            function onStateChange(evt) {
+                var id = parseInt(evt.target.value);
+                if (!id) {
+                    onClear();
+                    return;
+                }
+                var label = evt.target.options[evt.target.selectedIndex].textContent;
+                onPick("state", id, label);
+            }
+
+            function fetchGeographies() {
+                var scope = scopes[currentScope];
+                if (!scope || !scope.endpoint) return;
+                var query = searchEl.value.trim();
+                if (query.length < 2) {
+                    resultsEl.style.display = "none";
+                    statusEl.innerHTML = "";
+                    return;
+                }
+                if (searchAbort) searchAbort.abort();
+                searchAbort = new AbortController();
+                statusEl.innerHTML = spinner("Searching&hellip;");
+                fetch(apiBase + scope.endpoint + "?q=" + encodeURIComponent(query), {
+                    signal: searchAbort.signal,
+                })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error("HTTP " + res.status);
+                        return res.json();
+                    })
+                    .then(function (rows) {
+                        statusEl.innerHTML = "";
+                        if (rows.length === 0) {
+                            resultsEl.style.display = "none";
+                            statusEl.innerHTML =
+                                '<p style="font-size:15px;color:#393348;margin:4px 0 0;">No results for &ldquo;' +
+                                escHtml(query) +
+                                "&rdquo;.</p>";
+                        } else {
+                            populateResults(rows);
+                        }
+                    })
+                    .catch(function (err) {
+                        if (err.name === "AbortError") return;
+                        statusEl.innerHTML = errHtml("Search failed. Please try again.");
+                    });
+            }
+
+            function populateResults(rows) {
+                resultsEl.innerHTML = "";
+                rows.forEach(function (row) {
+                    var li = document.createElement("li");
+                    li.className = "lul-result";
+                    var btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.dataset.id = row.id;
+                    btn.textContent = row.state ? row.name + ", " + row.state : row.name;
+                    li.appendChild(btn);
+                    resultsEl.appendChild(li);
+                });
+                resultsEl.style.display = "";
+            }
+
+            function loadStates() {
+                statusEl.innerHTML = spinner("Loading states&hellip;");
+                fetch(apiBase + "/states/")
+                    .then(function (res) {
+                        if (!res.ok) throw new Error("HTTP " + res.status);
+                        return res.json();
+                    })
+                    .then(function (rows) {
+                        statusEl.innerHTML = "";
+                        rows.forEach(function (row) {
+                            var opt = document.createElement("option");
+                            opt.value = String(row.id);
+                            opt.textContent = row.name;
+                            stateSelectEl.appendChild(opt);
+                        });
+                        statesLoaded = true;
+                    })
+                    .catch(function () {
+                        statusEl.innerHTML = errHtml("Could not load states. Please refresh and try again.");
+                    });
+            }
+
+            function setScope(geoType) {
+                currentScope = geoType;
+                var scope = scopes[geoType];
+                if (!scope) return;
+                if (labelEl && scope.label) labelEl.textContent = scope.label;
+                var isState = geoType === "state";
+                typeaheadEl.style.display = isState ? "none" : "";
+                stateSelectEl.style.display = isState ? "" : "none";
+                if (!isState && hintEl) hintEl.textContent = scope.hint || "";
+                if (isState && !statesLoaded) loadStates();
+                reset();
+            }
+
+            function reset() {
+                searchEl.value = "";
+                resultsEl.innerHTML = "";
+                resultsEl.style.display = "none";
+                statusEl.innerHTML = "";
+                stateSelectEl.value = "";
+            }
+
+            return { setScope: setScope, reset: reset };
+        };
+    })();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var url = "https://landuselabs.com/product-selection";
+        var isDesktop = function () {
+            return window.matchMedia("(min-width: 768px)").matches;
+        };
+
+        var targets = document.querySelectorAll(".header-nav-folder-title");
+        targets.forEach(function (el) {
+            if (el.textContent.trim() === "PRODUCTS") {
+                el.style.cursor = "pointer";
+                el.addEventListener("click", function (e) {
+                    if (isDesktop()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.location.href = url;
+                    }
+                    // mobile: let default toggle behavior run, no override
+                });
+            }
+        });
+    });
+</script>

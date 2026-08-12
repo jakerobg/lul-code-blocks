@@ -1,0 +1,426 @@
+<!--
+  Data Difference — scroll story, split version (3 chapters)
+
+  One sticky, full-bleed stage:
+    - the maps sit behind, cross-fading from chapter to chapter
+    - a single white text panel slides between the left and right half
+  Chapters:
+    1. text left  / map right   (zoneomics_1)
+    2. map left   / text right  (zoneomics_2)
+    3. text left  / map right   (nza_1)
+
+  The panel is one persistent element rather than one per chapter, so the map
+  never ghosts through the white while the sides swap.
+
+  Images are hosted on the Squarespace CDN — paste-ready as is.
+-->
+
+<style>
+    .lul-ss3 {
+        --ls3-header: #393348;
+        --ls3-accent: #e0e5c2;
+        --ls3-panel: #ffffff;
+
+        /* ---- Knobs ---- */
+        --ls3-stage-h: 100svh; /* height of the sticky stage */
+        --ls3-step-h: 130vh; /* scroll distance per chapter (more dwell time) */
+        --ls3-split: 50%; /* width of the white text panel (desktop) */
+        --ls3-text-max: 34ch; /* line length inside the panel */
+        --ls3-pad: clamp(28px, 5vw, 80px); /* padding inside the panel */
+        --ls3-media-h: 46%; /* height of the map once stacked on mobile */
+
+        position: relative;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .lul-ss3 *,
+    .lul-ss3 *::before,
+    .lul-ss3 *::after {
+        box-sizing: border-box;
+    }
+
+    /* ---------- Sticky stage ---------- */
+    .lul-ss3__stage {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: var(--ls3-stage-h, 100svh);
+        overflow: hidden;
+        background: var(--ls3-panel);
+        container-type: inline-size; /* gives the panel cqw to slide by */
+    }
+
+    /* ---------- Maps (cross-faded, each pinned to its own half) ---------- */
+    /* Each map is sized to the half the panel is not covering, so the crop
+       stays close to the image's own proportions instead of zooming in hard. */
+    .lul-ss3__map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: calc(100% - var(--ls3-split, 50%));
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0;
+        transform: scale(1.05);
+        transition:
+            opacity 0.5s ease,
+            transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .lul-ss3__map--left {
+        right: auto;
+        left: 0;
+    }
+    .lul-ss3__map.is-active {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* ---------- The white panel ---------- */
+    .lul-ss3__panel {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: var(--ls3-split, 50%);
+        background: var(--ls3-panel);
+        transform: translateX(0);
+        transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    /* Slide flush to the right edge of the stage (exact at any --ls3-split) */
+    .lul-ss3__panel.is-right {
+        transform: translateX(100%); /* fallback where cqw is unsupported */
+        transform: translateX(calc(100cqw - 100%));
+    }
+
+    /* ---------- Text blocks (stacked inside the panel) ---------- */
+    .lul-ss3__text {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        padding: var(--ls3-pad);
+        opacity: 0;
+        visibility: hidden;
+        /* Outgoing copy clears out quickly so it never blends with the next */
+        transition:
+            opacity 0.25s ease,
+            visibility 0s linear 0.25s;
+    }
+    .lul-ss3__text.is-active {
+        opacity: 1;
+        visibility: visible;
+        transition:
+            opacity 0.25s ease 0.14s,
+            visibility 0s;
+    }
+
+    .lul-ss3__headline {
+        max-width: var(--ls3-text-max, 34ch);
+        margin: 0;
+        font-weight: 500;
+        font-size: clamp(1.15rem, 1.9vw, 1.85rem);
+        line-height: 1.32;
+        letter-spacing: -0.015em;
+        color: var(--ls3-header);
+    }
+
+    /* Each chunk masks itself; the text rises from behind the clipped edge,
+       same reveal used in the industry-page hooks. Chunks are phrase-level
+       (not hard line breaks) so they still wrap cleanly at any width. */
+    .lul-ss3__line {
+        display: block;
+        overflow: hidden;
+        padding: 0.08em 0; /* room for descenders + accent background */
+    }
+    .lul-ss3__reveal {
+        display: block;
+        transform: translateY(115%);
+        transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .lul-ss3__text.is-active .lul-ss3__reveal {
+        transform: translateY(0);
+    }
+    /* Stagger the rise, chunk by chunk (offset past the panel slide) */
+    .lul-ss3__text.is-active .lul-ss3__line--1 .lul-ss3__reveal {
+        transition-delay: 0.16s;
+    }
+    .lul-ss3__text.is-active .lul-ss3__line--2 .lul-ss3__reveal {
+        transition-delay: 0.26s;
+    }
+    .lul-ss3__text.is-active .lul-ss3__line--3 .lul-ss3__reveal {
+        transition-delay: 0.36s;
+    }
+
+    /* Marker-stroke highlight, swept left to right after the chunks land */
+    .lul-ss3__accent {
+        display: inline;
+        background-image: linear-gradient(var(--ls3-accent), var(--ls3-accent));
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-size: 0% 100%;
+        padding: 0 0.08em;
+        font-style: italic;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+        transition: background-size 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .lul-ss3__text.is-active .lul-ss3__accent {
+        background-size: 100% 100%;
+        transition-delay: 0.85s;
+    }
+
+    /* ---------- Chapter progress dots ---------- */
+    /* Lives in the panel, so it travels with it. */
+    .lul-ss3__progress {
+        position: absolute;
+        bottom: var(--ls3-pad);
+        left: var(--ls3-pad);
+        display: flex;
+        gap: 9px;
+        pointer-events: none;
+    }
+    .lul-ss3__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(57, 51, 72, 0.22);
+        transition:
+            background 0.35s ease,
+            transform 0.35s ease;
+    }
+    .lul-ss3__dot.is-active {
+        background: var(--ls3-header);
+        transform: scale(1.35);
+    }
+
+    /* ---------- Scroll triggers ---------- */
+    /* Pulled back over the sticky stage so each step owns one screen of scroll. */
+    .lul-ss3__steps {
+        position: relative;
+        margin-top: -100vh;
+        margin-top: calc(-1 * var(--ls3-stage-h, 100svh));
+        pointer-events: none;
+    }
+    .lul-ss3__step {
+        height: var(--ls3-step-h, 130vh);
+    }
+
+    /* ---------- Stacked layout: map on top, panel below ---------- */
+    @media (max-width: 760px) {
+        .lul-ss3__map,
+        .lul-ss3__map--left {
+            width: 100%;
+            height: var(--ls3-media-h, 46%);
+            inset: 0 0 auto 0;
+        }
+        .lul-ss3__panel,
+        .lul-ss3__panel.is-right {
+            width: 100%;
+            top: var(--ls3-media-h, 46%);
+            transform: none;
+        }
+        .lul-ss3__text {
+            align-items: flex-start;
+            padding-top: clamp(24px, 5vw, 40px);
+        }
+        .lul-ss3__headline {
+            font-size: clamp(1.1rem, 4.6vw, 1.5rem);
+            max-width: none;
+        }
+    }
+
+    /* ---------- No motion: no transitions ---------- */
+    @media (prefers-reduced-motion: reduce) {
+        .lul-ss3__map,
+        .lul-ss3__panel,
+        .lul-ss3__text,
+        .lul-ss3__reveal,
+        .lul-ss3__accent,
+        .lul-ss3__dot {
+            transition: none !important;
+        }
+        .lul-ss3__map {
+            transform: none;
+        }
+    }
+
+    /* ---------- JS disabled / not yet run: show the first chapter ---------- */
+    .lul-ss3:not(.lul-ss3--ready) .lul-ss3__map:first-of-type,
+    .lul-ss3:not(.lul-ss3--ready) .lul-ss3__text:first-of-type {
+        opacity: 1;
+        visibility: visible;
+    }
+    .lul-ss3:not(.lul-ss3--ready) .lul-ss3__map:first-of-type {
+        transform: none;
+    }
+    .lul-ss3:not(.lul-ss3--ready) .lul-ss3__reveal {
+        transform: translateY(0);
+    }
+</style>
+
+<section class="lul-ss3" aria-label="How our zoning data compares">
+    <div class="lul-ss3__stage">
+        <!-- Maps. Each sits in the half its chapter leaves open; add
+             --lul-ss3__map--left for the chapters where the panel is on the right.
+             Tweak object-position to choose which part of a map stays visible. -->
+        <img
+            class="lul-ss3__map"
+            src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/c9cb3bbe-6b7e-45ff-95f1-692c4465407e/zoneomics_1.png?content-type=image%2Fpng"
+            alt="Zoning map from another provider showing fragmented districts with gaps between boundaries"
+        />
+        <img
+            class="lul-ss3__map lul-ss3__map--left"
+            src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/ae91c8b5-d3bf-4f8b-93a6-934618559346/zoneomics_2.png?content-type=image%2Fpng"
+            alt="Zoning map from another provider showing a jurisdiction boundary that overlaps its neighbors"
+        />
+        <img
+            class="lul-ss3__map"
+            src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/0d0cce94-0d3b-4d7c-9bac-61bc7aeb61a0/nza_1.png?content-type=image%2Fpng"
+            alt="National Zoning Atlas map of New York City showing continuous, parcel-accurate zoning districts"
+        />
+
+        <div class="lul-ss3__panel">
+            <!-- Chapter 1 — panel left -->
+            <div class="lul-ss3__text" data-text="0" data-side="left">
+                <h2 class="lul-ss3__headline">
+                    <span class="lul-ss3__line lul-ss3__line--1">
+                        <span class="lul-ss3__reveal">Most prominent zoning providers</span>
+                    </span>
+                    <span class="lul-ss3__line lul-ss3__line--2">
+                        <span class="lul-ss3__reveal">sacrifice quality.</span>
+                    </span>
+                </h2>
+            </div>
+
+            <!-- Chapter 2 — panel right -->
+            <div class="lul-ss3__text" data-text="1" data-side="right">
+                <h2 class="lul-ss3__headline">
+                    <span class="lul-ss3__line lul-ss3__line--1">
+                        <span class="lul-ss3__reveal">This results in</span>
+                    </span>
+                    <span class="lul-ss3__line lul-ss3__line--2">
+                        <span class="lul-ss3__reveal">
+                            <span class="lul-ss3__accent">broken, overlapping boundaries</span>
+                        </span>
+                    </span>
+                    <span class="lul-ss3__line lul-ss3__line--3">
+                        <span class="lul-ss3__reveal">and unreliable data.</span>
+                    </span>
+                </h2>
+            </div>
+
+            <!-- Chapter 3 — panel left -->
+            <div class="lul-ss3__text" data-text="2" data-side="left">
+                <h2 class="lul-ss3__headline">
+                    <span class="lul-ss3__line lul-ss3__line--1">
+                        <span class="lul-ss3__reveal">
+                            Our data is <span class="lul-ss3__accent">triple vetted</span>, ensuring
+                        </span>
+                    </span>
+                    <span class="lul-ss3__line lul-ss3__line--2">
+                        <span class="lul-ss3__reveal">accurate representation of land use.</span>
+                    </span>
+                    <span class="lul-ss3__line lul-ss3__line--3">
+                        <span class="lul-ss3__reveal">
+                            With constant review and data quality checks, our data is ready to fit your needs.
+                        </span>
+                    </span>
+                </h2>
+            </div>
+
+            <div class="lul-ss3__progress" aria-hidden="true">
+                <span class="lul-ss3__dot"></span>
+                <span class="lul-ss3__dot"></span>
+                <span class="lul-ss3__dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty spacers: each one screen of scroll = one chapter -->
+    <div class="lul-ss3__steps" aria-hidden="true">
+        <div class="lul-ss3__step"></div>
+        <div class="lul-ss3__step"></div>
+        <div class="lul-ss3__step"></div>
+    </div>
+</section>
+
+<script>
+    (function () {
+        var roots = document.querySelectorAll(".lul-ss3:not([data-lul-ss3-init])");
+
+        Array.prototype.forEach.call(roots, function (root) {
+            root.setAttribute("data-lul-ss3-init", "1");
+
+            var stage = root.querySelector(".lul-ss3__stage");
+            var panel = root.querySelector(".lul-ss3__panel");
+            var maps = root.querySelectorAll(".lul-ss3__map");
+            var texts = root.querySelectorAll(".lul-ss3__text");
+            var dots = root.querySelectorAll(".lul-ss3__dot");
+            var count = texts.length;
+            var current = -2;
+            var ticking = false;
+
+            function show(index) {
+                if (index === current) return;
+                current = index;
+
+                Array.prototype.forEach.call(maps, function (map, i) {
+                    map.classList.toggle("is-active", i === index);
+                });
+                Array.prototype.forEach.call(texts, function (text, i) {
+                    text.classList.toggle("is-active", i === index);
+                });
+                Array.prototype.forEach.call(dots, function (dot, i) {
+                    dot.classList.toggle("is-active", i === index);
+                });
+                if (texts[index]) {
+                    panel.classList.toggle("is-right", texts[index].getAttribute("data-side") === "right");
+                }
+            }
+
+            // The chapter is derived straight from how far the stage has been
+            // pinned: the pinned distance is split into equal chapters.
+            function update() {
+                ticking = false;
+
+                var rect = root.getBoundingClientRect();
+                var pinned = root.offsetHeight - stage.offsetHeight;
+                if (pinned <= 0) {
+                    show(0);
+                    return;
+                }
+
+                // Hold everything back until the stage is halfway up the screen,
+                // so the first chapter animates in as you scroll into the section.
+                if (rect.top > window.innerHeight * 0.45) {
+                    show(-1);
+                    return;
+                }
+
+                var index = Math.floor((-rect.top / pinned) * count);
+                show(Math.max(0, Math.min(count - 1, index)));
+            }
+
+            function onScroll() {
+                if (ticking) return;
+                ticking = true;
+                window.requestAnimationFrame(update);
+            }
+
+            if (!window.requestAnimationFrame) return; // fall back to the static state
+
+            root.classList.add("lul-ss3--ready");
+            window.addEventListener("scroll", onScroll, { passive: true });
+            window.addEventListener("resize", onScroll);
+            update();
+        });
+    })();
+</script>
