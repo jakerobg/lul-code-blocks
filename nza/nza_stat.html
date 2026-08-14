@@ -1,0 +1,189 @@
+<!--
+  NZA coverage stats — three numbers in Bebas Neue with Arial labels, each
+  number swept by an animated highlight.
+
+  ▶ TO SWAP A VARIABLE: change data-field on that <span>. Nothing in the script
+    needs touching. Available fields from /nza_coverage:
+
+      jurisdictions_covered   jurisdictions_total
+      population_covered      population_total
+      acres_covered           acres_total
+      housing_units_covered   pages_analyzed
+      slices_total            districts_published
+      tracts_covered          tracts_total
+      blockgroups_covered     blockgroups_total
+
+  ▶ TO ADD/REMOVE A STAT: copy or delete a .lul-nza-stat block, then match the
+    column count in grid-template-columns. Spacing between stats is the second
+    value of `gap` on .lul-nza-row.
+
+  ▶ data-fallback is what shows if the API is unreachable, so the page never
+    renders an empty slot. Update it when the real numbers move.
+
+  ▶ COLOURS/SIZE: the vars at the top of .lul-nza-row.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
+
+<style>
+    .lul-nza-row {
+        /* Fixed, not fluid — the number never resizes, it just reflows to one
+           column at the media query below. If you make this much larger, lower
+           that breakpoint too: the longest value ("224,494,683+") is ~4.7em wide
+           in Bebas Neue, so three of them plus the gaps need ~15em of room. */
+        --nza-size: 4rem;
+        --nza-color: #393348; /* number before the highlight passes */
+        --nza-highlight: #00689a;
+        --nza-on-highlight: #ffffff; /* number once the highlight is behind it */
+        --nza-label: #000000;
+
+        display: grid;
+        /* auto, NOT 1fr. With 1fr each column is a full third of the row and the
+           content floats centered inside it, so most of the space between the
+           stats is leftover column — changing `gap` barely moves them. Sizing
+           columns to their content and centering the row makes `gap` literal:
+           the number below IS the distance between the stats. */
+        grid-template-columns: repeat(3, auto);
+        justify-content: center;
+        gap: 28px 56px; /* row gap when stacked | space between columns */
+        align-items: start;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    /* Stacks here rather than shrinking the type. Viewport-based, so allow a
+       little margin over the content width — see --nza-size. */
+    @media (max-width: 920px) {
+        .lul-nza-row {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    .lul-nza-row *,
+    .lul-nza-row *::before,
+    .lul-nza-row *::after {
+        box-sizing: border-box;
+    }
+
+    .lul-nza-stat {
+        text-align: center;
+    }
+
+    /* The number stays INLINE so the highlight hugs the digits rather than the
+       full column width; .lul-nza-stat does the centering. */
+    .lul-nza {
+        --d: 0s; /* per-stat stagger, set on the row below */
+        display: inline;
+        font-family: "Bebas Neue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: var(--nza-size);
+        line-height: 1;
+        letter-spacing: 0.01em;
+        color: var(--nza-color);
+        font-variant-numeric: tabular-nums;
+
+        /* Highlight is a non-repeating swatch grown 0 → full width, so it
+           sweeps left-to-right across the number like a marker stroke. */
+        background-image: linear-gradient(var(--nza-highlight), var(--nza-highlight));
+        background-repeat: no-repeat;
+        background-position: left center;
+        background-size: 0% 100%;
+        padding: 0.04em 0.14em;
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+        transition:
+            background-size 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d),
+            color 0.25s ease calc(var(--d) + 0.45s);
+    }
+    /* .is-lit is added once the number has rendered, so the swatch is sized to
+       the final value rather than the placeholder. */
+    .lul-nza.is-lit {
+        background-size: 100% 100%;
+        color: var(--nza-on-highlight);
+    }
+    .lul-nza-row > :nth-child(2) .lul-nza {
+        --d: 0.12s;
+    }
+    .lul-nza-row > :nth-child(3) .lul-nza {
+        --d: 0.24s;
+    }
+
+    .lul-nza-label {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        line-height: 1.5;
+        color: var(--nza-label);
+        margin: 25px auto 0; /* gap between the number and its label */
+        max-width: 22ch;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .lul-nza {
+            transition: none;
+        }
+    }
+</style>
+
+<div class="lul-nza-row">
+    <div class="lul-nza-stat">
+        <span class="lul-nza" data-field="jurisdictions_covered" data-fallback="11015">11,015+</span>
+        <p class="lul-nza-label">Jurisdictions Published to the National Zoning Atlas</p>
+    </div>
+
+    <div class="lul-nza-stat">
+        <span class="lul-nza" data-field="pages_analyzed" data-fallback="1337510">1,337,510+</span>
+        <p class="lul-nza-label">Pages of Zoning Codes Read</p>
+    </div>
+
+    <div class="lul-nza-stat">
+        <span class="lul-nza" data-field="population_covered" data-fallback="224494683">224,494,683+</span>
+        <p class="lul-nza-label">People Living in Published Jurisdictions</p>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // One request per page no matter how many copies of this block are on
+        // it — the first to run owns the promise, the rest await the same one.
+        window.__lulNza =
+            window.__lulNza ||
+            fetch("https://api.zoningatlas.org/nza_coverage", {
+                headers: { Accept: "application/vnd.pgrst.object+json" },
+            })
+                .then(function (r) {
+                    if (!r.ok) throw new Error("HTTP " + r.status);
+                    return r.json();
+                })
+                // PostgREST returns a bare object with the Accept header above and
+                // a one-item array without it. Accept either.
+                .then(function (d) {
+                    return Array.isArray(d) ? d[0] : d;
+                });
+
+        var nodes = document.querySelectorAll(".lul-nza:not([data-lul-nza-done])");
+        if (!nodes.length) return;
+
+        function render(el, value) {
+            el.setAttribute("data-lul-nza-done", "1");
+            // Round: tracts_covered / blockgroups_covered come back fractional.
+            el.textContent = Number(value).toLocaleString("en-US", { maximumFractionDigits: 0 }) + "+";
+            // Next frame, so the browser paints the 0%-width swatch before the
+            // class change animates it — set in the same frame it would jump.
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    el.classList.add("is-lit");
+                });
+            });
+        }
+
+        window.__lulNza
+            .then(function (data) {
+                nodes.forEach(function (el) {
+                    var v = data[el.dataset.field];
+                    render(el, v == null ? el.dataset.fallback : v);
+                });
+            })
+            .catch(function () {
+                // Leave the hardcoded fallback in place rather than blanking it.
+                nodes.forEach(function (el) {
+                    render(el, el.dataset.fallback);
+                });
+            });
+    })();
+</script>

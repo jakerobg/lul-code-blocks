@@ -26,7 +26,7 @@
     says so instead of failing silently.
 
   ▶ EDIT THESE (product decisions, not derived from the API):
-      PRESETS          — what "Residential Basics" / "Full Regulatory" select
+      PRESETS          — what "Basic Regulatory" / "Full Regulatory" select
       REG_GROUP_LABELS — regulation_type → accordion heading
       USE_TYPE_LABELS  — use_type → chip label (+ tooltip for acronyms)
 -->
@@ -71,6 +71,15 @@
         /* Accent tints */
         --lul-accent-soft: rgba(var(--lul-accent-rgb), 0.08); /* hover wash, info tile */
         --lul-accent-hover: rgba(var(--lul-accent-rgb), 0.5); /* hover borders */
+
+        /* ── Layout knob ──
+           How far below the top of the window the "Your Selection" card parks
+           when it sticks. Squarespace's header is fixed and sits ABOVE this
+           block, so a small value leaves the card hidden behind it. Raise this
+           until the card clears your header — it wants to be roughly the header
+           height plus a little breathing room. Headers that shrink on scroll
+           should be measured in their SHRUNK state. */
+        --lul-sticky-top: 120px;
 
         /* Error state */
         --lul-error-bg: #fff3f3;
@@ -510,14 +519,6 @@
         color: var(--lul-ink);
         opacity: 0.7;
     }
-    .lul-sl__chip-count {
-        color: var(--lul-muted);
-        font-weight: 400;
-        margin-left: 5px;
-    }
-    .lul-sl__chip[aria-pressed="true"] .lul-sl__chip-count {
-        color: var(--lul-accent);
-    }
     .lul-sl__chip--ghost {
         border-style: dashed;
         color: var(--lul-muted);
@@ -679,7 +680,7 @@
     /* ── Sidebar ── */
     .lul-sl__side {
         position: sticky;
-        top: 20px;
+        top: var(--lul-sticky-top);
         background: var(--lul-surface);
         border: 1px solid var(--lul-accent);
         border-radius: 0;
@@ -707,25 +708,6 @@
         font-weight: 400;
         color: var(--lul-muted);
         margin-left: 6px;
-    }
-    .lul-sl__calc {
-        margin: 10px 0 0;
-        font-size: 12.5px;
-    }
-    .lul-sl__calc summary {
-        cursor: pointer;
-        color: var(--lul-ink);
-        text-decoration: underline;
-        text-underline-offset: 2px;
-        list-style: none;
-    }
-    .lul-sl__calc summary::-webkit-details-marker {
-        display: none;
-    }
-    .lul-sl__calc p {
-        color: var(--lul-muted);
-        line-height: 1.55;
-        margin: 8px 0 0;
     }
     .lul-sl__side-rule {
         border: 0;
@@ -997,7 +979,10 @@
 
                         <p class="lul-sl__hint lul-sl__hint--dict">
                             Every order includes all base variables listed in our
-                            <a href="https://www.landuselabs.com/data-dictionary" target="_blank" rel="noopener"
+                            <a
+                                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1642345933#gid=1642345933"
+                                target="_blank"
+                                rel="noopener"
                                 >Data Dictionary</a
                             >
                             at no extra charge — the options below are additional, optional variables.
@@ -1017,14 +1002,6 @@
                     <span class="lul-sl__price" id="lul-price">$0</span
                     ><span class="lul-sl__price-unit">/ one-time download</span>
                 </div>
-                <details class="lul-sl__calc">
-                    <summary>How is this calculated?</summary>
-                    <p>
-                        Price is based on the number of Slices in your geography and the number of variables you select,
-                        with an adjustment for population. Totals are rounded up to the nearest $100. Pick a geography
-                        and at least one variable for a live quote.
-                    </p>
-                </details>
 
                 <hr class="lul-sl__side-rule" />
 
@@ -1105,7 +1082,7 @@
         var PRESETS = [
             {
                 id: "residential-basics",
-                label: "Residential Basics",
+                label: "Basic Regulatory Package",
                 slugs: ["type", "family1_treatment", "family2_treatment", "family3_treatment", "family4_treatment"],
             },
             { id: "full", label: "Full Regulatory Package", note: "under review", all: true },
@@ -1150,10 +1127,12 @@
             var el = $(id);
             if (el) el.classList.toggle("lul-hidden", !visible);
         }
-        function fieldCount(sets) {
-            return sets.reduce(function (n, vs) {
-                return n + vs.fields.length;
-            }, 0);
+        // Counts CHECKBOX ROWS, not underlying fields. One row is one variable
+        // set — and a set can hold more than one field (e.g. Min. Lot Size is
+        // Minimum + Maximum). Counting fields made 2-Family read "0 / 5" against
+        // 4 visible checkboxes. The set is also the unit pricing bills on.
+        function rowCount(sets) {
+            return sets.length;
         }
 
         // highlight step 1, 2 or 3
@@ -1392,15 +1371,11 @@
             wrap.innerHTML = useTypesInOrder()
                 .map(function (u) {
                     var meta = USE_TYPE_LABELS[u] || {};
-                    var n = fieldCount(setsForUseType(u));
                     return (
                         '<button type="button" class="lul-sl__chip" data-use="' +
                         escHtml(u) +
                         '" aria-pressed="false">' +
                         escHtml(useTypeLabel(u)) +
-                        '<span class="lul-sl__chip-count">(' +
-                        n +
-                        ")</span>" +
                         (meta.help ? '<span class="lul-sl__help" title="' + escHtml(meta.help) + '">?</span>' : "") +
                         "</button>"
                     );
@@ -1413,13 +1388,21 @@
                 var u = btn.dataset.use;
                 if (_useTypes.has(u)) {
                     _useTypes.delete(u);
+                    _openGroups.delete(u);
                     // Deselecting a use type must also drop its variables, or the
                     // price would include rows the buyer can no longer see.
                     setsForUseType(u).forEach(function (vs) {
                         _selected.delete(vs.slug);
                     });
                 } else {
+                    // Turning a chip on selects everything in it and opens the
+                    // group, so the effect is visible rather than just revealing
+                    // an empty checklist to work through.
                     _useTypes.add(u);
+                    _openGroups.add(u);
+                    setsForUseType(u).forEach(function (vs) {
+                        _selected.add(vs.slug);
+                    });
                 }
                 buildChecklist();
                 syncUseTypeChips();
@@ -1454,8 +1437,8 @@
             host.innerHTML = uses
                 .map(function (use) {
                     var members = setsForUseType(use);
-                    var total = fieldCount(members);
-                    var chosen = fieldCount(
+                    var total = rowCount(members);
+                    var chosen = rowCount(
                         members.filter(function (vs) {
                             return _selected.has(vs.slug);
                         }),
@@ -1618,13 +1601,13 @@
         function updateGroupCounts() {
             document.querySelectorAll("#lul-checklist .lul-sl__group-btn").forEach(function (btn) {
                 var members = setsForUseType(btn.dataset.group);
-                var chosen = fieldCount(
+                var chosen = rowCount(
                     members.filter(function (vs) {
                         return _selected.has(vs.slug);
                     }),
                 );
                 btn.querySelector(".lul-sl__group-meta").innerHTML =
-                    chosen + " / " + fieldCount(members) + ' selected<span class="lul-sl__caret"></span>';
+                    chosen + " / " + rowCount(members) + ' selected<span class="lul-sl__caret"></span>';
                 // Any variable ticked fills the bar like an active chip.
                 btn.closest(".lul-sl__group-head").classList.toggle("is-on", chosen > 0);
             });
@@ -1676,11 +1659,11 @@
         // ── Sidebar ──────────────────────────────────────────────────────────
 
         function refreshSidebar() {
-            var total = _variableSets ? fieldCount(_variableSets) : 0;
+            var total = _variableSets ? rowCount(_variableSets) : 0;
             var selectedSets = (_variableSets || []).filter(function (vs) {
                 return _selected.has(vs.slug);
             });
-            var chosen = fieldCount(selectedSets);
+            var chosen = rowCount(selectedSets);
 
             $("lul-count").textContent = chosen + " / " + total + " variable" + (total === 1 ? "" : "s") + " selected";
 
@@ -1721,6 +1704,11 @@
 
             _price = null;
             $("lul-price").textContent = "…";
+            // Re-quoting means the order changed, so the licensing agreement has
+            // to be accepted again for the new order — same as the old form. It
+            // adds a click, but it stops a purchase going through on an
+            // acceptance the buyer made for a different selection.
+            $("lul-terms").checked = false;
             updateBuyButton();
 
             // Cancel any in-flight quote — a fast-clicking buyer can outpace the
