@@ -1,0 +1,375 @@
+<!--
+  PRODUCT GRID — six cards, 2 rows x 3 columns (Squarespace Code Block).
+
+  Splash-page counterpart to product_pages/product_table.html. Same card
+  design (faint keyline, radius 0, category pill, subgrid row alignment),
+  with these differences:
+
+    • Lays out 2x3 instead of one row of five.
+    • The "Best for:" eyebrow + use-case line is replaced by the product
+      DESCRIPTION — the same copy used in explore_products_NEW.html, so
+      the two blocks stay in sync. Change it in both places.
+    • No Unit / Format specs — just description, then pricing.
+    • Secondary (outlined) buttons rather than the filled accent.
+    • A 6TH card at the end points at the product selector quiz instead
+      of a product page.
+
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, 2 across under 1016px, 1 under 668px.
+  ▶ All classes are prefixed lul-pgrid- / --lulg- so this can share a page
+    with product_table.html without either one clobbering the other.
+-->
+
+<section class="lul-pgrid" aria-label="Explore products">
+    <style>
+        .lul-pgrid {
+            --lulg-ink: #393348;
+            --lulg-accent: #594496;
+            --lulg-accent-dark: #3f2e70;
+            --lulg-btn-hover: #f9f9f9; /* secondary button hover fill */
+            --lulg-body: rgba(57, 51, 72, 0.75);
+            --lulg-border: rgba(57, 51, 72, 0.15); /* card keyline — faint, matches the other blocks */
+            --lulg-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+            --lulg-eyebrow: rgba(57, 51, 72, 0.6); /* same grey as the specs eyebrow */
+            --lulg-gap: 28px; /* space BETWEEN cards */
+            --lulg-card-pad: 26px 24px 24px; /* inner card padding */
+            /* Card width is FIXED at this until the block can't fit three of
+               them; the grid centers in whatever space is left rather than
+               stretching to the edge. 3 * 320 + 2 * 28 = 1016px of block width
+               for a full row. Change --lulg-card-w to resize every card — and
+               update the two @container breakpoints below to match, since CSS
+               can't compute a breakpoint from a variable. */
+            --lulg-card-w: 350px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--lulg-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 32px 20px;
+            container-type: inline-size;
+            container-name: lulpgrid;
+        }
+        .lul-pgrid *,
+        .lul-pgrid *::before,
+        .lul-pgrid *::after {
+            box-sizing: border-box;
+        }
+
+        /* ── GRID ──
+           Real grid + subgrid, not flex. Flex would make every card the same
+           HEIGHT, but each card's internal sections would still stack
+           independently, so "PRICING MODEL" would land at a different height
+           per card (the descriptions differ in line count). With subgrid, all
+           cards on a row share one set of row tracks, so every internal
+           boundary lines up across the row. */
+        .lul-pgrid__grid {
+            display: grid;
+            /* Fixed-width tracks, not 1fr — cards stay --lulg-card-w wide on a
+               wide block instead of stretching to the edge. minmax(0, …) lets
+               them shrink once the block is narrower than the row needs, so
+               they never overflow. justify-content centers the row in the
+               leftover space. */
+            grid-template-columns: repeat(3, minmax(0, var(--lulg-card-w)));
+            justify-content: center;
+            gap: var(--lulg-gap);
+        }
+
+        .lul-pgrid__card {
+            /* 5 children: pill, title, description, price block, button */
+            grid-row: span 5;
+            display: grid;
+            grid-template-rows: subgrid;
+            /* A subgrid inherits the parent's gap, which would add --lulg-gap
+               between every row INSIDE the card on top of each element's own
+               margin. Spacing here is margin-driven, so zero it out. */
+            row-gap: 0;
+            min-width: 0;
+            background: #ffffff;
+            border: 1px solid var(--lulg-border);
+            border-radius: 0;
+            box-shadow: var(--lulg-shadow);
+            padding: var(--lulg-card-pad);
+        }
+
+        /* Browsers without subgrid fall back to flex: cards are equal height
+           and the button sits on a shared baseline, but the inner rules may
+           not align perfectly. */
+        @supports not (grid-template-rows: subgrid) {
+            .lul-pgrid__grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .lul-pgrid__card {
+                /* fixed width here too — grow:0 so they don't stretch to fill
+                   the row; wrapping is what changes the column count. */
+                flex: 0 1 var(--lulg-card-w);
+                display: flex;
+                flex-direction: column;
+            }
+            .lul-pgrid__desc {
+                flex-grow: 1;
+            }
+        }
+
+        /* ── CATEGORY PILL ── */
+        .lul-pgrid__pill {
+            justify-self: start; /* grid equivalent of align-self: flex-start */
+            align-self: start;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            line-height: 1;
+            padding: 7px 12px;
+            border-radius: 999px;
+            margin-bottom: 14px;
+        }
+        .lul-pgrid__pill--document {
+            background: #e2def2;
+            color: #453a72;
+        }
+        .lul-pgrid__pill--vector {
+            background: #d8deec;
+            color: #33406b;
+        }
+        .lul-pgrid__pill--raster {
+            background: #eaddc7;
+            color: #6b5330;
+        }
+        .lul-pgrid__pill--summary {
+            background: #e0e5c2;
+            color: #4a5620;
+        }
+
+        .lul-pgrid__title {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            line-height: 1.2;
+            color: var(--lulg-ink);
+            margin: 0 0 14px;
+        }
+
+        /* ── DESCRIPTION ──
+           Copy matches explore_products_NEW.html. Replaces the "Best for:"
+           eyebrow + use-case line from product_table.html. */
+        .lul-pgrid__desc {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--lulg-body);
+            margin: 0 0 30px;
+        }
+
+        /* ── PRICING ── uppercase eyebrow over a bold value */
+        .lul-pgrid__pricewrap {
+            margin-bottom: 13px;
+        }
+        .lul-pgrid__priceLabel {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--lulg-eyebrow);
+            margin: 0 0 3px;
+        }
+        .lul-pgrid__price {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--lulg-ink);
+            margin: 0;
+        }
+        /* Secondary button style — outlined, dark ink label, same as
+           BUTTONS/BUTTONS_PRIMARY_SECONDARY.html. */
+        .lul-pgrid__btn {
+            display: block;
+            align-self: end;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            padding: 8px 14px;
+            border: 1px solid var(--lulg-ink);
+            border-radius: 0;
+            background: transparent;
+            color: var(--lulg-ink);
+            text-decoration: none;
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+        .lul-pgrid__btn:hover {
+            background: var(--lulg-btn-hover);
+        }
+        /* Squarespace link-color override safety */
+        .lul-pgrid a,
+        .lul-pgrid a:visited {
+            text-decoration: none;
+        }
+
+        /* ── SELECTOR CARD (the 6th) ──
+           Grey fill instead of white, an icon + label where the pill goes, and
+           no pricing — but it keeps the same 5 row tracks so its button still
+           lands on the row's shared baseline. */
+        .lul-pgrid__card--selector {
+            background: #efedec; /* standard LUL grey */
+            border-color: var(--lulg-border);
+        }
+        .lul-pgrid__selectorLabel {
+            justify-self: start;
+            align-self: start;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            line-height: 1;
+            color: var(--lulg-ink);
+            /* pill has 7px vertical padding; match it so the titles line up */
+            padding: 7px 0;
+            margin-bottom: 14px;
+        }
+        .lul-pgrid__selectorLabel svg {
+            width: 15px;
+            height: 15px;
+            flex: none;
+        }
+        /* Empty spacer that occupies the price row on the selector card, so
+           its button still lands on the row's shared baseline. */
+        .lul-pgrid__pricewrap--empty {
+            margin-bottom: 13px;
+        }
+
+        /* ── RESPONSIVE ──
+           Column count changes on the GRID, not flex-basis on the card. Each
+           wrapped band gets its own row tracks, so cards stay aligned with the
+           others on their row at every breakpoint. */
+        /* 3 across needs 3*320 + 2*28 = 1016px; 2 across needs 668px. Cards
+           keep their fixed width in every tier and the row stays centered —
+           they only shrink below the last breakpoint. */
+        @container lulpgrid (max-width: 1015px) {
+            .lul-pgrid__grid {
+                grid-template-columns: repeat(2, minmax(0, var(--lulg-card-w)));
+            }
+        }
+        @container lulpgrid (max-width: 667px) {
+            .lul-pgrid__grid {
+                grid-template-columns: minmax(0, var(--lulg-card-w));
+            }
+        }
+        /* Fallback for browsers without container queries (pre-2023): fall
+           back to viewport breakpoints so the block still reflows. */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 1080px) {
+                .lul-pgrid__grid {
+                    grid-template-columns: repeat(2, minmax(0, var(--lulg-card-w)));
+                }
+            }
+            @media (max-width: 720px) {
+                .lul-pgrid__grid {
+                    grid-template-columns: minmax(0, var(--lulg-card-w));
+                }
+            }
+        }
+    </style>
+
+    <div class="lul-pgrid__grid">
+        <!-- ══ PARCEL REPORTS ══ -->
+        <article class="lul-pgrid__card" data-product="reports">
+            <span class="lul-pgrid__pill lul-pgrid__pill--document">Document</span>
+            <h4 class="lul-pgrid__title">Parcel Reports</h4>
+            <p class="lul-pgrid__desc">
+                On-demand reports summarizing zoning rules for 90+ million individual parcels across the country.
+            </p>
+            <div class="lul-pgrid__pricewrap">
+                <p class="lul-pgrid__priceLabel">Pricing model</p>
+                <p class="lul-pgrid__price">$250 per report</p>
+            </div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/reports">Explore Reports</a>
+        </article>
+
+        <!-- ══ ZONING DISTRICTS ══ -->
+        <article class="lul-pgrid__card" data-product="districts">
+            <span class="lul-pgrid__pill lul-pgrid__pill--vector">GIS vector layer</span>
+            <h4 class="lul-pgrid__title">Zoning Districts</h4>
+            <p class="lul-pgrid__desc">
+                GIS layers showing regulatory particulars for each zoning district in a selected geography.
+            </p>
+            <div class="lul-pgrid__pricewrap">
+                <p class="lul-pgrid__priceLabel">Pricing model</p>
+                <p class="lul-pgrid__price">Per-district, per-variable pricing</p>
+            </div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/districts">Explore Districts</a>
+        </article>
+
+        <!-- ══ ZONING RASTERS ══ -->
+        <article class="lul-pgrid__card" data-product="rasters">
+            <span class="lul-pgrid__pill lul-pgrid__pill--raster">GIS raster layer</span>
+            <h4 class="lul-pgrid__title">Zoning Rasters</h4>
+            <p class="lul-pgrid__desc">
+                30x30 meter grid cells that standardize residential and nonresidential uses for high-level analysis.
+            </p>
+            <div class="lul-pgrid__pricewrap">
+                <p class="lul-pgrid__priceLabel">Pricing model</p>
+                <p class="lul-pgrid__price">Per-acreage, per-category pricing</p>
+            </div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/rasters">Explore Rasters</a>
+        </article>
+
+        <!-- ══ ZONING SLICES ══ -->
+        <article class="lul-pgrid__card" data-product="slices">
+            <span class="lul-pgrid__pill lul-pgrid__pill--vector">GIS vector layer</span>
+            <h4 class="lul-pgrid__title">Zoning Slices</h4>
+            <p class="lul-pgrid__desc">
+                GIS layers showing regulatory outcomes computed after combining base and overlay districts.
+            </p>
+            <div class="lul-pgrid__pricewrap">
+                <p class="lul-pgrid__priceLabel">Pricing model</p>
+                <p class="lul-pgrid__price">Per-slice, per-variable pricing</p>
+            </div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/slices">Explore Slices</a>
+        </article>
+
+        <!-- ══ ZONING TABLES ══ -->
+        <article class="lul-pgrid__card" data-product="tables">
+            <span class="lul-pgrid__pill lul-pgrid__pill--summary">Summary data</span>
+            <h4 class="lul-pgrid__title">Zoning Tables</h4>
+            <p class="lul-pgrid__desc">
+                Statistics summarizing zoning, housing, and demographic conditions at various geographic levels.
+            </p>
+            <div class="lul-pgrid__pricewrap">
+                <p class="lul-pgrid__priceLabel">Pricing model</p>
+                <p class="lul-pgrid__price">Per-geographic unit pricing</p>
+            </div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/tables">Explore Tables</a>
+        </article>
+
+        <!-- ══ PRODUCT SELECTOR (not a product — points at the quiz) ══ -->
+        <article class="lul-pgrid__card lul-pgrid__card--selector" data-product="selector">
+            <span class="lul-pgrid__selectorLabel">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6" />
+                    <path
+                        d="M7.8 7.6a2.2 2.2 0 114 1.3c-.7.8-1.6 1.1-1.6 2.1"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                    />
+                    <circle cx="10.1" cy="13.9" r="0.9" fill="currentColor" />
+                </svg>
+                Product selector
+            </span>
+            <h4 class="lul-pgrid__title">We're Here to Help</h4>
+            <p class="lul-pgrid__desc">
+                With just a few questions, we can point you to the product we think best meets your needs.
+            </p>
+            <div class="lul-pgrid__pricewrap lul-pgrid__pricewrap--empty" aria-hidden="true"></div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/product-selection">Take the Quiz</a>
+        </article>
+    </div>
+</section>

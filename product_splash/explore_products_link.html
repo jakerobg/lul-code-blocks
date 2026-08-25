@@ -1,0 +1,126 @@
+<!--
+  EXPLORE PRODUCTS — jump link (Squarespace Code Block).
+
+  A borderless, ghost-style link in the uppercase eyebrow treatment with a
+  downward chevron stacked beneath it. Grey at rest, primary purple on
+  hover/focus — same idea as .lul-btn--ghost in product_selector.html,
+  which is transparent and shifts colour rather than fill.
+
+  ▶ TARGET: href="#products". Point it at whatever anchor the product grid
+    sits on — in Squarespace that's the section's Anchor Link ID (set in
+    the section's settings), entered there WITHOUT the "#".
+  ▶ COLOURS/SIZE: the vars at the top of .lul-explore.
+  ▶ The chevron drifts down a few pixels on hover and breathes gently at
+    rest; both are skipped under prefers-reduced-motion.
+-->
+<div class="lul-explore">
+    <style>
+        .lul-explore {
+            --lulx-rest: rgba(57, 51, 72, 0.6); /* grey at rest — the eyebrow grey */
+            --lulx-hover: #594496; /* primary purple on hover */
+            --lulx-size: 13px; /* label size */
+            --lulx-tracking: 0.14em; /* label letter-spacing */
+            --lulx-chevron: 22px; /* chevron width */
+            --lulx-gap: 10px; /* space between label and chevron */
+            --lulx-pad: 14px 10px; /* click target padding */
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center; /* change to flex-start to left-align */
+            padding: 8px 0;
+        }
+        .lul-explore *,
+        .lul-explore *::before,
+        .lul-explore *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-explore__link {
+            display: inline-flex;
+            flex-direction: column; /* chevron sits BELOW the label */
+            align-items: center;
+            gap: var(--lulx-gap);
+            padding: var(--lulx-pad);
+            background: transparent;
+            border: none;
+            color: var(--lulx-rest);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.25s ease;
+        }
+        /* Squarespace link-colour override safety */
+        .lul-explore a.lul-explore__link,
+        .lul-explore a.lul-explore__link:visited {
+            color: var(--lulx-rest);
+            text-decoration: none;
+        }
+        .lul-explore a.lul-explore__link:hover,
+        .lul-explore a.lul-explore__link:focus-visible {
+            color: var(--lulx-hover);
+        }
+        .lul-explore__link:focus-visible {
+            outline: 2px solid var(--lulx-hover);
+            outline-offset: 4px;
+        }
+
+        /* uppercase eyebrow treatment */
+        .lul-explore__label {
+            font-size: var(--lulx-size);
+            font-weight: 700;
+            letter-spacing: var(--lulx-tracking);
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .lul-explore__chevron {
+            width: var(--lulx-chevron);
+            height: auto;
+            display: block;
+            /* colour follows the link via currentColor */
+            transition: transform 0.25s ease;
+        }
+        /* gentle idle bob, so it reads as "there's more below" */
+        @media (prefers-reduced-motion: no-preference) {
+            .lul-explore__chevron {
+                animation: lulx-bob 2.4s ease-in-out infinite;
+            }
+            .lul-explore__link:hover .lul-explore__chevron,
+            .lul-explore__link:focus-visible .lul-explore__chevron {
+                animation: none; /* settle, then hold the nudged position */
+                transform: translateY(4px);
+            }
+        }
+        @keyframes lulx-bob {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(3px);
+            }
+        }
+    </style>
+
+    <a class="lul-explore__link" href="#products">
+        <span class="lul-explore__label">Explore Products</span>
+        <svg
+            class="lul-explore__chevron"
+            viewBox="0 0 24 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+        >
+            <path
+                d="M2 2l10 10L22 2"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+    </a>
+</div>

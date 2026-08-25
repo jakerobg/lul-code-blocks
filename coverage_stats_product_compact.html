@@ -1,79 +1,131 @@
 <!--
-  Coverage Stats — four square stat cards (Squarespace Code Block).
-  Big count-up number fills each card; a smaller muted subheader sits
-  beneath it. Numbers tick up from 0 → target the first time the block
-  scrolls into view. Values come live from the zoning-atlas coverage API.
+  Coverage Stats — PRODUCT / COMPACT (Squarespace Code Block).
 
-  ▶ CONFIG (top of the <script> below): SELECTED lists the 4 cards. Each
+  Root-directory version of product_pages/coverage_stats_PRODUCT.html:
+  big count-up number with a small uppercase label above it, on a white
+  card. Numbers tick up from 0 → target the first time the block scrolls
+  into view. Values come live from the zoning-atlas coverage API.
+
+  Differences from the PRODUCT original:
+    • Everything is a little SMALLER and CLOSER TOGETHER — sized for a
+      narrow code block (see the TWEAKABLE SIZING block below).
+    • Cards are back: white tile + keyline + shadow, same treatment as
+      coverage_stats.html. The band behind them is transparent by default
+      — set --lulp-bg to #393348 for the PRODUCT original's dark band.
+    • Two layouts only: 4 ACROSS on one line when the block is wide
+      enough, otherwise 2x2. It NEVER drops to a single column — on a very
+      narrow block the 2x2 cards shrink instead. See COL_STEPS.
+    • Layout is measured off the BLOCK's own width (ResizeObserver), the
+      same approach as coverage_stats.html in this folder — not off the
+      viewport — so it reflows to the code block it's dropped into.
+
+  ▶ CONFIG (top of the <script> below): SELECTED lists the cards. Each
     is either a metric key (fetched live from METRICS) or a hardcoded
     { value, label } card.
 
-  Self-contained; all classes prefixed lul-cov- to avoid collisions.
+  All classes/vars are prefixed lul-covp- / --lulp- so this can share a
+  page with the other coverage_stats blocks without clobbering them.
 -->
-<section class="lul-cov" aria-label="Data coverage statistics">
+<section class="lul-covp" aria-label="Data coverage statistics">
     <style>
-        .lul-cov {
-            --lul-header: #594496;
-            --lul-card: #ffffff; /* grey card, matches research-band feel */
-            --lul-sub: #393348;
+        .lul-covp {
+            /* ── COLOUR ──────────────────────────────────────────────────
+               Cards match coverage_stats.html: white tile, dark text.
+               --lulp-bg is the band BEHIND the cards; set it to #393348 for
+               the dark band the PRODUCT original used. */
+            --lulp-bg: transparent;
+            --lulp-card-bg: #ffffff;
+            --lulp-num-color: #594496;
+            --lulp-label-color: #393348;
+            --lulp-card-border: 1px solid rgba(57, 51, 72, 0.3);
+            --lulp-card-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
+
+            /* ── TWEAKABLE SIZING ────────────────────────────────────────
+               Tuned down from the PRODUCT original (values in comments)
+               for a smaller code block. Everything worth nudging is here. */
+            --lulp-card-w: 150px; /* column width (was 180px) */
+            --lulp-gap-x: 16px; /* space BETWEEN columns (was 25px) */
+            --lulp-gap-y: 18px; /* space BETWEEN rows (was 25px) */
+            --lulp-num-size: 2.2rem; /* big number (was 2.9rem) */
+            --lulp-label-size: 11px; /* uppercase label (was 12px) */
+            --lulp-num-gap: 6px; /* label → number gap */
+            --lulp-card-pad-top: 16px; /* card padding: above the label */
+            --lulp-card-pad-x: 16px; /* card padding: left + right */
+            --lulp-card-pad-bottom: 16px; /* card padding: below the number */
+            --lulp-card-min-h: 0px; /* height floor; 0 = card hugs its content */
+            --lulp-band-pad-y: 16px; /* space above/below the whole band (was 20px) */
+
+            /* ── SMALL-BLOCK STEP DOWN ───────────────────────────────────
+               Below --lulp-small-at the type drops one stop so a long number
+               (e.g. 1,261,957 → 1.3M+) doesn't bleed past the card edge.
+               Still 2x2 — this only changes the type and side padding. */
+            --lulp-small-at: 300px; /* block width that triggers the step down */
+            --lulp-num-size-sm: 1.7rem; /* number when small (from 2.2rem) */
+            --lulp-label-size-sm: 10px; /* label when small (from 11px) */
+            --lulp-card-pad-x-sm: 12px; /* side padding when small (from 16px) */
+            /* ─────────────────────────────────────────────────────────── */
+
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: var(--lul-header);
+            color: var(--lulp-num-color);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
-            padding: 20px 0;
+            padding: var(--lulp-band-pad-y) 0;
+            background: var(--lulp-bg);
             /* never let the block paint outside its Squarespace container */
             overflow-x: clip;
         }
-        .lul-cov *,
-        .lul-cov *::before,
-        .lul-cov *::after {
+        .lul-covp *,
+        .lul-covp *::before,
+        .lul-covp *::after {
             box-sizing: border-box;
         }
 
-        .lul-cov__grid {
+        .lul-covp__grid {
             display: grid;
-            /* Cards are 180px wide and wrap to the next row instead of
-               stretching to fill. --lul-cols is set by the ResizeObserver in
-               the script below (4 / 2 / 1) from the BLOCK's measured width.
-               minmax(0, 180px) is the safety net: if the block is ever
-               narrower than the row needs, tracks shrink rather than
-               overflowing past the code block's edge. */
-            grid-template-columns: repeat(var(--lul-cols, 1), minmax(0, 180px));
-            justify-content: center; /* centers the row of cards in the block */
-            gap: 25px;
+            /* Either 4 across (one line, on a wide block) or 2x2 — never 1
+               column. --lulp-cols is set by the ResizeObserver in the script
+               below from the BLOCK's measured width. minmax(0, …) is the
+               safety net: on a very narrow block the two tracks SHRINK, so it
+               stays 2x2 instead of overflowing past the code block's edge. */
+            grid-template-columns: repeat(var(--lulp-cols, 2), minmax(0, var(--lulp-card-w)));
+            justify-content: center;
+            column-gap: var(--lulp-gap-x);
+            row-gap: var(--lulp-gap-y);
             width: 100%;
             max-width: 100%;
-            margin-inline: auto;
         }
 
-        .lul-cov__card {
-            background: var(--lul-card);
+        /* White tile, same treatment as coverage_stats.html */
+        .lul-covp__card {
+            background: var(--lulp-card-bg);
+            border: var(--lulp-card-border);
+            box-shadow: var(--lulp-card-shadow);
             border-radius: 0;
-            padding: 25px 20px 25px 20px;
+            padding: var(--lulp-card-pad-top) var(--lulp-card-pad-x) var(--lulp-card-pad-bottom);
+            min-height: var(--lulp-card-min-h);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            min-height: 150px; /* taller card -> bigger number-to-text gap */
-            box-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
+            /* Label and number are both flush left inside the card, so the
+               label's left edge lines up with the first digit. The grid still
+               centers the row of cards as a whole. */
             text-align: left;
             align-items: flex-start;
-            border: solid 1px rgba(57, 51, 72, 0.3);
         }
 
-        .lul-cov__num {
+        .lul-covp__num {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-weight: 400;
-            font-size: 2.9rem;
+            font-size: var(--lulp-num-size);
             line-height: 1;
             letter-spacing: -0.03em;
-            color: var(--lul-header);
+            color: var(--lulp-num-color);
             margin: 0;
-            margin-top: auto; /* number sits at the bottom, label on top */
         }
-        .lul-cov__plus {
+        .lul-covp__plus {
             font-size: 0.6em; /* a little smaller than the number */
             font-weight: 400;
             margin-left: 0.15em;
@@ -81,63 +133,79 @@
         }
 
         /* transparent "ghost" tile — opt-in per hardcoded card via `accent: true`.
-           For placement on a DARK background: no fill, a cream keyline + cream
-           text so it reads as a different class of figure using one palette. */
-        .lul-cov__card--accent {
+           For placement on a DARK band: no fill, a cream keyline + cream text. */
+        .lul-covp__card--accent {
             background: transparent;
+            border: none;
             /* inset ring instead of a real border, so it doesn't shift the
                content down by the border width like a border-box border would */
             box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
         }
-        .lul-cov__card--accent .lul-cov__num {
+        .lul-covp__card--accent .lul-covp__num {
             color: #eeecef;
         }
-        .lul-cov__card--accent .lul-cov__sub {
+        .lul-covp__card--accent .lul-covp__sub {
             color: rgba(238, 236, 239, 0.78);
             opacity: 1;
         }
-        .lul-cov__card--accent .lul-cov__plus {
+        .lul-covp__card--accent .lul-covp__plus {
             color: rgba(238, 236, 239, 0.6);
         }
 
-        /* uppercase label — same treatment as uppercase_label.html.
-           Sits at the TOP of the card; the number is pushed to the bottom. */
-        .lul-cov__sub {
+        /* uppercase label — sits at the TOP of the card, number beneath. */
+        .lul-covp__sub {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: var(--lulp-label-size);
+            font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             line-height: 1.4;
-            color: #393348;
-            opacity: 0.8;
-            margin: 0;
+            color: var(--lulp-label-color);
+            opacity: 0.85;
+            margin: 0 0 var(--lulp-num-gap) 0;
         }
 
-        /* Column count is decided in JS (see setCols) — no @media or @container
-           rules here, so nothing depends on the viewport or on how Squarespace
-           wraps the code block. */
+        /* Small-block state: data-size="sm" is stamped on the section by
+           setColsP when the block is narrower than --lulp-small-at. Setting
+           the vars here overrides the defaults above (attribute selector wins
+           on specificity) and they inherit down to the cards. */
+        .lul-covp[data-size="sm"] {
+            --lulp-num-size: var(--lulp-num-size-sm);
+            --lulp-label-size: var(--lulp-label-size-sm);
+            --lulp-card-pad-x: var(--lulp-card-pad-x-sm);
+        }
+
+        /* Column count is decided in JS (see setColsP) — no @media or
+           @container rules here, so nothing depends on the viewport or on how
+           Squarespace wraps the code block. */
     </style>
 
-    <div class="lul-cov__grid" id="lul-cov-grid"></div>
+    <div class="lul-covp__grid" id="lul-covp-grid"></div>
 
     <script>
         (function () {
-            var root = document.currentScript.closest(".lul-cov");
+            var root = document.currentScript.closest(".lul-covp");
             if (!root) return;
-            var grid = root.querySelector("#lul-cov-grid");
+            var grid = root.querySelector("#lul-covp-grid");
             if (!grid) return;
 
             var API = "https://api.zoningatlas.org/nza_coverage";
 
             /* ════════════════════════════════════════════════════════════
-               1) CHOOSE THE 4 CARDS (in display order). Each entry is either:
+               1) CHOOSE THE CARDS (in display order). Each entry is either:
                     • a metric KEY (string) from the METRICS registry → fetched live
                     • a HARDCODED card object: { value: 90000000, label: "parcels" }
-                      (optional per-card flags: plus:false, accent:true → transparent tile)
-                  Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
+                      (optional per-card flags: plus:false, accent:true)
+                  Mix and match, e.g. 3 live + 1 hardcoded, or all live.
                ════════════════════════════════════════════════════════════ */
-            var SELECTED = [{ value: 90000000, label: "parcels" }, "acres", "population", "pages"];
+            var SELECTED = [{ value: 90000000, label: "parcels", plus: true }, "acres", "population", "pages"];
+
+            /* Column counts this block is allowed to use, WIDEST FIRST. The
+               first one that fits the block wins; the LAST entry is the floor,
+               used even when it doesn't fit (the cards shrink instead). So
+               [4, 2] = one line on a wide block, 2x2 otherwise, never 1 across.
+               Add 3 if you ever want a 3-across tier. */
+            var COL_STEPS = [4, 2];
 
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
@@ -209,7 +277,7 @@
             // per-card plus flag (defaults on if omitted).
             function withPlus(n, show, dp, unit) {
                 if (show === false) return abbr(n, dp, unit);
-                return abbr(n, dp, unit) + '<span class="lul-cov__plus">+</span>';
+                return abbr(n, dp, unit) + '<span class="lul-covp__plus">+</span>';
             }
 
             // ── Build the cards from SELECTED ──────────────────────────
@@ -221,7 +289,7 @@
                     var m = METRICS[entry];
                     if (!m) {
                         // unknown key → warn so the card isn't silently dropped
-                        console.warn('[coverage_stats] unknown metric key: "' + entry + '"');
+                        console.warn('[coverage_stats_product_compact] unknown metric key: "' + entry + '"');
                         return null;
                     }
                     return {
@@ -241,19 +309,19 @@
                     plus: entry.plus !== undefined ? entry.plus : SHOW_PLUS,
                     dp: entry.dp,
                     unit: entry.unit,
-                    accent: entry.accent === true, // transparent ghost tile
+                    accent: entry.accent === true,
                 };
             }).filter(Boolean);
 
             var records = []; // { el, subEl, def, target }
             defs.forEach(function (def) {
                 var card = document.createElement("article");
-                card.className = "lul-cov__card" + (def.accent ? " lul-cov__card--accent" : "");
+                card.className = "lul-covp__card" + (def.accent ? " lul-covp__card--accent" : "");
                 var num = document.createElement("p");
-                num.className = "lul-cov__num";
+                num.className = "lul-covp__num";
                 num.textContent = "—";
                 var sub = document.createElement("p");
-                sub.className = "lul-cov__sub";
+                sub.className = "lul-covp__sub";
                 card.appendChild(sub);
                 card.appendChild(num);
                 grid.appendChild(card);
@@ -276,6 +344,49 @@
                 });
             }
 
+            // ── Responsive columns, measured off the BLOCK (not the viewport) ──
+            // Card width and column gap are read back from the CSS custom
+            // properties above, so the TWEAKABLE SIZING block stays the single
+            // source of truth — edit the CSS and the breakpoints follow.
+            function cssPx(name, fallback) {
+                var v = parseFloat(getComputedStyle(root).getPropertyValue(name));
+                return isNaN(v) ? fallback : v;
+            }
+            function setColsP() {
+                // clientWidth excludes any scrollbar; padding here is vertical only
+                var w = root.clientWidth || root.getBoundingClientRect().width || 0;
+                if (!w) return;
+                var cardW = cssPx("--lulp-card-w", 150);
+                var gapX = cssPx("--lulp-gap-x", 16);
+                // first step (widest first) that fits; floor = last step, which
+                // is used even if it doesn't fit — the tracks shrink instead
+                var cols = COL_STEPS[COL_STEPS.length - 1];
+                for (var i = 0; i < COL_STEPS.length; i++) {
+                    var n = COL_STEPS[i];
+                    if (w >= n * cardW + (n - 1) * gapX) {
+                        cols = n;
+                        break;
+                    }
+                }
+                root.style.setProperty("--lulp-cols", cols);
+                root.setAttribute("data-cols", cols); // handy for styling hooks
+
+                // Step the type down one stop on a really narrow block, so a
+                // long number doesn't bleed past the card edge. Read the
+                // threshold back from CSS so it stays tweakable in one place.
+                var smallAt = cssPx("--lulp-small-at", 300);
+                root.setAttribute("data-size", w < smallAt ? "sm" : "md");
+            }
+            setColsP();
+            if ("ResizeObserver" in window) {
+                // fires on block resize AND on the initial layout pass, which
+                // covers Squarespace mounting/animating the block after load
+                new ResizeObserver(setColsP).observe(root);
+            } else {
+                window.addEventListener("resize", setColsP);
+                window.addEventListener("load", setColsP);
+            }
+
             // ── Animation ──────────────────────────────────────────────
             function countUp(rec) {
                 if (rec.target === null) return;
@@ -295,12 +406,10 @@
                 }
                 requestAnimationFrame(frame);
             }
-
             var started = false;
             function begin() {
                 if (started) return;
                 started = true;
-
                 if (reduce || !("IntersectionObserver" in window)) {
                     records.forEach(function (rec) {
                         if (rec.target !== null)
@@ -326,32 +435,6 @@
                 records.forEach(function (rec) {
                     io.observe(rec.el);
                 });
-            }
-
-            // ── Responsive columns, measured off the BLOCK (not the viewport) ──
-            // Squarespace drops this into a code block of unknown width, so the
-            // column count comes from the block's own measured width. Widths
-            // needed: 4 across = 4*180 + 3*25 = 795; 2 across = 2*180 + 25 = 385.
-            var CARD_W = 180,
-                GAP = 25;
-            function widthFor(cols) {
-                return cols * CARD_W + (cols - 1) * GAP;
-            }
-            function setCols() {
-                // clientWidth excludes any scrollbar; padding here is vertical only
-                var w = root.clientWidth || root.getBoundingClientRect().width || 0;
-                if (!w) return;
-                var cols = w >= widthFor(4) ? 4 : w >= widthFor(2) ? 2 : 1;
-                root.style.setProperty("--lul-cols", cols);
-            }
-            setCols();
-            if ("ResizeObserver" in window) {
-                // fires on block resize AND on the initial layout pass, which
-                // covers Squarespace mounting/animating the block after load
-                new ResizeObserver(setCols).observe(root);
-            } else {
-                window.addEventListener("resize", setCols);
-                window.addEventListener("load", setCols);
             }
 
             // ── Fetch live data, then animate (fall back on failure/timeout) ──

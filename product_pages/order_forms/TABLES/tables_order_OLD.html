@@ -1,0 +1,492 @@
+<!--
+  Zoning Tables order form.
+
+  Styling lives in site-wide Squarespace Custom CSS — source-of-truth
+  is `squarespace/custom-css.css` in this repo (shared with the
+  parcel-report form). Paste that file's contents into Squarespace →
+  Website → Custom CSS once; both embeds inherit. Font + body text
+  color intentionally inherit from Squarespace Site Styles so a theme
+  font change propagates here automatically.
+
+  Flow:
+    pick unit of analysis (jurisdiction / county / block group /
+    census tract / zip code)
+    → pick scope (single jurisdiction / county / CBSA / state)
+    → pick the specific geography (typeahead or state dropdown)
+    → optional geometries → live price → terms → buy
+
+  Scope tiles available per unit:
+    jurisdiction                     → all four scopes
+    block_group, tract, zcta, county → county + cbsa + state
+                               (single-jurisdiction disallowed by the
+                               backend's 422 validation).
+
+  This file is Tables-only on purpose. Districts / Slices / Rasters
+  live on their own Squarespace pages with their own forms.
+-->
+<div id="lul-order">
+    <!-- Step 1: unit of analysis. Always visible. -->
+    <div class="lul-step" id="lul-step-unit">
+        <span class="lul-label">I want Zoning Tables for:</span>
+        <div class="lul-tiles" role="radiogroup" aria-label="Unit of analysis">
+            <div class="lul-tile">
+                <input
+                    type="radio"
+                    name="lul-unit"
+                    autocomplete="off"
+                    id="lul-unit-jurisdiction"
+                    value="jurisdiction"
+                />
+                <label for="lul-unit-jurisdiction">
+                    <span class="lul-tile-name">Jurisdictions</span>
+                    <span class="lul-tile-desc">Municipalities, townships, and unincorporated counties</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-county" value="county" />
+                <label for="lul-unit-county">
+                    <span class="lul-tile-name">Counties</span>
+                    <span class="lul-tile-desc">One row per county</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-tract" value="tract" />
+                <label for="lul-unit-tract">
+                    <span class="lul-tile-name">Census Tracts</span>
+                    <span class="lul-tile-desc">Census tracts</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-block-group" value="block_group" />
+                <label for="lul-unit-block-group">
+                    <span class="lul-tile-name">Block Groups</span>
+                    <span class="lul-tile-desc">Census block groups</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-zcta" value="zcta" />
+                <label for="lul-unit-zcta">
+                    <span class="lul-tile-name">Zip Codes</span>
+                    <span class="lul-tile-desc">Census ZIP Code Tabulation Areas (ZCTAs)</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: scope. Hidden until a unit-of-analysis is chosen. Some tiles
+       hide based on the unit (BG/Tract are county-or-state only). -->
+    <div class="lul-step lul-step-hidden" id="lul-step-scope">
+        <span class="lul-label">This will cover:</span>
+        <div class="lul-tiles" role="radiogroup" aria-label="Scope">
+            <div class="lul-tile" id="lul-scope-tile-jurisdiction">
+                <input
+                    type="radio"
+                    name="lul-scope"
+                    autocomplete="off"
+                    id="lul-scope-jurisdiction"
+                    value="jurisdiction"
+                />
+                <label for="lul-scope-jurisdiction">
+                    <span class="lul-tile-name">Single Jurisdiction</span>
+                    <span class="lul-tile-desc">Municipality, township, or unincorporated county.</span>
+                </label>
+            </div>
+            <div class="lul-tile" id="lul-scope-tile-county">
+                <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-county" value="county" />
+                <label for="lul-scope-county">
+                    <span class="lul-tile-name">County</span>
+                    <span class="lul-tile-desc lul-scope-desc-county">All jurisdictions in a county.</span>
+                </label>
+            </div>
+            <div class="lul-tile" id="lul-scope-tile-cbsa">
+                <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-cbsa" value="cbsa" />
+                <label for="lul-scope-cbsa">
+                    <span class="lul-tile-name">CBSA (metro/micro area)</span>
+                    <span class="lul-tile-desc lul-scope-desc-cbsa">All jurisdictions in a CBSA.</span>
+                </label>
+            </div>
+            <div class="lul-tile" id="lul-scope-tile-state">
+                <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-state" value="state" />
+                <label for="lul-scope-state">
+                    <span class="lul-tile-name">State</span>
+                    <span class="lul-tile-desc lul-scope-desc-state">All jurisdictions in a state.</span>
+                </label>
+            </div>
+            <!-- Non-interactive: "country" isn't a supported geography_type
+           (VALID_GEOGRAPHY_TYPES tops out at state), so this routes buyers
+           to the contact form instead of a purchase flow. Not a real radio
+           option, so it's hidden from the radiogroup's accessible name.
+           Always visible — unlike the scope tiles above, it isn't toggled
+           by ALLOWED_SCOPES per unit-of-analysis. -->
+            <div class="lul-tile lul-tile-info" aria-hidden="true">
+                <span class="lul-tile-name">Country</span>
+                <span class="lul-tile-desc"
+                    ><a href="https://www.landuselabs.com/contact">Contact us</a> for a quote.</span
+                >
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: pick the specific geography. Hidden until scope chosen.
+       Typeahead for jurisdiction/county/cbsa, dropdown for state. -->
+    <div class="lul-step lul-step-hidden" id="lul-step-geopick">
+        <span class="lul-label" id="lul-geo-label">Jurisdiction</span>
+
+        <div id="lul-geo-typeahead">
+            <input
+                id="lul-geo-search"
+                class="lul-input"
+                type="text"
+                placeholder="Type at least 2 characters to search&hellip;"
+                autocomplete="off"
+            />
+            <p class="lul-hint" id="lul-geo-hint">Enter a name, then select from the results below.</p>
+            <div id="lul-geo-status"></div>
+            <ul id="lul-geo-results" class="lul-results" style="display: none"></ul>
+        </div>
+
+        <select id="lul-state-select" class="lul-input" style="display: none">
+            <option value="">Select a state&hellip;</option>
+        </select>
+    </div>
+
+    <!-- Step 4: optional boundary polygons. Label updates per unit + scope. -->
+    <div class="lul-step lul-step-hidden" id="lul-step-geometries">
+        <span class="lul-label">Geographic Boundaries (Optional)</span>
+        <div class="lul-checkbox-wrap">
+            <input type="checkbox" id="lul-with-geometries" />
+            <label for="lul-with-geometries" id="lul-with-geometries-label">
+                Include boundary polygons with the download.
+            </label>
+        </div>
+    </div>
+
+    <!-- Step 5: price, terms, buy. -->
+    <div class="lul-step lul-step-hidden" id="lul-step-buy">
+        <div id="lul-price-display" class="lul-price"></div>
+        <!-- Partial-coverage warning. Populated from /price/ response's
+         optional `warnings` array; hidden when empty. -->
+        <div class="lul-msg lul-warn" id="lul-price-warnings" style="display: none"></div>
+        <div class="lul-checkbox-wrap">
+            <input type="checkbox" id="lul-terms" />
+            <label for="lul-terms">
+                I have read and agree to the
+                <a href="/legal-agreement" target="_blank" rel="noopener">Data Licensing Agreement</a>.
+            </label>
+        </div>
+        <button class="lul-btn" id="lul-buy-btn" disabled onclick="lulBuy()">Purchase &rarr;</button>
+    </div>
+</div>
+
+<!-- Shared typeahead helper (window.lulMountGeoSearch / lulSpinner / lulErrHtml /
+     lulEscHtml) is loaded site-wide via lul-geo-search.html in
+     Settings → Advanced → Code Injection → Header. -->
+<script>
+    (function () {
+        // ── Configuration ────────────────────────────────────────────────────────
+
+        const API_BASE = "https://extracts.landuselabs.com";
+
+        // ── State ────────────────────────────────────────────────────────────────
+
+        var _unit = null; // 'jurisdiction' | 'county' | 'tract' | 'block_group' | 'zcta'
+        var _geoType = null; // 'jurisdiction' | 'county' | 'cbsa' | 'state'
+        var _geoId = null; // integer | null
+        var _price = null; // cents | null
+        var _withGeometries = false;
+
+        // Per-scope picker config — endpoint and result-list hint.
+        var SCOPES = {
+            jurisdiction: {
+                label: "Jurisdiction",
+                endpoint: "/jurisdictions/",
+                hint: "Enter a jurisdiction name, then select from the results below.",
+            },
+            county: {
+                label: "County",
+                endpoint: "/counties/",
+                hint: "Enter a county name, then select from the results below.",
+            },
+            cbsa: {
+                label: "Metro Area",
+                endpoint: "/cbsas/",
+                hint: "Enter a metro area name, then select from the results below.",
+            },
+            state: { label: "State", endpoint: null, hint: "" },
+        };
+
+        var _geoSearch = window.lulMountGeoSearch({
+            apiBase: API_BASE,
+            scopes: SCOPES,
+            onPick: function (geoType, geoId, _label) {
+                _geoId = geoId;
+                updateGeometriesLabel();
+                showEl("lul-step-geometries", true);
+                refreshPrice();
+            },
+            onClear: function () {
+                _geoId = null;
+                showEl("lul-step-geometries", false);
+                showEl("lul-step-buy", false);
+            },
+        });
+
+        var spinner = window.lulSpinner;
+        var errHtml = window.lulErrHtml;
+        var escHtml = window.lulEscHtml;
+
+        // Scope tiles available per unit. BG/CT/ZCTA are county-or-larger only
+        // per the pricing doc; the backend also enforces this with a 422.
+        var ALLOWED_SCOPES = {
+            jurisdiction: ["jurisdiction", "county", "cbsa", "state"],
+            block_group: ["county", "cbsa", "state"],
+            tract: ["county", "cbsa", "state"],
+            zcta: ["county", "cbsa", "state"],
+            county: ["county", "cbsa", "state"],
+        };
+
+        // Singular noun for each unit, used in dynamic copy.
+        var UNIT_NOUN = {
+            jurisdiction: "jurisdiction",
+            block_group: "block group",
+            tract: "census tract",
+            zcta: "zip code",
+            county: "county",
+        };
+
+        // Plural noun for each unit, used in dynamic copy.
+        var UNIT_NOUN_PLURAL = {
+            jurisdiction: "jurisdictions",
+            block_group: "block groups",
+            tract: "census tracts",
+            zcta: "zip codes",
+            county: "counties",
+        };
+
+        var SCOPE_NOUN = {
+            jurisdiction: "jurisdiction",
+            county: "county",
+            cbsa: "CBSA",
+            state: "state",
+        };
+
+        // ── Wire up listeners ────────────────────────────────────────────────────
+
+        document.querySelectorAll('input[name="lul-unit"]').forEach(function (el) {
+            el.addEventListener("change", onUnitChange);
+        });
+        document.querySelectorAll('input[name="lul-scope"]').forEach(function (el) {
+            el.addEventListener("change", onScopeChange);
+        });
+        document.getElementById("lul-with-geometries").addEventListener("change", onWithGeometriesChange);
+        document.getElementById("lul-terms").addEventListener("change", onTermsChange);
+
+        // Firefox / Safari restore checked radios + checkboxes across reload
+        // (bfcache and cross-navigation form-state persistence). The JS state
+        // machine only advances via change events, so a restored selection
+        // leaves the UI stuck on step 1 with an already-picked tile the user
+        // has to click off and back on to progress. Force-clear on load.
+        document.querySelectorAll('input[name="lul-unit"], input[name="lul-scope"]').forEach(function (el) {
+            el.checked = false;
+        });
+        document.getElementById("lul-with-geometries").checked = false;
+        document.getElementById("lul-terms").checked = false;
+
+        // ── Step handlers ────────────────────────────────────────────────────────
+
+        function onUnitChange(evt) {
+            _unit = evt.target.value;
+            var allowed = ALLOWED_SCOPES[_unit];
+
+            // Show/hide scope tiles per the unit's allowed scopes.
+            ["jurisdiction", "county", "cbsa", "state"].forEach(function (scope) {
+                var tile = document.getElementById("lul-scope-tile-" + scope);
+                if (allowed.indexOf(scope) >= 0) {
+                    tile.classList.remove("lul-tile-hidden");
+                } else {
+                    tile.classList.add("lul-tile-hidden");
+                }
+            });
+            // Rewrite the scope-description copy that mentions the unit (county /
+            // CBSA / state tiles all say "All [unit-plural] in a [scope]").
+            //
+            // County unit at county scope is the one combination where that
+            // phrasing collapses — "All counties in a county" — because the unit
+            // and the scope are the same thing. It's a valid purchase (a single
+            // summary row for the county), so the tile stays; only the wording
+            // changes.
+            var plural = UNIT_NOUN_PLURAL[_unit];
+            document.querySelector(".lul-scope-desc-county").textContent =
+                _unit === "county" ? "A single row summarizing the county." : "All " + plural + " in a county.";
+            document.querySelector(".lul-scope-desc-cbsa").textContent = "All " + plural + " in a CBSA.";
+            document.querySelector(".lul-scope-desc-state").textContent = "All " + plural + " in a state.";
+
+            showEl("lul-step-scope", true);
+
+            // Preserve the user's later-step picks if they're still valid under
+            // the new unit. Only invalidate the scope (and downstream geo) when
+            // the previously-chosen scope isn't allowed for this unit.
+            if (_geoType && allowed.indexOf(_geoType) < 0) {
+                resetScope();
+                return;
+            }
+            if (_geoId != null) {
+                // Scope + geography survive — but the per-unit rate changed, so
+                // re-quote and refresh the geometries-label phrasing.
+                updateGeometriesLabel();
+                refreshPrice();
+            }
+        }
+
+        function onScopeChange(evt) {
+            _geoType = evt.target.value;
+            resetGeo();
+            _geoSearch.setScope(_geoType);
+            showEl("lul-step-geopick", true);
+        }
+        // onGeoSearch / onResultClick / onStateChange are owned by lul-geo-search.js.
+
+        function onWithGeometriesChange() {
+            _withGeometries = this.checked;
+            refreshPrice();
+        }
+
+        function onTermsChange() {
+            document.getElementById("lul-buy-btn").disabled = !this.checked || _geoId == null;
+        }
+
+        // ── Reset helpers ────────────────────────────────────────────────────────
+
+        function resetScope() {
+            _geoType = null;
+            document.querySelectorAll('input[name="lul-scope"]').forEach(function (el) {
+                el.checked = false;
+            });
+            resetGeo();
+            showEl("lul-step-geopick", false);
+        }
+
+        function resetGeo() {
+            _geoId = null;
+            _geoSearch.reset();
+            document.getElementById("lul-with-geometries").checked = false;
+            _withGeometries = false;
+            showEl("lul-step-geometries", false);
+            showEl("lul-step-buy", false);
+        }
+
+        // ── Dynamic geometries label ─────────────────────────────────────────────
+
+        function updateGeometriesLabel() {
+            // Two singular cases, both where the unit and the scope are the same
+            // thing and "each [unit] in the [scope]" would repeat itself:
+            // jurisdiction-unit at jurisdiction scope, and county-unit at county
+            // scope. Everything else reads as "each [unit] in the [scope]".
+            var text;
+            if (_unit === _geoType) {
+                text = "Include the " + UNIT_NOUN[_unit] + " boundary polygon with the download.";
+            } else {
+                text =
+                    "Include boundary polygons for each " + UNIT_NOUN[_unit] + " in the " + SCOPE_NOUN[_geoType] + ".";
+            }
+            document.getElementById("lul-with-geometries-label").textContent = text;
+        }
+
+        // ── Pricing ──────────────────────────────────────────────────────────────
+
+        function refreshPrice() {
+            if (_geoId == null) return;
+            _price = null;
+            document.getElementById("lul-price-display").textContent = "…";
+            document.getElementById("lul-buy-btn").disabled = true;
+            document.getElementById("lul-terms").checked = false;
+            showEl("lul-step-buy", true);
+
+            fetch(API_BASE + "/price/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product: "tables",
+                    geography_type: _geoType,
+                    geography_id: _geoId,
+                    unit_of_analysis: _unit,
+                    with_geometries: _withGeometries,
+                }),
+            })
+                .then(function (res) {
+                    return res.json().then(function (data) {
+                        return { ok: res.ok, data: data };
+                    });
+                })
+                .then(function (r) {
+                    if (!r.ok) {
+                        document.getElementById("lul-price-display").textContent = "Price unavailable";
+                        var msg = (r.data && r.data.detail) || "Price unavailable for this selection.";
+                        renderWarnings([{ message: msg }]);
+                        return;
+                    }
+                    _price = r.data.total_cents;
+                    renderPrice();
+                    renderWarnings(r.data.warnings || []);
+                })
+                .catch(function () {
+                    document.getElementById("lul-price-display").textContent = "Price unavailable";
+                    renderWarnings([]);
+                });
+        }
+
+        function renderPrice() {
+            var fmt = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            });
+            document.getElementById("lul-price-display").textContent = fmt.format(_price / 100);
+        }
+
+        function renderWarnings(warnings) {
+            var box = document.getElementById("lul-price-warnings");
+            if (!warnings || warnings.length === 0) {
+                box.style.display = "none";
+                box.innerHTML = "";
+                return;
+            }
+            box.innerHTML = warnings
+                .map(function (w) {
+                    return "<p>" + window.lulEscHtml(w.message) + "</p>";
+                })
+                .join("");
+            box.style.display = "";
+        }
+
+        // ── Checkout redirect ────────────────────────────────────────────────────
+
+        function lulBuy() {
+            if (_geoId == null) return;
+            var params = new URLSearchParams({
+                product: "tables",
+                type: _geoType,
+                id: String(_geoId),
+                unit: _unit,
+                with_geometries: String(_withGeometries),
+            });
+            window.location.href = API_BASE + "/payments/checkout/?" + params.toString();
+        }
+
+        // ── Utilities ────────────────────────────────────────────────────────────
+
+        function showEl(id, visible) {
+            var el = document.getElementById(id);
+            if (visible) {
+                el.classList.remove("lul-step-hidden");
+            } else {
+                el.classList.add("lul-step-hidden");
+            }
+        }
+
+        // spinner / errHtml / escHtml live in lul-geo-search.js (aliased above).
+
+        window.lulBuy = lulBuy;
+    })();
+</script>

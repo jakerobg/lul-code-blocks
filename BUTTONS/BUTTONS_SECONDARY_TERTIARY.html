@@ -1,15 +1,19 @@
 <!--
-  Data action buttons — primary (filled purple) + secondary (outlined).
+  Data action buttons — secondary (outlined) + tertiary (filled ink).
 
-  ▶ Colours and padding are the vars at the top. The primary button's border
-    always matches its own fill, so it reads as a solid block; the secondary
-    keeps the dark ink outline.
+  Byte-for-byte the same shell as BUTTONS_PRIMARY_SECONDARY.html — only the
+  colours, labels and links differ. The filled slot is DARK INK rather than the
+  purple accent; that ink-filled variant is what we call a tertiary button (see
+  industry_pages/product_tabs.html, which uses it for its selected tab).
+
+  ▶ Colours and padding are the vars at the top. A button's border always
+    matches its own fill/outline, so the tertiary reads as a solid block and
+    the secondary keeps the dark ink outline.
 -->
 <style>
     .lul-actions {
-        --lul-ink: #393347; /* secondary border + label */
-        --lul-primary: #594496; /* primary fill + border */
-        --lul-primary-hover: #3f2e70;
+        --lul-ink: #393347; /* secondary border + label, tertiary fill */
+        --lul-ink-hover: #4c4460; /* tertiary hover fill */
         --lul-secondary-hover: #ffffff;
         --lul-btn-pad: 10px 26px;
 
@@ -50,14 +54,14 @@
             color 0.25s ease;
     }
 
-    .lul-actions .lul-actions__btn--primary {
-        background: var(--lul-primary);
-        border-color: var(--lul-primary);
+    .lul-actions .lul-actions__btn--tertiary {
+        background: var(--lul-ink);
+        border-color: var(--lul-ink);
         color: #ffffff;
     }
-    .lul-actions .lul-actions__btn--primary:hover {
-        background: var(--lul-primary-hover);
-        border-color: var(--lul-primary-hover);
+    .lul-actions .lul-actions__btn--tertiary:hover {
+        background: var(--lul-ink-hover);
+        border-color: var(--lul-ink-hover);
     }
 
     .lul-actions .lul-actions__btn--secondary {
@@ -71,8 +75,8 @@
 </style>
 
 <div class="lul-actions">
-    <a class="lul-actions__btn lul-actions__btn--primary" href="/product-selector"
-        >Find Your Product</a>
-    <a class="lul-actions__btn lul-actions__btn--secondary" href="/services"
-        >Explore Services</a>
+    <a class="lul-actions__btn lul-actions__btn--secondary" href="https://www.landuselabs.com/s/Parcel-Report-Sample.pdf"
+        >Download Sample</a>
+    <a class="lul-actions__btn lul-actions__btn--tertiary" href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1390244737#gid=1390244737"
+        >Data Dictionary</a>
 </div>

@@ -1,8 +1,28 @@
 <!--
-  Reports — animated hero graphic (Squarespace Code Block).
-  Laid out like slices_graphic.html: a self-contained, left-aligned
-  block (not centered in the viewport), all styles scoped under
-  .lul-reports-anim so they can't collide with the page's own CSS.
+  Parcel Reports — animated hero graphic (Squarespace Code Block).
+
+  Same format as slices_graphic.html and districts_graphic.html: a
+  self-contained, left-aligned block driven entirely by CSS @keyframes —
+  no <script>, no per-frame JS, and prefers-reduced-motion respected.
+  (It previously ran on a JS timer that repositioned one card and hand-
+  animated the pulse ring with requestAnimationFrame.) The ARTWORK IS
+  UNCHANGED — same SVG parcels, same five highlighted lots, same card
+  design and content, same colours.
+
+  Animation: a single 17s loop split into five 20% steps. In each step
+  one parcel fills with its zone colour, a pulse ring expands from its
+  centroid, and that parcel's info card fades in. All three share the
+  step's keyframe percentages, so they can't drift out of sync the way
+  independent timers can.
+
+  ▶ TIMING: --rpa-loop on .lul-reports-anim sets the whole cycle.
+  ▶ CARD PLACEMENT: each card carries --rpa-left / --rpa-top in the
+    markup, as a percentage of the map. Those were computed from the
+    parcel centroids using the old JS's own placement rule (prefer the
+    roomier side, clamp to the edges), so cards sit where they always
+    did — but now they track the artwork as the block scales instead of
+    being pinned to pixel values measured once at load.
+  ▶ All animation classes are prefixed rpa-.
 -->
 <div class="lul-reports-anim">
     <style>
@@ -101,10 +121,224 @@
             color: #333;
             line-height: 1.35;
         }
+
+        /* ── ANIMATION ──────────────────────────────────────────────────────
+           Pure CSS, same approach as slices_graphic.html: one shared loop
+           length, percentage keyframes, no JS. Five steps of 20% each — the
+           parcel lights up, its pulse ring expands, and its card fades in;
+           all three share the step's timing so they can't drift.
+           To retime the whole thing, change --rpa-loop below. */
+        .lul-reports-anim {
+            --rpa-loop: 17s;
+        }
+        .rpa-card,
+        .rpa-p1,
+        .rpa-p2,
+        .rpa-p3,
+        .rpa-p4,
+        .rpa-p5,
+        .rpa-ring {
+            animation-duration: var(--rpa-loop);
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            animation-fill-mode: both;
+        }
+        /* the parcel fill/stroke transition from the base .parcel rule would
+           fight the keyframes — the animation drives these directly */
+        .rpa-p1,
+        .rpa-p2,
+        .rpa-p3,
+        .rpa-p4,
+        .rpa-p5 {
+            transition: none;
+        }
+        .rpa-ring {
+            stroke-width: 0.6px;
+            fill: none;
+            /* scale about the ring's own centre rather than the SVG origin */
+            transform-box: fill-box;
+            transform-origin: center;
+            animation-timing-function: ease-out;
+        }
+        /* Cards are positioned from each parcel's centroid, expressed as a
+           percentage of the map so they track the artwork as it scales.
+           --rpa-left/--rpa-top are set per card in the markup. */
+        .rpa-card {
+            left: var(--rpa-left);
+            top: var(--rpa-top);
+            bottom: auto;
+            border-top-color: var(--rpa-accent);
+            /* never let a card overflow a narrow block */
+            max-width: calc(100% - 28px);
+        }
+        /* Cards whose parcel sits low on the map are anchored from the BOTTOM.
+           The old JS clamped their top using a hardcoded 160px card height, but
+           the cards actually render 219-243px, so they hung past the block's
+           lower edge. Anchoring to the bottom is height-independent. */
+        .rpa-card--bottom {
+            top: auto;
+            bottom: var(--rpa-bottom);
+        }
+        .rpa-card .card-zone,
+        .rpa-card .card-address {
+            color: var(--rpa-accent);
+        }
+        .rpa-card1 {
+            animation-name: rpaCard1;
+        }
+        .rpa-card2 {
+            animation-name: rpaCard2;
+        }
+        .rpa-card3 {
+            animation-name: rpaCard3;
+        }
+        .rpa-card4 {
+            animation-name: rpaCard4;
+        }
+        .rpa-card5 {
+            animation-name: rpaCard5;
+        }
+        .rpa-p1 {
+            animation-name: rpaParcel1;
+        }
+        .rpa-p2 {
+            animation-name: rpaParcel2;
+        }
+        .rpa-p3 {
+            animation-name: rpaParcel3;
+        }
+        .rpa-p4 {
+            animation-name: rpaParcel4;
+        }
+        .rpa-p5 {
+            animation-name: rpaParcel5;
+        }
+        .rpa-ring1 {
+            stroke: #c8925a;
+            animation-name: rpaRing1;
+        }
+        .rpa-ring2 {
+            stroke: #c2685c;
+            animation-name: rpaRing2;
+        }
+        .rpa-ring3 {
+            stroke: #8a72c0;
+            animation-name: rpaRing3;
+        }
+        .rpa-ring4 {
+            stroke: #6a95b8;
+            animation-name: rpaRing4;
+        }
+        .rpa-ring5 {
+            stroke: #7aaa58;
+            animation-name: rpaRing5;
+        }
+
+        @keyframes rpaCard1 {
+            0%, 0.0% { opacity: 0; }
+            1.6%, 16.8% { opacity: 1; }
+            18.4%, 100% { opacity: 0; }
+        }
+        @keyframes rpaParcel1 {
+            0%, 0.0% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+            1.6%, 16.8% { fill: #c8925a; stroke: #c8925a; }
+            18.4%, 100% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+        }
+        @keyframes rpaRing1 {
+            0%, 0.0% { transform: scale(0.6); opacity: 0; }
+            0.2% { transform: scale(0.6); opacity: 0.7; }
+            5.3%, 100% { transform: scale(2.5); opacity: 0; }
+        }
+        @keyframes rpaCard2 {
+            0%, 20.0% { opacity: 0; }
+            21.6%, 36.8% { opacity: 1; }
+            38.4%, 100% { opacity: 0; }
+        }
+        @keyframes rpaParcel2 {
+            0%, 20.0% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+            21.6%, 36.8% { fill: #c2685c; stroke: #c2685c; }
+            38.4%, 100% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+        }
+        @keyframes rpaRing2 {
+            0%, 20.0% { transform: scale(0.6); opacity: 0; }
+            20.2% { transform: scale(0.6); opacity: 0.7; }
+            25.3%, 100% { transform: scale(2.5); opacity: 0; }
+        }
+        @keyframes rpaCard3 {
+            0%, 40.0% { opacity: 0; }
+            41.6%, 56.8% { opacity: 1; }
+            58.4%, 100% { opacity: 0; }
+        }
+        @keyframes rpaParcel3 {
+            0%, 40.0% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+            41.6%, 56.8% { fill: #8a72c0; stroke: #8a72c0; }
+            58.4%, 100% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+        }
+        @keyframes rpaRing3 {
+            0%, 40.0% { transform: scale(0.6); opacity: 0; }
+            40.2% { transform: scale(0.6); opacity: 0.7; }
+            45.3%, 100% { transform: scale(2.5); opacity: 0; }
+        }
+        @keyframes rpaCard4 {
+            0%, 60.0% { opacity: 0; }
+            61.6%, 76.8% { opacity: 1; }
+            78.4%, 100% { opacity: 0; }
+        }
+        @keyframes rpaParcel4 {
+            0%, 60.0% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+            61.6%, 76.8% { fill: #6a95b8; stroke: #6a95b8; }
+            78.4%, 100% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+        }
+        @keyframes rpaRing4 {
+            0%, 60.0% { transform: scale(0.6); opacity: 0; }
+            60.2% { transform: scale(0.6); opacity: 0.7; }
+            65.3%, 100% { transform: scale(2.5); opacity: 0; }
+        }
+        @keyframes rpaCard5 {
+            0%, 80.0% { opacity: 0; }
+            81.6%, 96.8% { opacity: 1; }
+            98.4%, 100% { opacity: 0; }
+        }
+        @keyframes rpaParcel5 {
+            0%, 80.0% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+            81.6%, 96.8% { fill: #7aaa58; stroke: #7aaa58; }
+            98.4%, 100% { fill: rgb(218, 214, 210); stroke: rgb(165, 158, 152); }
+        }
+        @keyframes rpaRing5 {
+            0%, 80.0% { transform: scale(0.6); opacity: 0; }
+            80.2% { transform: scale(0.6); opacity: 0.7; }
+            85.3%, 100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* Reduced motion: hold the first parcel lit with its card, no cycling */
+        @media (prefers-reduced-motion: reduce) {
+            .rpa-card,
+            .rpa-p1,
+            .rpa-p2,
+            .rpa-p3,
+            .rpa-p4,
+            .rpa-p5,
+            .rpa-ring {
+                animation: none !important;
+            }
+            .rpa-card {
+                opacity: 0;
+            }
+            .rpa-card1 {
+                opacity: 1;
+            }
+            .rpa-p1 {
+                fill: #c8925a;
+                stroke: #c8925a;
+            }
+            .rpa-ring {
+                opacity: 0;
+            }
+        }
     </style>
     <div class="scene">
-            <div class="map-wrap" id="mapWrap">
-                <svg id="mainSvg" viewBox="0 0 290.22 247.69" xmlns="http://www.w3.org/2000/svg">
+            <div class="map-wrap">
+                <svg viewBox="0 0 290.22 247.69" xmlns="http://www.w3.org/2000/svg">
                     <g id="Layer_1-2" data-name="Layer 1">
                         <path
                             class="parcel"
@@ -282,7 +516,7 @@
                             vector-effect="non-scaling-stroke"
                         />
                         <path
-                            class="parcel"
+                            class="parcel rpa-p1"
                             d="M132.74,32l.28-1.66-19.28-1.77.55-3.17,3.41-19.66,38.15,3.7-3.54,20.53-.66,3.8-18.91-1.77"
                             vector-effect="non-scaling-stroke"
                         />
@@ -562,7 +796,7 @@
                             vector-effect="non-scaling-stroke"
                         />
                         <path
-                            class="parcel"
+                            class="parcel rpa-p4"
                             d="M42.79,47.2l-16.07-1.2,1.07-7.13,16.09,1.16-.5,3.35-.59,3.83"
                             vector-effect="non-scaling-stroke"
                         />
@@ -737,7 +971,7 @@
                             vector-effect="non-scaling-stroke"
                         />
                         <path
-                            class="parcel"
+                            class="parcel rpa-p3"
                             d="M184.08,105.22l-15.94,1.33.17-1.18,1.47-9.42.94-6.03.28-1.88,20.07,1.92-2.56,14.89-4.44.37"
                             vector-effect="non-scaling-stroke"
                         />
@@ -1227,7 +1461,7 @@
                             vector-effect="non-scaling-stroke"
                         />
                         <path
-                            class="parcel"
+                            class="parcel rpa-p2"
                             d="M250.79,236.83l-5.82-.28.02-.39.79-7.96,3.34.15,1.62.09,14.67.74-.72,8.29-13.91-.63"
                             vector-effect="non-scaling-stroke"
                         />
@@ -1697,7 +1931,7 @@
                             vector-effect="non-scaling-stroke"
                         />
                         <path
-                            class="parcel"
+                            class="parcel rpa-p5"
                             d="M46.05,189.05l-20.01-1.66.74-4.77.17-1.22.2-1.31,19.96,1.79-.17,1.16-.9,6.01"
                             vector-effect="non-scaling-stroke"
                         />
@@ -1721,209 +1955,85 @@
                             d="M26.04,187.39l-.74,4.77-20.09-1.64,1.4-9.55,20.18,1.66-.74,4.77"
                             vector-effect="non-scaling-stroke"
                         />
-                        <!-- Pulse ring at active parcel centroid -->
-                        <circle
-                            id="pulseRing"
-                            cx="-100"
-                            cy="-100"
-                            r="0"
-                            fill="none"
-                            stroke="transparent"
-                            stroke-width="2"
-                            opacity="0"
-                        />
+                        <!-- Pulse rings, one per parcel (CSS-timed) -->
+                        <circle class="rpa-ring rpa-ring1" cx="134.8" cy="19.75" r="12.63" fill="none" />
+                        <circle class="rpa-ring rpa-ring2" cx="255.19" cy="232.84" r="6.13" fill="none" />
+                        <circle class="rpa-ring rpa-ring3" cx="179.61" cy="97.29" r="6.88" fill="none" />
+                        <circle class="rpa-ring rpa-ring4" cx="35.3" cy="43.04" r="5.15" fill="none" />
+                        <circle class="rpa-ring rpa-ring5" cx="36.57" cy="184.57" r="6.32" fill="none" />
                     </g>
                 </svg>
-                <div class="card" id="infoCard">
-                    <div class="card-zone" id="cardZone"></div>
-                    <div class="card-desc" id="cardDesc"></div>
-                    <div class="card-address" id="cardAddress"></div>
+                <div class="card rpa-card rpa-card1" style="--rpa-accent: #c8925a; --rpa-left: 52.85%; --rpa-top: 2.501%">
+                    <div class="card-zone">IN-S</div>
+                    <div class="card-desc">Institutional, Educational</div>
+                    <div class="card-address">32 Hackfeld Rd</div>
                     <div class="card-divider"></div>
                     <div class="card-row">
                         <div class="card-label">Allowed Uses</div>
-                        <div class="card-value" id="cardUses"></div>
+                        <div class="card-value">Mixed with Residential</div>
                     </div>
                     <div class="card-row">
                         <div class="card-label">Units Allowed</div>
-                        <div class="card-value" id="cardUnits"></div>
+                        <div class="card-value">1, 2, 3</div>
+                    </div>
+                </div>
+                <div class="card rpa-card rpa-card--bottom rpa-card2" style="--rpa-accent: #c2685c; --rpa-left: 48.753%; --rpa-bottom: 2.5%">
+                    <div class="card-zone">BL-1.0</div>
+                    <div class="card-desc">Business, Limited</div>
+                    <div class="card-address">74 West St</div>
+                    <div class="card-divider"></div>
+                    <div class="card-row">
+                        <div class="card-label">Allowed Uses</div>
+                        <div class="card-value">Mixed with Residential</div>
+                    </div>
+                    <div class="card-row">
+                        <div class="card-label">Units Allowed</div>
+                        <div class="card-value">1, 2, 3, 4+</div>
+                    </div>
+                </div>
+                <div class="card rpa-card rpa-card3" style="--rpa-accent: #8a72c0; --rpa-left: 22.711%; --rpa-top: 19.71%">
+                    <div class="card-zone">RG-5</div>
+                    <div class="card-desc">Residence, General</div>
+                    <div class="card-address">5 Trowbridge Rd</div>
+                    <div class="card-divider"></div>
+                    <div class="card-row">
+                        <div class="card-label">Allowed Uses</div>
+                        <div class="card-value">Primarily Residential</div>
+                    </div>
+                    <div class="card-row">
+                        <div class="card-label">Units Allowed</div>
+                        <div class="card-value">1, 2, 3, 4+</div>
+                    </div>
+                </div>
+                <div class="card rpa-card rpa-card4" style="--rpa-accent: #6a95b8; --rpa-left: 18.566%; --rpa-top: 3.087%">
+                    <div class="card-zone">BO-1.0</div>
+                    <div class="card-desc">Business, Office</div>
+                    <div class="card-address">201 Park Ave</div>
+                    <div class="card-divider"></div>
+                    <div class="card-row">
+                        <div class="card-label">Allowed Uses</div>
+                        <div class="card-value">Mixed with Residential</div>
+                    </div>
+                    <div class="card-row">
+                        <div class="card-label">Units Allowed</div>
+                        <div class="card-value">1, 2, 3, 4+</div>
+                    </div>
+                </div>
+                <div class="card rpa-card rpa-card--bottom rpa-card5" style="--rpa-accent: #7aaa58; --rpa-left: 19.003%; --rpa-bottom: 2.5%">
+                    <div class="card-zone">RL-7</div>
+                    <div class="card-desc">Residence, Limited</div>
+                    <div class="card-address">17-19 Somerset St</div>
+                    <div class="card-divider"></div>
+                    <div class="card-row">
+                        <div class="card-label">Allowed Uses</div>
+                        <div class="card-value">Primarily Residential</div>
+                    </div>
+                    <div class="card-row">
+                        <div class="card-label">Units Allowed</div>
+                        <div class="card-value">1, 2</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script>
-            const PARCELS = [
-                {
-                    zone: "IN-S",
-                    desc: "Institutional, Educational",
-                    color: "#c8925a",
-                    uses: "Mixed with Residential",
-                    units: "1, 2, 3",
-                    address: "32 Hackfeld Rd",
-                    d: "M132.74,32l.28-1.66-19.28-1.77.55-3.17,3.41-19.66,38.15,3.7-3.54,20.53-.66,3.8-18.91-1.77",
-                    cx: 134.8,
-                    cy: 19.75,
-                    size: 42.11,
-                },
-                {
-                    zone: "BL-1.0",
-                    desc: "Business, Limited",
-                    color: "#c2685c",
-                    uses: "Mixed with Residential",
-                    units: "1, 2, 3, 4+",
-                    address: "74 West St",
-                    d: "M250.79,236.83l-5.82-.28.02-.39.79-7.96,3.34.15,1.62.09,14.67.74-.72,8.29-13.91-.63",
-                    cx: 255.19,
-                    cy: 232.84,
-                    size: 20.44,
-                },
-                {
-                    zone: "RG-5",
-                    desc: "Residence, General",
-                    color: "#8a72c0",
-                    uses: "Primarily Residential",
-                    units: "1, 2, 3, 4+",
-                    address: "5 Trowbridge Rd",
-                    d: "M184.08,105.22l-15.94,1.33.17-1.18,1.47-9.42.94-6.03.28-1.88,20.07,1.92-2.56,14.89-4.44.37",
-                    cx: 179.61,
-                    cy: 97.29,
-                    size: 22.93,
-                },
-                {
-                    zone: "BO-1.0",
-                    desc: "Business, Office",
-                    color: "#6a95b8",
-                    uses: "Mixed with Residential",
-                    units: "1, 2, 3, 4+",
-                    address: "201 Park Ave",
-                    d: "M42.79,47.2l-16.07-1.2,1.07-7.13,16.09,1.16-.5,3.35-.59,3.83",
-                    cx: 35.3,
-                    cy: 43.04,
-                    size: 17.16,
-                },
-                {
-                    zone: "RL-7",
-                    desc: "Residence, Limited",
-                    color: "#7aaa58",
-                    uses: "Primarily Residential",
-                    units: "1, 2",
-                    address: "17-19 Somerset St",
-                    d: "M46.05,189.05l-20.01-1.66.74-4.77.17-1.22.2-1.31,19.96,1.79-.17,1.16-.9,6.01",
-                    cx: 36.57,
-                    cy: 184.57,
-                    size: 21.07,
-                },
-            ];
-            const SVG_W = 290.22,
-                SVG_H = 247.69;
-            const CARD_W = 215,
-                CARD_H = 160,
-                MARGIN = 14;
-
-            const svg = document.getElementById("mainSvg");
-            const wrap = document.getElementById("mapWrap");
-            const card = document.getElementById("infoCard");
-            const pulseRing = document.getElementById("pulseRing");
-
-            const animatedEls = {};
-            PARCELS.forEach((p, i) => {
-                svg.querySelectorAll(".parcel").forEach((el) => {
-                    if (el.getAttribute("d") === p.d) animatedEls[i] = el;
-                });
-            });
-
-            function positionCard(p) {
-                const svgRect = svg.getBoundingClientRect();
-                const wrapRect = wrap.getBoundingClientRect();
-                const scaleX = svgRect.width / SVG_W;
-                const scaleY = svgRect.height / SVG_H;
-                const px = svgRect.left - wrapRect.left + p.cx * scaleX;
-                const py = svgRect.top - wrapRect.top + p.cy * scaleY;
-                const wW = wrapRect.width;
-                const wH = wrapRect.height;
-
-                let left;
-                if (wW - px >= CARD_W + MARGIN * 3) {
-                    left = px + MARGIN * 3;
-                } else if (px >= CARD_W + MARGIN * 3) {
-                    left = px - CARD_W - MARGIN * 3;
-                } else {
-                    left = Math.max(MARGIN, Math.min(px - CARD_W / 2, wW - CARD_W - MARGIN));
-                }
-                let top = py - CARD_H / 2;
-                top = Math.max(MARGIN, Math.min(top, wH - CARD_H - MARGIN));
-
-                card.style.left = left + "px";
-                card.style.top = top + "px";
-                card.style.right = "auto";
-            }
-
-            let current = -1;
-            let pulseAnim = null;
-
-            function animatePulse(color, size) {
-                if (pulseAnim) cancelAnimationFrame(pulseAnim);
-                let start = null;
-                const DURATION = 900;
-                const rStart = size * 0.18;
-                const rEnd = size * 0.75;
-                function step(ts) {
-                    if (!start) start = ts;
-                    const t = Math.min((ts - start) / DURATION, 1);
-                    const r = rStart + t * (rEnd - rStart);
-                    const op = (1 - t) * 0.7;
-                    pulseRing.setAttribute("r", r);
-                    pulseRing.setAttribute("opacity", op);
-                    if (t < 1) pulseAnim = requestAnimationFrame(step);
-                    else pulseRing.setAttribute("opacity", 0);
-                }
-                pulseRing.setAttribute("stroke", color);
-                pulseRing.setAttribute("stroke-width", "0.6");
-                pulseAnim = requestAnimationFrame(step);
-            }
-
-            function showParcel(idx) {
-                if (current >= 0 && animatedEls[current]) {
-                    const prev = animatedEls[current];
-                    prev.style.fill = "";
-                    prev.style.stroke = "";
-                    prev.style.strokeWidth = "";
-                    prev.style.filter = "";
-                }
-                card.classList.remove("visible");
-
-                current = idx;
-                const p = PARCELS[idx];
-                const el = animatedEls[idx];
-
-                if (el) {
-                    el.style.fill = p.color;
-                    el.style.stroke = p.color;
-                    el.style.strokeWidth = "0.8px";
-                    el.style.filter = `drop-shadow(0 0 1.5px ${p.color}aa)`;
-                    pulseRing.setAttribute("cx", p.cx);
-                    pulseRing.setAttribute("cy", p.cy);
-                    animatePulse(p.color, p.size);
-                }
-
-                document.getElementById("cardZone").textContent = p.zone;
-                document.getElementById("cardZone").style.color = p.color;
-                document.getElementById("cardDesc").textContent = p.desc;
-                document.getElementById("cardAddress").textContent = p.address;
-                document.getElementById("cardAddress").style.color = p.color;
-                document.getElementById("cardUses").textContent = p.uses;
-                document.getElementById("cardUnits").textContent = p.units;
-                card.style.borderTopColor = p.color;
-
-                positionCard(p);
-                requestAnimationFrame(() => card.classList.add("visible"));
-            }
-
-            function next() {
-                showParcel((current + 1) % PARCELS.length);
-                setTimeout(next, 3400);
-            }
-
-            setTimeout(next, 600);
-        </script>
     </div>

@@ -1,5 +1,17 @@
 <!--
-  Coverage Stats — four square stat cards (Squarespace Code Block).
+  Coverage Stats (2x2, LEFT-ALIGNED) — four square stat cards
+  (Squarespace Code Block).
+
+  Variant of coverage_stats.html. Differences: the grid tops out at TWO
+  columns (never 4 across, however wide the block is) and is flush LEFT
+  rather than centered. It still uses the same block-measured container
+  logic, so it drops to a single column when the code block is too narrow
+  for two. Use this when the stats sit beside other left-aligned content
+  (body copy, a heading) and need to line up with it.
+
+  All classes/vars are suffixed 2 (lul-cov2, --lul2-*) so this can share a
+  page with coverage_stats.html without either one clobbering the other.
+
   Big count-up number fills each card; a smaller muted subheader sits
   beneath it. Numbers tick up from 0 → target the first time the block
   scrolls into view. Values come live from the zoning-atlas coverage API.
@@ -8,16 +20,48 @@
     is either a metric key (fetched live from METRICS) or a hardcoded
     { value, label } card.
 
-  Self-contained; all classes prefixed lul-cov- to avoid collisions.
+  Self-contained; all classes prefixed lul-cov2- to avoid collisions.
 -->
-<section class="lul-cov" aria-label="Data coverage statistics">
+<section class="lul-cov2" aria-label="Data coverage statistics">
     <style>
-        .lul-cov {
-            --lul-header: #594496;
-            --lul-card: #ffffff; /* grey card, matches research-band feel */
-            --lul-sub: #393348;
+        .lul-cov2 {
+            --lul2-header: #594496;
+            --lul2-card: #ffffff; /* grey card, matches research-band feel */
+            --lul2-sub: #393348;
+
+            /* ── TWEAKABLE SIZING ────────────────────────────────────────
+               Everything you'd normally want to nudge lives here. */
+            --lul2-num-size: 2.5rem; /* big count-up number (was 2.9rem) */
+            /* Space between the LABEL and the NUMBER. Per-state, because the
+               2x2 cards are taller and want more air than the stacked ones. */
+            --lul2-num-gap-2col: 40px;
+            --lul2-num-gap: var(--lul2-num-gap-2col);
+            --lul2-card-pad-top: 20px; /* card padding: above the label */
+            --lul2-card-pad-x: 20px; /* card padding: left + right */
+            --lul2-card-pad-bottom: 20px; /* card padding: BELOW the number */
+            --lul2-card-min-h: 120px; /* card height floor; lower = tighter card */
+            --lul2-gap-2col: 25px; /* grid gap in the 2x2 state */
+            --lul2-justify-2col: start; /* 2x2 sits flush left in the block */
+
+            /* ── Stacked (1-column) overrides ────────────────────────────
+               A stacked card is wider and shorter than a 2x2 one, so it needs
+               less vertical room; the space under the number comes from BOTH
+               the min-height floor and the bottom padding, so both drop here.
+
+               --lul2-card-w-1col is the stacked card's fixed width: wider than
+               the 180px used in the 2x2 state, but NOT stretched to the block's
+               edge. That's the one to tweak. The minmax(0, …) wrapper only lets
+               it shrink instead of overflowing on a very narrow block. */
+            --lul2-card-w-1col: 160px;
+            --lul2-track-1col: minmax(0, var(--lul2-card-w-1col));
+            --lul2-gap-1col: 12px; /* grid gap when stacked */
+            --lul2-justify-1col: center; /* stacked column centers in the block */
+            --lul2-num-gap-1col: 12px; /* label-to-number gap when stacked */
+            --lul2-card-pad-bottom-1col: 14px; /* bottom padding when stacked */
+            --lul2-card-min-h-1col: 0px; /* 0 = card hugs its content */
+            /* ─────────────────────────────────────────────────────────── */
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: var(--lul-header);
+            color: var(--lul2-header);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             width: 100%;
@@ -27,53 +71,55 @@
             /* never let the block paint outside its Squarespace container */
             overflow-x: clip;
         }
-        .lul-cov *,
-        .lul-cov *::before,
-        .lul-cov *::after {
+        .lul-cov2 *,
+        .lul-cov2 *::before,
+        .lul-cov2 *::after {
             box-sizing: border-box;
         }
 
-        .lul-cov__grid {
+        .lul-cov2__grid {
             display: grid;
-            /* Cards are 180px wide and wrap to the next row instead of
-               stretching to fill. --lul-cols is set by the ResizeObserver in
-               the script below (4 / 2 / 1) from the BLOCK's measured width.
-               minmax(0, 180px) is the safety net: if the block is ever
-               narrower than the row needs, tracks shrink rather than
-               overflowing past the code block's edge. */
-            grid-template-columns: repeat(var(--lul-cols, 1), minmax(0, 180px));
-            justify-content: center; /* centers the row of cards in the block */
-            gap: 25px;
+            /* 2 columns MAX — never 4 across, no matter how wide the block is.
+               Drops to 1 column when the block can't fit two.
+               --lul2-cols is set by the ResizeObserver in the script below
+               from the BLOCK's measured width. minmax(0, 180px) is the safety
+               net: tracks shrink rather than overflowing past the code block. */
+            grid-template-columns: repeat(var(--lul2-cols, 1), var(--lul2-track, minmax(0, 180px)));
+            /* flush left in the 2x2 state, centered when stacked (see below) */
+            justify-content: var(--lul2-justify, var(--lul2-justify-2col));
+            gap: var(--lul2-gap, var(--lul2-gap-2col));
             width: 100%;
             max-width: 100%;
-            margin-inline: auto;
         }
 
-        .lul-cov__card {
-            background: var(--lul-card);
+        .lul-cov2__card {
+            background: var(--lul2-card);
             border-radius: 0;
-            padding: 25px 20px 25px 20px;
+            padding: var(--lul2-card-pad-top) var(--lul2-card-pad-x) var(--lul2-card-pad-bottom);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            min-height: 150px; /* taller card -> bigger number-to-text gap */
+            min-height: var(--lul2-card-min-h);
             box-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
             text-align: left;
             align-items: flex-start;
             border: solid 1px rgba(57, 51, 72, 0.3);
         }
 
-        .lul-cov__num {
+        .lul-cov2__num {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-weight: 400;
-            font-size: 2.9rem;
+            font-size: var(--lul2-num-size);
             line-height: 1;
             letter-spacing: -0.03em;
-            color: var(--lul-header);
-            margin: 0;
-            margin-top: auto; /* number sits at the bottom, label on top */
+            color: var(--lul2-header);
+            /* Fixed gap under the label instead of `margin-top: auto`, which
+               pushed the number to the card's bottom edge and made the gap a
+               side effect of card height. Now the two sit together and
+               --lul2-num-gap controls the spacing directly. */
+            margin: var(--lul2-num-gap) 0 0 0;
         }
-        .lul-cov__plus {
+        .lul-cov2__plus {
             font-size: 0.6em; /* a little smaller than the number */
             font-weight: 400;
             margin-left: 0.15em;
@@ -83,26 +129,26 @@
         /* transparent "ghost" tile — opt-in per hardcoded card via `accent: true`.
            For placement on a DARK background: no fill, a cream keyline + cream
            text so it reads as a different class of figure using one palette. */
-        .lul-cov__card--accent {
+        .lul-cov2__card--accent {
             background: transparent;
             /* inset ring instead of a real border, so it doesn't shift the
                content down by the border width like a border-box border would */
             box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
         }
-        .lul-cov__card--accent .lul-cov__num {
+        .lul-cov2__card--accent .lul-cov2__num {
             color: #eeecef;
         }
-        .lul-cov__card--accent .lul-cov__sub {
+        .lul-cov2__card--accent .lul-cov2__sub {
             color: rgba(238, 236, 239, 0.78);
             opacity: 1;
         }
-        .lul-cov__card--accent .lul-cov__plus {
+        .lul-cov2__card--accent .lul-cov2__plus {
             color: rgba(238, 236, 239, 0.6);
         }
 
         /* uppercase label — same treatment as uppercase_label.html.
            Sits at the TOP of the card; the number is pushed to the bottom. */
-        .lul-cov__sub {
+        .lul-cov2__sub {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 12px;
             font-weight: 600;
@@ -114,18 +160,31 @@
             margin: 0;
         }
 
-        /* Column count is decided in JS (see setCols) — no @media or @container
+        /* Stacked (1-column) state: tighten the grid gap AND the space under
+           the number, so the four boxes read as one list instead of four tall
+           drifting slabs. These vars are set on the grid but inherit down to
+           the cards. data-cols is stamped on the section by setCols2. */
+        .lul-cov2[data-cols="1"] .lul-cov2__grid {
+            --lul2-track: var(--lul2-track-1col);
+            --lul2-justify: var(--lul2-justify-1col);
+            --lul2-gap: var(--lul2-gap-1col);
+            --lul2-num-gap: var(--lul2-num-gap-1col);
+            --lul2-card-pad-bottom: var(--lul2-card-pad-bottom-1col);
+            --lul2-card-min-h: var(--lul2-card-min-h-1col);
+        }
+
+        /* Column count is decided in JS (see setCols2) — no @media or @container
            rules here, so nothing depends on the viewport or on how Squarespace
            wraps the code block. */
     </style>
 
-    <div class="lul-cov__grid" id="lul-cov-grid"></div>
+    <div class="lul-cov2__grid" id="lul-cov2-grid"></div>
 
     <script>
         (function () {
-            var root = document.currentScript.closest(".lul-cov");
+            var root = document.currentScript.closest(".lul-cov2");
             if (!root) return;
-            var grid = root.querySelector("#lul-cov-grid");
+            var grid = root.querySelector("#lul-cov2-grid");
             if (!grid) return;
 
             var API = "https://api.zoningatlas.org/nza_coverage";
@@ -209,7 +268,7 @@
             // per-card plus flag (defaults on if omitted).
             function withPlus(n, show, dp, unit) {
                 if (show === false) return abbr(n, dp, unit);
-                return abbr(n, dp, unit) + '<span class="lul-cov__plus">+</span>';
+                return abbr(n, dp, unit) + '<span class="lul-cov2__plus">+</span>';
             }
 
             // ── Build the cards from SELECTED ──────────────────────────
@@ -221,7 +280,7 @@
                     var m = METRICS[entry];
                     if (!m) {
                         // unknown key → warn so the card isn't silently dropped
-                        console.warn('[coverage_stats] unknown metric key: "' + entry + '"');
+                        console.warn('[coverage_stats_2x2_left] unknown metric key: "' + entry + '"');
                         return null;
                     }
                     return {
@@ -248,12 +307,12 @@
             var records = []; // { el, subEl, def, target }
             defs.forEach(function (def) {
                 var card = document.createElement("article");
-                card.className = "lul-cov__card" + (def.accent ? " lul-cov__card--accent" : "");
+                card.className = "lul-cov2__card" + (def.accent ? " lul-cov2__card--accent" : "");
                 var num = document.createElement("p");
-                num.className = "lul-cov__num";
+                num.className = "lul-cov2__num";
                 num.textContent = "—";
                 var sub = document.createElement("p");
-                sub.className = "lul-cov__sub";
+                sub.className = "lul-cov2__sub";
                 card.appendChild(sub);
                 card.appendChild(num);
                 grid.appendChild(card);
@@ -329,29 +388,31 @@
             }
 
             // ── Responsive columns, measured off the BLOCK (not the viewport) ──
-            // Squarespace drops this into a code block of unknown width, so the
-            // column count comes from the block's own measured width. Widths
-            // needed: 4 across = 4*180 + 3*25 = 795; 2 across = 2*180 + 25 = 385.
-            var CARD_W = 180,
-                GAP = 25;
-            function widthFor(cols) {
-                return cols * CARD_W + (cols - 1) * GAP;
+            // Same logic as coverage_stats.html, but capped at 2 columns: this
+            // variant tops out at 2x2 and only ever drops to a single column.
+            // Width needed for 2 across = 2*180 + 25 = 385.
+            var CARD_W2 = 180,
+                GAP2 = 25;
+            function widthFor2(cols) {
+                return cols * CARD_W2 + (cols - 1) * GAP2;
             }
-            function setCols() {
+            function setCols2() {
                 // clientWidth excludes any scrollbar; padding here is vertical only
                 var w = root.clientWidth || root.getBoundingClientRect().width || 0;
                 if (!w) return;
-                var cols = w >= widthFor(4) ? 4 : w >= widthFor(2) ? 2 : 1;
-                root.style.setProperty("--lul-cols", cols);
+                var cols = w >= widthFor2(2) ? 2 : 1;
+                root.style.setProperty("--lul2-cols", cols);
+                // drives the tighter stacked-state gap in the CSS above
+                root.setAttribute("data-cols", cols);
             }
-            setCols();
+            setCols2();
             if ("ResizeObserver" in window) {
                 // fires on block resize AND on the initial layout pass, which
                 // covers Squarespace mounting/animating the block after load
-                new ResizeObserver(setCols).observe(root);
+                new ResizeObserver(setCols2).observe(root);
             } else {
-                window.addEventListener("resize", setCols);
-                window.addEventListener("load", setCols);
+                window.addEventListener("resize", setCols2);
+                window.addEventListener("load", setCols2);
             }
 
             // ── Fetch live data, then animate (fall back on failure/timeout) ──

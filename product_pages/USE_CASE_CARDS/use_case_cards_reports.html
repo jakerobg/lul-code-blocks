@@ -1,0 +1,207 @@
+<!--
+  USE CASE CARDS — four icon cards, 4 across (Squarespace Code Block).
+  Same card system as the audience cards, carousel, and coverage stats:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+  These are informational, not links, so they're <article> elements with no
+  hover lift — motion and shadow stay reserved for the clickable product and
+  audience cards. To make them clickable, swap <article> for <a href="…"> and
+  uncomment the hover rule below.
+  ▶ WIDTH: fills its Squarespace section. Control the inset from the
+    section's content-width setting.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    4 across, stacked one-by-one under 640px.
+  ▶ ICONS: inline SVG, swap the <path> data for any 24x24 outline icon.
+  ▶ NAMESPACE: everything here is prefixed lul-ucr- / --lulucr- and the
+    container is named lulucr, so this block is fully self-contained. The
+    sibling blocks that use the shared lul-uc- namespace (use_case_cards.html,
+    product_specs_cards.html, how_we_build.html) define their own .lul-uc
+    rules; before this rename, dropping two of them on one page meant whichever
+    <style> loaded last won for BOTH. This one can now sit alongside any of
+    them without either being affected.
+-->
+<section class="lul-ucr" aria-label="Use cases">
+    <style>
+        .lul-ucr {
+            --lulucr-ink: #393348;
+            --lulucr-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 30px 0;
+            container-type: inline-size;
+            container-name: lulucr;
+        }
+        .lul-ucr *,
+        .lul-ucr *::before,
+        .lul-ucr *::after {
+            box-sizing: border-box;
+        }
+        .lul-ucr__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lulucr-gap);
+        }
+        .lul-ucr__card {
+            flex: 1 1 calc(25% - (var(--lulucr-gap) * 3 / 4));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        /* uncomment if you turn these into links
+        .lul-ucr__card:hover {
+            border-color: rgba(57, 51, 72, 0.4);
+            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
+            transform: translateY(-2px);
+        } */
+        .lul-ucr__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lulucr-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-ucr__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-ucr__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lulucr-ink);
+            margin: 0 0 12px;
+        }
+        .lul-ucr__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 640px  →  4 across
+             ≤ 640px  →  stacked                                      */
+        @container lulucr (max-width: 640px) {
+            .lul-ucr {
+                --lulucr-gap: 16px;
+            }
+            .lul-ucr__card {
+                flex-basis: 100%;
+            }
+        }
+        /* fallback for browsers without container queries */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 760px) {
+                .lul-ucr__card {
+                    flex-basis: 100%;
+                }
+            }
+        }
+    </style>
+    <div class="lul-ucr__grid">
+        <!-- Due Diligence -->
+        <article class="lul-ucr__card">
+            <span class="lul-ucr__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-4.3-4.3" />
+                    <path d="m8.5 11 2 2 4-4" />
+                </svg>
+            </span>
+            <h4 class="lul-ucr__title">Due Diligence</h4>
+            <p class="lul-ucr__body">
+                Evaluate zoning risk, permitted uses, and structural limits before putting money down.
+            </p>
+        </article>
+        <!-- Development Feasibility -->
+        <article class="lul-ucr__card">
+            <span class="lul-ucr__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4Z"
+                    />
+                    <path d="m7.5 10.5 2 2" />
+                    <path d="m10.5 7.5 2 2" />
+                    <path d="m13.5 4.5 2 2" />
+                    <path d="m4.5 13.5 2 2" />
+                </svg>
+            </span>
+            <h4 class="lul-ucr__title">Development Feasibility</h4>
+            <p class="lul-ucr__body">Model by-right height limits, FAR maximums and parking minimum constraints.</p>
+        </article>
+        <!-- Conformity Analysis -->
+        <article class="lul-ucr__card">
+            <span class="lul-ucr__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                    <path d="M14 2v6h6" />
+                    <path d="m8.5 15.5 2.5 2.5L15.5 13" />
+                </svg>
+            </span>
+            <h4 class="lul-ucr__title">Conformity Analysis</h4>
+            <p class="lul-ucr__body">
+                Verify a building or structure conforms to active local land use and setback regulations.
+            </p>
+        </article>
+        <!-- Risk Mitigation -->
+        <article class="lul-ucr__card">
+            <span class="lul-ucr__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+                    <path d="M12 8v4" />
+                    <path d="M12 16h.01" />
+                </svg>
+            </span>
+            <h4 class="lul-ucr__title">Risk Mitigation</h4>
+            <p class="lul-ucr__body">
+                Protect against zoning surprises, environmental overlays, and hazard preservation requirements.
+            </p>
+        </article>
+    </div>
+</section>

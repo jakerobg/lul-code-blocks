@@ -1,23 +1,25 @@
 <!--
-  ZONING SLICES ORDER FORM — geography → variables → instant pricing.
+  ZONING DISTRICTS ORDER FORM — geography → variables → instant pricing.
 
-  Restyled from slices_form_OLD.html to match slices_form_outline.png and the
-  visual language of reports_order_form.html. The BACKEND LOGIC IS UNCHANGED —
-  same /availability/, /slices/variable-sets/, /price/ and /payments/checkout/
-  calls, same scope handling, same spill-in warnings.
+  Twin of SLICES/slices_order_form.html: same layout, same styling, same
+  step flow, same backend contract. Only the product differs —
+  /availability/?product=districts, /districts/variable-sets/, and
+  product=districts on /price/ and /payments/checkout/.
 
-  What changed is the UI. The old variable matrix (use-type rows × regulation-
-  type columns) is replaced by the wireframe's two-stage picker:
-     use-type chips  →  filter which variables are listed
+  The variable picker is the same two-stage control:
+     use-type chips   →  filter which variables are listed
      accordion groups →  check individual variables inside each group
-  Both axes still come straight from the registry's own `use_type` /
-  `regulation_type` values, so a new variable set on the backend still appears
-  here with no UI change.
+  Both axes come straight from the registry's own `use_type` /
+  `regulation_type` values, so a new variable set on the backend appears
+  here with no UI change. The districts registry currently has 72 sets
+  across 8 use types and 18 regulation types (see
+  districts_variable_sets.json) — all of it is picked up automatically.
 
-  ▶ ROOT ID is #lul-slices, deliberately NOT #lul-order. The site-wide
+  ▶ ROOT ID is #lul-districts, deliberately NOT #lul-order. The site-wide
     Squarespace CSS caps #lul-order at 560px and carries the old matrix rules;
     a separate id keeps this block self-contained. Everything it needs is in
-    the <style> below.
+    the <style> below. Class prefix is lul-di__ (slices uses lul-sl__), so the
+    two forms can coexist on one page.
 
   ▶ TYPEAHEAD is the shared site-wide helper (window.lulMountGeoSearch from
     lul-geo-search.html in Code Injection → Header). The element ids it binds to
@@ -32,7 +34,7 @@
 -->
 
 <style>
-    #lul-slices {
+    #lul-districts {
         /* ── Colour system ──────────────────────────────────────────────────
            Two brand colours are the only place a literal value appears. The
            -rgb triplets exist so every tint below can be derived from the same
@@ -81,6 +83,9 @@
            should be measured in their SHRUNK state. */
         --lul-sticky-top: 120px;
 
+        /* Max width of the whole form block */
+        --lul-max-w: 1280px;
+
         /* Error state */
         --lul-error-bg: #fff3f3;
         --lul-error-line: rgba(180, 0, 0, 0.2);
@@ -91,32 +96,39 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         width: 100%;
+        /* Caps the form on a wide screen instead of letting it run to the edge;
+           narrower blocks just fill their width. Because this sits on the same
+           element as container-type below, the @container breakpoints measure
+           the CAPPED width, so they stay tied to the space the form actually
+           has. */
+        max-width: var(--lul-max-w);
+        margin-inline: auto;
         box-sizing: border-box;
         /* the step row and the two-column split size against the BLOCK, not the
            viewport — this sits in a Squarespace column of unknown width */
         container-type: inline-size;
-        container-name: lulslices;
+        container-name: luldistricts;
     }
-    #lul-slices *,
-    #lul-slices *::before,
-    #lul-slices *::after {
+    #lul-districts *,
+    #lul-districts *::before,
+    #lul-districts *::after {
         box-sizing: border-box;
     }
 
     /* ── Panel + columns ── */
-    .lul-sl__panel {
+    .lul-di__panel {
         background: var(--lul-panel);
         border-radius: 0;
-        padding: 26px clamp(16px, 3cqi, 30px) 30px;
+        padding: 36px clamp(16px, 3cqi, 30px) 30px;
     }
-    .lul-sl__cols {
+    .lul-di__cols {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 320px;
         gap: 24px;
         align-items: start;
     }
-    @container lulslices (max-width: 860px) {
-        .lul-sl__cols {
+    @container luldistricts (max-width: 860px) {
+        .lul-di__cols {
             grid-template-columns: minmax(0, 1fr);
         }
     }
@@ -125,7 +137,7 @@
        Same inline-block construction as reports_order_form.html: Squarespace's
        stylesheet breaks a flex row here (staggered baselines, stray
        underlines), and inline-block is much harder for it to disturb. */
-    #lul-slices .lul-steps {
+    #lul-districts .lul-steps {
         display: block !important;
         white-space: nowrap !important;
         text-align: center;
@@ -136,7 +148,7 @@
         line-height: 1;
         overflow: hidden;
     }
-    #lul-slices .lul-step {
+    #lul-districts .lul-step {
         display: inline-block !important;
         vertical-align: middle !important;
         white-space: nowrap;
@@ -145,7 +157,7 @@
         border: 0 !important;
         text-decoration: none !important;
     }
-    #lul-slices .lul-step__num {
+    #lul-districts .lul-step__num {
         display: inline-block !important;
         vertical-align: middle !important;
         width: 22px;
@@ -164,7 +176,7 @@
             background 0.25s ease,
             color 0.25s ease;
     }
-    #lul-slices .lul-step__label {
+    #lul-districts .lul-step__label {
         display: inline-block !important;
         vertical-align: middle !important;
         font-size: 12.5px;
@@ -178,15 +190,15 @@
         text-decoration: none !important;
         transition: color 0.25s ease;
     }
-    #lul-slices .lul-step.is-active .lul-step__num {
+    #lul-districts .lul-step.is-active .lul-step__num {
         background: var(--lul-accent) !important;
         color: var(--lul-on-accent) !important;
     }
-    #lul-slices .lul-step.is-active .lul-step__label {
+    #lul-districts .lul-step.is-active .lul-step__label {
         color: var(--lul-ink) !important;
         font-weight: 700;
     }
-    #lul-slices .lul-steps__rule {
+    #lul-districts .lul-steps__rule {
         display: inline-block !important;
         vertical-align: middle !important;
         width: clamp(20px, 5cqi, 64px);
@@ -195,54 +207,54 @@
         margin: 0 14px;
         border: 0 !important;
     }
-    @container lulslices (max-width: 560px) {
-        #lul-slices .lul-step:not(.is-active) .lul-step__label {
+    @container luldistricts (max-width: 560px) {
+        #lul-districts .lul-step:not(.is-active) .lul-step__label {
             display: none !important;
         }
-        #lul-slices .lul-steps__rule {
+        #lul-districts .lul-steps__rule {
             margin: 0 8px;
         }
     }
 
     /* ── Cards + sections ── */
-    .lul-sl__card {
+    .lul-di__card {
         background: var(--lul-surface);
         border-radius: 0;
         padding: 22px clamp(16px, 2.4cqi, 24px);
         margin-bottom: 16px;
     }
-    .lul-sl__card:last-child {
+    .lul-di__card:last-child {
         margin-bottom: 0;
     }
-    .lul-sl__intro {
+    .lul-di__intro {
         font-size: 14.5px;
         line-height: 1.6;
         color: var(--lul-ink);
         margin: 0 0 22px;
     }
-    .lul-sl__h {
+    .lul-di__h {
         font-size: 15px;
         font-weight: 700;
         letter-spacing: -0.01em;
         margin: 0 0 12px;
         color: var(--lul-ink);
     }
-    .lul-sl__hint {
+    .lul-di__hint {
         font-size: 13.5px;
         line-height: 1.55;
         color: var(--lul-muted);
         margin: 0 0 14px;
     }
-    .lul-sl__hint a {
+    .lul-di__hint a {
         color: var(--lul-ink);
         text-decoration: underline;
         text-underline-offset: 2px;
     }
     /* Sits between the use-type chips and the checklist they populate. */
-    .lul-sl__hint--dict {
+    .lul-di__hint--dict {
         margin: 20px 0 14px;
     }
-    .lul-sl__eyebrow {
+    .lul-di__eyebrow {
         font-size: 10.5px;
         font-weight: 700;
         letter-spacing: 0.1em;
@@ -250,32 +262,32 @@
         color: var(--lul-muted);
         margin: 0 0 10px;
     }
-    .lul-sl__rule {
+    .lul-di__rule {
         border: 0;
         border-top: 1px solid var(--lul-line);
         margin: 20px 0 18px;
     }
 
     /* ── Scope tiles ── */
-    .lul-sl__tiles {
+    .lul-di__tiles {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
     }
-    @container lulslices (max-width: 620px) {
-        .lul-sl__tiles {
+    @container luldistricts (max-width: 620px) {
+        .lul-di__tiles {
             grid-template-columns: minmax(0, 1fr);
         }
     }
-    .lul-sl__tile {
+    .lul-di__tile {
         position: relative;
     }
-    .lul-sl__tile input {
+    .lul-di__tile input {
         position: absolute;
         opacity: 0;
         pointer-events: none;
     }
-    .lul-sl__tile label {
+    .lul-di__tile label {
         display: block;
         height: 100%;
         border: 1px solid var(--lul-line);
@@ -288,11 +300,11 @@
             border-color 0.15s ease,
             box-shadow 0.15s ease;
     }
-    .lul-sl__tile label:hover {
+    .lul-di__tile label:hover {
         border-color: var(--lul-accent-hover);
     }
     /* the radio dot, drawn rather than native so it sits where the mock has it */
-    .lul-sl__tile label::after {
+    .lul-di__tile label::after {
         content: "";
         position: absolute;
         top: 16px;
@@ -306,49 +318,49 @@
             border-color 0.15s ease,
             box-shadow 0.15s ease;
     }
-    .lul-sl__tile input:checked + label {
+    .lul-di__tile input:checked + label {
         border-color: var(--lul-accent);
         box-shadow: inset 0 0 0 1px var(--lul-accent);
     }
-    .lul-sl__tile input:checked + label::after {
+    .lul-di__tile input:checked + label::after {
         border-color: var(--lul-accent);
         background: var(--lul-accent);
         box-shadow: inset 0 0 0 2.5px var(--lul-surface);
     }
-    .lul-sl__tile input:focus-visible + label {
+    .lul-di__tile input:focus-visible + label {
         outline: 2px solid var(--lul-accent);
         outline-offset: 2px;
     }
-    .lul-sl__tile-name {
+    .lul-di__tile-name {
         display: block;
         font-size: 14px;
         font-weight: 700;
         margin-bottom: 5px;
     }
-    .lul-sl__tile-desc {
+    .lul-di__tile-desc {
         display: block;
         font-size: 12.5px;
         line-height: 1.45;
         color: var(--lul-muted);
     }
     /* non-interactive "contact us" tile */
-    .lul-sl__tile--info {
+    .lul-di__tile--info {
         border: 1px solid transparent;
         border-radius: 0;
         background: var(--lul-accent-soft);
         padding: 14px 15px;
     }
-    .lul-sl__tile--info a {
+    .lul-di__tile--info a {
         color: var(--lul-ink);
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
     /* ── Search field (ids below are the shared typeahead's mount points) ── */
-    .lul-sl__search {
+    .lul-di__search {
         position: relative;
     }
-    .lul-sl__search::before {
+    .lul-di__search::before {
         content: "";
         position: absolute;
         left: 15px;
@@ -360,7 +372,7 @@
         border-radius: 50%;
         pointer-events: none;
     }
-    .lul-sl__search::after {
+    .lul-di__search::after {
         content: "";
         position: absolute;
         left: 27px;
@@ -372,7 +384,7 @@
         transform: rotate(45deg);
         pointer-events: none;
     }
-    #lul-slices .lul-input {
+    #lul-districts .lul-input {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size: 15px;
         padding: 13px 14px;
@@ -385,21 +397,21 @@
         transition: border-color 0.15s;
         -webkit-appearance: none;
     }
-    /* Needs the #lul-slices prefix: the `padding` shorthand above is id-scoped,
-       so a plain .lul-sl__search .lul-input rule loses on specificity and the
+    /* Needs the #lul-districts prefix: the `padding` shorthand above is id-scoped,
+       so a plain .lul-di__search .lul-input rule loses on specificity and the
        text runs under the magnifying glass. */
-    #lul-slices .lul-sl__search .lul-input {
+    #lul-districts .lul-di__search .lul-input {
         padding-left: 42px;
     }
-    #lul-slices .lul-input::placeholder {
+    #lul-districts .lul-input::placeholder {
         color: var(--lul-faint);
     }
-    #lul-slices .lul-input:focus {
+    #lul-districts .lul-input:focus {
         border-color: var(--lul-accent);
     }
     /* typeahead results — styled here because the site-wide rules for these
        are scoped to #lul-order, which this block deliberately does not use */
-    #lul-slices .lul-results {
+    #lul-districts .lul-results {
         list-style: none;
         margin: 6px 0 0;
         padding: 0;
@@ -410,11 +422,11 @@
         overflow-y: auto;
         box-shadow: 0 6px 20px var(--lul-shadow);
     }
-    #lul-slices .lul-results li {
+    #lul-districts .lul-results li {
         padding: 0;
         border-bottom: 1px solid var(--lul-line);
     }
-    #lul-slices .lul-results li:last-child {
+    #lul-districts .lul-results li:last-child {
         border-bottom: 0;
     }
     /* lul-geo-search.js builds each row as <li class="lul-result"><button
@@ -422,7 +434,7 @@
        button has to stay a button. Reset it to look like a plain list row and
        carry the padding, so the whole row is the hit target. !important because
        Squarespace styles bare <button> elements site-wide. */
-    #lul-slices .lul-results li button {
+    #lul-districts .lul-results li button {
         display: block !important;
         width: 100% !important;
         text-align: left !important;
@@ -441,8 +453,8 @@
         cursor: pointer;
         min-height: 0 !important;
     }
-    #lul-slices .lul-results li button:hover,
-    #lul-slices .lul-results li button:focus-visible {
+    #lul-districts .lul-results li button:hover,
+    #lul-districts .lul-results li button:focus-visible {
         background: var(--lul-accent-soft) !important;
         outline: none;
     }
@@ -478,12 +490,12 @@
     }
 
     /* ── Chips (presets + use types) ── */
-    .lul-sl__chips {
+    .lul-di__chips {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
     }
-    .lul-sl__chip {
+    .lul-di__chip {
         font-family: inherit;
         font-size: 13px;
         font-weight: 500;
@@ -499,10 +511,10 @@
             background 0.15s ease,
             color 0.15s ease;
     }
-    .lul-sl__chip:hover {
+    .lul-di__chip:hover {
         border-color: var(--lul-accent-hover);
     }
-    .lul-sl__chip[aria-pressed="true"] {
+    .lul-di__chip[aria-pressed="true"] {
         border-color: var(--lul-accent);
         color: var(--lul-accent);
         background: var(--lul-accent-soft);
@@ -510,26 +522,26 @@
     }
     /* Preset packages activate green rather than purple, so a chosen package
        reads as distinct from the use-type filters below it. */
-    #lul-presets .lul-sl__chip[aria-pressed="true"] {
+    #lul-presets .lul-di__chip[aria-pressed="true"] {
         border-color: var(--lul-green-line);
         background: var(--lul-green);
         color: var(--lul-ink);
     }
-    #lul-presets .lul-sl__chip[aria-pressed="true"] .lul-sl__chip-note {
+    #lul-presets .lul-di__chip[aria-pressed="true"] .lul-di__chip-note {
         color: var(--lul-ink);
         opacity: 0.7;
     }
-    .lul-sl__chip--ghost {
+    .lul-di__chip--ghost {
         border-style: dashed;
         color: var(--lul-muted);
     }
-    .lul-sl__chip-note {
+    .lul-di__chip-note {
         font-style: italic;
         color: var(--lul-muted);
         font-weight: 400;
         margin-left: 5px;
     }
-    .lul-sl__help {
+    .lul-di__help {
         display: inline-block;
         width: 14px;
         height: 14px;
@@ -545,16 +557,16 @@
     }
 
     /* ── Accordion checklist ── */
-    .lul-sl__acc {
+    .lul-di__acc {
         border-radius: 0;
         overflow: hidden;
     }
-    .lul-sl__group {
+    .lul-di__group {
         margin-bottom: 6px;
     }
     /* The header holds two independent controls — a select-all checkbox and the
        expand toggle — so it can't be one <button> (no nested interactives). */
-    .lul-sl__group-head {
+    .lul-di__group-head {
         display: flex;
         align-items: stretch;
         background: var(--lul-chip);
@@ -563,27 +575,27 @@
             background 0.15s ease,
             border-color 0.15s ease;
     }
-    .lul-sl__group-head:hover {
+    .lul-di__group-head:hover {
         background: var(--lul-fill);
     }
     /* Any variable ticked inside → the bar fills like an active use-type chip. */
-    .lul-sl__group-head.is-on {
+    .lul-di__group-head.is-on {
         background: var(--lul-accent-soft);
         border-color: var(--lul-accent);
     }
-    .lul-sl__group-check {
+    .lul-di__group-check {
         display: flex;
         align-items: center;
         padding: 0 0 0 14px;
         margin: 0;
         cursor: pointer;
     }
-    .lul-sl__group-check input {
+    .lul-di__group-check input {
         margin: 0;
         accent-color: var(--lul-accent);
         cursor: pointer;
     }
-    .lul-sl__group-btn {
+    .lul-di__group-btn {
         font-family: inherit;
         display: flex;
         align-items: center;
@@ -601,16 +613,16 @@
         font-size: 13.5px;
         font-weight: 700;
     }
-    .lul-sl__group-head.is-on .lul-sl__group-btn {
+    .lul-di__group-head.is-on .lul-di__group-btn {
         color: var(--lul-accent);
     }
-    .lul-sl__group-meta {
+    .lul-di__group-meta {
         font-size: 12.5px;
         font-weight: 400;
         color: var(--lul-muted);
         white-space: nowrap;
     }
-    .lul-sl__caret {
+    .lul-di__caret {
         display: inline-block;
         width: 9px;
         height: 9px;
@@ -620,23 +632,23 @@
         margin-left: 10px;
         transition: transform 0.2s ease;
     }
-    .lul-sl__group-btn[aria-expanded="false"] .lul-sl__caret {
+    .lul-di__group-btn[aria-expanded="false"] .lul-di__caret {
         transform: rotate(45deg);
         margin-top: -5px;
     }
     /* padding-top is set to match the gap between subgroups below (row
        padding + subgroup margin), so the first heading sits the same distance
        from the bar as every later heading does from the rows above it. */
-    .lul-sl__group-body {
+    .lul-di__group-body {
         padding: 10px 4px 8px;
     }
     /* Driven off the wrapper, not the button: the body is a sibling of the
        header row now, so an adjacent-sibling selector on the button no longer
        reaches it. */
-    .lul-sl__group[data-open="false"] .lul-sl__group-body {
+    .lul-di__group[data-open="false"] .lul-di__group-body {
         display: none;
     }
-    .lul-sl__var {
+    .lul-di__var {
         display: flex;
         align-items: flex-start;
         gap: 10px;
@@ -647,20 +659,20 @@
         font-size: 13.5px;
         line-height: 1.4;
     }
-    .lul-sl__var:hover {
+    .lul-di__var:hover {
         background: var(--lul-accent-soft);
     }
-    .lul-sl__var input {
+    .lul-di__var input {
         margin: 2px 0 0;
         accent-color: var(--lul-accent);
         flex-shrink: 0;
     }
     /* Regulation-type heading within a use-type accordion. Replaces the old
        per-row tag — one heading per subgroup instead of a badge on every row. */
-    .lul-sl__sub + .lul-sl__sub {
+    .lul-di__sub + .lul-di__sub {
         margin-top: 4px;
     }
-    .lul-sl__sub-label {
+    .lul-di__sub-label {
         font-size: 10.5px;
         font-weight: 700;
         letter-spacing: 0.08em;
@@ -669,7 +681,7 @@
         margin: 0 0 2px;
         padding: 0 12px;
     }
-    .lul-sl__empty {
+    .lul-di__empty {
         font-size: 13.5px;
         line-height: 1.55;
         color: var(--lul-muted);
@@ -678,7 +690,7 @@
     }
 
     /* ── Sidebar ── */
-    .lul-sl__side {
+    .lul-di__side {
         position: sticky;
         top: var(--lul-sticky-top);
         background: var(--lul-surface);
@@ -686,45 +698,45 @@
         border-radius: 0;
         padding: 20px;
     }
-    @container lulslices (max-width: 860px) {
-        .lul-sl__side {
+    @container luldistricts (max-width: 860px) {
+        .lul-di__side {
             position: static;
         }
     }
-    .lul-sl__side-title {
+    .lul-di__side-title {
         font-size: 15px;
         font-weight: 700;
         margin: 0 0 16px;
     }
-    .lul-sl__price {
+    .lul-di__price {
         font-size: 34px;
         font-weight: 700;
         letter-spacing: -0.02em;
         line-height: 1;
         color: var(--lul-accent);
     }
-    .lul-sl__price-unit {
+    .lul-di__price-unit {
         font-size: 13px;
         font-weight: 400;
         color: var(--lul-muted);
         margin-left: 6px;
     }
-    .lul-sl__side-rule {
+    .lul-di__side-rule {
         border: 0;
         border-top: 1px solid var(--lul-line);
         margin: 16px 0;
     }
-    .lul-sl__count {
+    .lul-di__count {
         font-size: 13.5px;
         margin: 0 0 8px;
     }
-    .lul-sl__side-empty {
+    .lul-di__side-empty {
         font-size: 12.5px;
         line-height: 1.5;
         color: var(--lul-muted);
         margin: 0;
     }
-    .lul-sl__side-list {
+    .lul-di__side-list {
         list-style: none;
         margin: 0;
         padding: 0;
@@ -734,10 +746,10 @@
         line-height: 1.45;
         color: var(--lul-muted);
     }
-    .lul-sl__side-list li {
+    .lul-di__side-list li {
         padding: 3px 0;
     }
-    .lul-sl__terms {
+    .lul-di__terms {
         display: flex;
         align-items: flex-start;
         gap: 9px;
@@ -747,17 +759,17 @@
         margin: 0 0 14px;
         cursor: pointer;
     }
-    .lul-sl__terms input {
+    .lul-di__terms input {
         margin: 1px 0 0;
         accent-color: var(--lul-accent);
         flex-shrink: 0;
     }
-    .lul-sl__terms a {
+    .lul-di__terms a {
         color: var(--lul-ink);
         text-decoration: underline;
         text-underline-offset: 2px;
     }
-    #lul-slices .lul-btn {
+    #lul-districts .lul-btn {
         width: 100%;
         font-family: inherit;
         display: inline-flex;
@@ -776,11 +788,11 @@
             background 0.25s ease,
             border-color 0.25s ease;
     }
-    #lul-slices .lul-btn:hover:not(:disabled) {
+    #lul-districts .lul-btn:hover:not(:disabled) {
         background: var(--lul-accent-dark);
         border-color: var(--lul-accent-dark);
     }
-    #lul-slices .lul-btn:disabled {
+    #lul-districts .lul-btn:disabled {
         background: var(--lul-chip);
         border-color: var(--lul-chip);
         color: var(--lul-muted);
@@ -818,10 +830,10 @@
     }
 </style>
 
-<div id="lul-slices">
+<div id="lul-districts">
     <!-- No heading here on purpose — the page's own title/subtitle block sits
          above this Code Block in Squarespace. -->
-    <div class="lul-sl__panel">
+    <div class="lul-di__panel">
         <!-- Written on ONE source line on purpose: a line break between these
              inline-blocks becomes a visible whitespace gap. Inline styles repeat
              the CSS so Squarespace's stylesheet can't break the row. -->
@@ -867,20 +879,20 @@
             >
         </div>
 
-        <div class="lul-sl__cols">
+        <div class="lul-di__cols">
             <!-- ══════════ MAIN COLUMN ══════════ -->
             <div>
-                <div class="lul-sl__card">
-                    <p class="lul-sl__intro">
-                        Zoning Slices reveal the land use regulations that apply to each unique combination of base and
-                        overlay districts, including permitted uses, dimensional requirements, lot characteristics, and
-                        more. You choose the geographies and regulations you need. We deliver the GIS layers.
+                <div class="lul-di__card">
+                    <p class="lul-di__intro">
+                        Zoning Districts reveal the land use regulations specified in base and overlay districts,
+                        including permitted uses, dimensional requirements, lot characteristics, and more. You choose
+                        the geographies and regulations you need. We deliver the GIS layers.
                     </p>
 
                     <!-- ── 1. Scope ── -->
-                    <h3 class="lul-sl__h">1. Select Geographic Scope</h3>
-                    <div class="lul-sl__tiles" role="radiogroup" aria-label="Geographic scope">
-                        <div class="lul-sl__tile">
+                    <h3 class="lul-di__h">1. Select Geographic Scope</h3>
+                    <div class="lul-di__tiles" role="radiogroup" aria-label="Geographic scope">
+                        <div class="lul-di__tile">
                             <input
                                 type="radio"
                                 name="lul-scope"
@@ -889,13 +901,13 @@
                                 value="jurisdiction"
                             />
                             <label for="lul-scope-jurisdiction">
-                                <span class="lul-sl__tile-name">Single Jurisdiction</span>
-                                <span class="lul-sl__tile-desc"
+                                <span class="lul-di__tile-name">Single Jurisdiction</span>
+                                <span class="lul-di__tile-desc"
                                     >Municipality, township, or unincorporated county boundary.</span
                                 >
                             </label>
                         </div>
-                        <div class="lul-sl__tile">
+                        <div class="lul-di__tile">
                             <input
                                 type="radio"
                                 name="lul-scope"
@@ -904,8 +916,8 @@
                                 value="county"
                             />
                             <label for="lul-scope-county">
-                                <span class="lul-sl__tile-name">County-wide</span>
-                                <span class="lul-sl__tile-desc"
+                                <span class="lul-di__tile-name">County-wide</span>
+                                <span class="lul-di__tile-desc"
                                     >Includes all available municipalities and districts inside a county boundary.</span
                                 >
                             </label>
@@ -913,9 +925,9 @@
                         <!-- Non-interactive: flags the unsupported scope tier and routes to
                              the contact form instead of a purchase flow. Not a real radio
                              option, so it stays out of the radiogroup's accessible name. -->
-                        <div class="lul-sl__tile--info" aria-hidden="true">
-                            <span class="lul-sl__tile-name">CBSA, State, or Country</span>
-                            <span class="lul-sl__tile-desc"
+                        <div class="lul-di__tile--info" aria-hidden="true">
+                            <span class="lul-di__tile-name">CBSA, State, or Country</span>
+                            <span class="lul-di__tile-desc"
                                 ><a href="https://www.landuselabs.com/contact">Contact us</a> for a tailored regional
                                 quote.</span
                             >
@@ -924,14 +936,14 @@
 
                     <!-- ── 2. Search area (hidden until a scope is picked) ── -->
                     <div id="lul-step-geopick" class="lul-hidden">
-                        <hr class="lul-sl__rule" />
-                        <h3 class="lul-sl__h" id="lul-geo-label">2. Search Area</h3>
+                        <hr class="lul-di__rule" />
+                        <h3 class="lul-di__h" id="lul-geo-label">2. Search Area</h3>
                         <div id="lul-geo-typeahead">
-                            <p class="lul-sl__hint" id="lul-geo-hint">
+                            <p class="lul-di__hint" id="lul-geo-hint">
                                 Type in the name of the jurisdiction (e.g., city, town, township, county) without typing
                                 in the state name. Then select the jurisdiction from the results.
                             </p>
-                            <div class="lul-sl__search">
+                            <div class="lul-di__search">
                                 <input
                                     id="lul-geo-search"
                                     class="lul-input"
@@ -959,9 +971,9 @@
                 <div class="lul-msg lul-warn lul-hidden" id="lul-spillin-warning"></div>
 
                 <!-- ── 3. Variables ── -->
-                <div class="lul-sl__card lul-hidden" id="lul-step-variables">
-                    <h3 class="lul-sl__h">3. Select Variables or Choose a Package</h3>
-                    <p class="lul-sl__hint">
+                <div class="lul-di__card lul-hidden" id="lul-step-variables">
+                    <h3 class="lul-di__h">3. Select Variables or Choose a Package</h3>
+                    <p class="lul-di__hint">
                         Select one or more <strong>use types</strong> to see their available <strong>variables</strong>.
                         Each use type has its own set of data fields.
                     </p>
@@ -969,18 +981,18 @@
                     <div id="lul-var-status"></div>
 
                     <div id="lul-var-body" class="lul-hidden">
-                        <p class="lul-sl__eyebrow">Choose a preset variable package</p>
-                        <div class="lul-sl__chips" id="lul-presets"></div>
+                        <p class="lul-di__eyebrow">Choose a preset variable package</p>
+                        <div class="lul-di__chips" id="lul-presets"></div>
 
-                        <hr class="lul-sl__rule" />
+                        <hr class="lul-di__rule" />
 
-                        <p class="lul-sl__eyebrow">Or select use types</p>
-                        <div class="lul-sl__chips" id="lul-usetypes"></div>
+                        <p class="lul-di__eyebrow">Or select use types</p>
+                        <div class="lul-di__chips" id="lul-usetypes"></div>
 
-                        <p class="lul-sl__hint lul-sl__hint--dict">
+                        <p class="lul-di__hint lul-di__hint--dict">
                             Every order includes all base variables listed in our
                             <a
-                                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1642345933#gid=1642345933"
+                                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1394472999#gid=1394472999"
                                 target="_blank"
                                 rel="noopener"
                                 >Data Dictionary</a
@@ -988,33 +1000,33 @@
                             at no extra charge — the options below are additional, optional variables.
                         </p>
 
-                        <div class="lul-sl__acc" id="lul-checklist"></div>
+                        <div class="lul-di__acc" id="lul-checklist"></div>
                     </div>
                 </div>
             </div>
 
             <!-- ══════════ SIDEBAR ══════════ -->
-            <aside class="lul-sl__side">
-                <p class="lul-sl__side-title">Your Selection</p>
+            <aside class="lul-di__side">
+                <p class="lul-di__side-title">Your Selection</p>
 
-                <p class="lul-sl__eyebrow">Estimated price</p>
+                <p class="lul-di__eyebrow">Estimated price</p>
                 <div>
-                    <span class="lul-sl__price" id="lul-price">$0</span
-                    ><span class="lul-sl__price-unit">/ one-time download</span>
+                    <span class="lul-di__price" id="lul-price">$0</span
+                    ><span class="lul-di__price-unit">/ one-time download</span>
                 </div>
 
-                <hr class="lul-sl__side-rule" />
+                <hr class="lul-di__side-rule" />
 
-                <p class="lul-sl__eyebrow">Selected variables</p>
-                <p class="lul-sl__count" id="lul-count">0 / 0 variables selected</p>
-                <p class="lul-sl__side-empty" id="lul-side-empty">
+                <p class="lul-di__eyebrow">Selected variables</p>
+                <p class="lul-di__count" id="lul-count">0 / 0 variables selected</p>
+                <p class="lul-di__side-empty" id="lul-side-empty">
                     Nothing selected yet. Pick a preset or start checking boxes — this list fills in live.
                 </p>
-                <ul class="lul-sl__side-list lul-hidden" id="lul-side-list"></ul>
+                <ul class="lul-di__side-list lul-hidden" id="lul-side-list"></ul>
 
-                <hr class="lul-sl__side-rule" />
+                <hr class="lul-di__side-rule" />
 
-                <label class="lul-sl__terms" for="lul-terms">
+                <label class="lul-di__terms" for="lul-terms">
                     <input type="checkbox" id="lul-terms" />
                     <span
                         >I have read and agree to the
@@ -1075,10 +1087,13 @@
             All: { label: "District-Wide Characteristics" },
             ADU: { label: "ADU", help: "Accessory Dwelling Unit" },
             PRD: { label: "PRD", help: "Planned Residential Development" },
+            Affordable: { label: "Affordable", help: "Income-restricted or otherwise affordable housing" },
         };
 
         // PRODUCT DECISION — not derived from the API. Adjust freely.
         // `all: true` selects every variable set in the registry.
+        // These slugs all exist in the districts registry; if you rename one
+        // on the backend, an unknown slug here is simply ignored.
         var PRESETS = [
             {
                 id: "residential-basics",
@@ -1179,7 +1194,7 @@
         });
         $("lul-terms").checked = false;
         $("lul-terms").addEventListener("change", updateBuyButton);
-        $("lul-buy-btn").addEventListener("click", buySlices);
+        $("lul-buy-btn").addEventListener("click", buyDistricts);
 
         function onScopeChange(evt) {
             _geoType = evt.target.value;
@@ -1233,7 +1248,7 @@
             hideAvailability();
             var url =
                 API_BASE +
-                "/availability/?product=slices&geography_type=" +
+                "/availability/?product=districts&geography_type=" +
                 encodeURIComponent(_geoType) +
                 "&geography_id=" +
                 encodeURIComponent(_geoId);
@@ -1271,7 +1286,7 @@
         function loadVariableSets() {
             var statusEl = $("lul-var-status");
             statusEl.innerHTML = spinner("Loading variables&hellip;");
-            fetch(API_BASE + "/slices/variable-sets/")
+            fetch(API_BASE + "/districts/variable-sets/")
                 .then(function (res) {
                     if (!res.ok) throw new Error("HTTP " + res.status);
                     return res.json();
@@ -1314,15 +1329,15 @@
             $("lul-presets").innerHTML =
                 PRESETS.map(function (p) {
                     return (
-                        '<button type="button" class="lul-sl__chip" data-preset="' +
+                        '<button type="button" class="lul-di__chip" data-preset="' +
                         escHtml(p.id) +
                         '" aria-pressed="false">' +
                         escHtml(p.label) +
-                        (p.note ? '<span class="lul-sl__chip-note">' + escHtml(p.note) + "</span>" : "") +
+                        (p.note ? '<span class="lul-di__chip-note">' + escHtml(p.note) + "</span>" : "") +
                         "</button>"
                     );
                 }).join("") +
-                '<button type="button" class="lul-sl__chip lul-sl__chip--ghost" data-clear="1">Clear All</button>';
+                '<button type="button" class="lul-di__chip lul-di__chip--ghost" data-clear="1">Clear All</button>';
 
             $("lul-presets").addEventListener("click", function (e) {
                 var btn = e.target.closest("button");
@@ -1372,11 +1387,11 @@
                 .map(function (u) {
                     var meta = USE_TYPE_LABELS[u] || {};
                     return (
-                        '<button type="button" class="lul-sl__chip" data-use="' +
+                        '<button type="button" class="lul-di__chip" data-use="' +
                         escHtml(u) +
                         '" aria-pressed="false">' +
                         escHtml(useTypeLabel(u)) +
-                        (meta.help ? '<span class="lul-sl__help" title="' + escHtml(meta.help) + '">?</span>' : "") +
+                        (meta.help ? '<span class="lul-di__help" title="' + escHtml(meta.help) + '">?</span>' : "") +
                         "</button>"
                     );
                 })
@@ -1430,7 +1445,7 @@
             });
             if (!uses.length) {
                 host.innerHTML =
-                    '<p class="lul-sl__empty">Select a use type above to see the variables available for it.</p>';
+                    '<p class="lul-di__empty">Select a use type above to see the variables available for it.</p>';
                 return;
             }
 
@@ -1445,31 +1460,31 @@
                     );
                     var open = _openGroups.has(use);
                     return (
-                        '<div class="lul-sl__group" data-open="' +
+                        '<div class="lul-di__group" data-open="' +
                         (open ? "true" : "false") +
                         '">' +
-                        '<div class="lul-sl__group-head' +
+                        '<div class="lul-di__group-head' +
                         (chosen ? " is-on" : "") +
                         '">' +
-                        '<label class="lul-sl__group-check" title="Select every variable in this use type">' +
+                        '<label class="lul-di__group-check" title="Select every variable in this use type">' +
                         '<input type="checkbox" data-use-all="' +
                         escHtml(use) +
                         '"' +
                         (chosen === total ? " checked" : "") +
                         "></label>" +
-                        '<button type="button" class="lul-sl__group-btn" data-group="' +
+                        '<button type="button" class="lul-di__group-btn" data-group="' +
                         escHtml(use) +
                         '" aria-expanded="' +
                         (open ? "true" : "false") +
                         '"><span>' +
                         escHtml(useTypeLabel(use)) +
-                        '</span><span class="lul-sl__group-meta">' +
+                        '</span><span class="lul-di__group-meta">' +
                         chosen +
                         " / " +
                         total +
-                        ' selected<span class="lul-sl__caret"></span></span></button>' +
+                        ' selected<span class="lul-di__caret"></span></span></button>' +
                         "</div>" +
-                        '<div class="lul-sl__group-body">' +
+                        '<div class="lul-di__group-body">' +
                         subgroupsHtml(members) +
                         "</div></div>"
                     );
@@ -1490,7 +1505,7 @@
             return order
                 .map(function (reg) {
                     return (
-                        '<div class="lul-sl__sub"><p class="lul-sl__sub-label">' +
+                        '<div class="lul-di__sub"><p class="lul-di__sub-label">' +
                         escHtml(groupLabel(reg)) +
                         "</p>" +
                         byReg[reg].map(varRowHtml).join("") +
@@ -1502,7 +1517,7 @@
 
         function varRowHtml(vs) {
             return (
-                '<label class="lul-sl__var" title="' +
+                '<label class="lul-di__var" title="' +
                 escHtml(tooltipFor(vs)) +
                 '"><input type="checkbox" data-slug="' +
                 escHtml(vs.slug) +
@@ -1538,7 +1553,10 @@
                 i++;
             }
             // back off to the last whole word so we never cut mid-token
-            var common = head.slice(0, i).replace(/\s*\S*$/, "").trim();
+            var common = head
+                .slice(0, i)
+                .replace(/\s*\S*$/, "")
+                .trim();
             return (common || head) + " (" + vs.fields.length + " fields)";
         }
 
@@ -1561,14 +1579,14 @@
 
         // Delegated so rebuilt rows never need re-wiring.
         $("lul-checklist").addEventListener("click", function (e) {
-            var btn = e.target.closest(".lul-sl__group-btn");
+            var btn = e.target.closest(".lul-di__group-btn");
             if (!btn) return;
             var use = btn.dataset.group;
             if (_openGroups.has(use)) _openGroups.delete(use);
             else _openGroups.add(use);
             var open = _openGroups.has(use);
             btn.setAttribute("aria-expanded", open ? "true" : "false");
-            btn.closest(".lul-sl__group").dataset.open = open ? "true" : "false";
+            btn.closest(".lul-di__group").dataset.open = open ? "true" : "false";
         });
 
         $("lul-checklist").addEventListener("change", function (e) {
@@ -1599,17 +1617,17 @@
         // Update the counts and bar state in place — rebuilding the whole
         // checklist on every tick would collapse the accordion under the cursor.
         function updateGroupCounts() {
-            document.querySelectorAll("#lul-checklist .lul-sl__group-btn").forEach(function (btn) {
+            document.querySelectorAll("#lul-checklist .lul-di__group-btn").forEach(function (btn) {
                 var members = setsForUseType(btn.dataset.group);
                 var chosen = rowCount(
                     members.filter(function (vs) {
                         return _selected.has(vs.slug);
                     }),
                 );
-                btn.querySelector(".lul-sl__group-meta").innerHTML =
-                    chosen + " / " + rowCount(members) + ' selected<span class="lul-sl__caret"></span>';
+                btn.querySelector(".lul-di__group-meta").innerHTML =
+                    chosen + " / " + rowCount(members) + ' selected<span class="lul-di__caret"></span>';
                 // Any variable ticked fills the bar like an active chip.
-                btn.closest(".lul-sl__group-head").classList.toggle("is-on", chosen > 0);
+                btn.closest(".lul-di__group-head").classList.toggle("is-on", chosen > 0);
             });
             syncGroupCheckboxes();
         }
@@ -1720,7 +1738,7 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    product: "slices",
+                    product: "districts",
                     geography_type: _geoType,
                     geography_id: _geoId,
                     variable_set_slugs: Array.from(_selected),
@@ -1776,12 +1794,12 @@
 
         // ── Checkout redirect ────────────────────────────────────────────────
 
-        function buySlices() {
+        function buyDistricts() {
             if (_geoId == null || _selected.size === 0) return;
             // URLSearchParams collapses repeated keys via set(); we want repeated
             // `variable_set_slug=…` for the FastAPI list binding, so append.
             var params = new URLSearchParams();
-            params.append("product", "slices");
+            params.append("product", "districts");
             params.append("type", _geoType);
             params.append("id", String(_geoId));
             _selected.forEach(function (slug) {
@@ -1790,6 +1808,6 @@
             window.location.href = API_BASE + "/payments/checkout/?" + params.toString();
         }
 
-        window.lulBuySlices = buySlices;
+        window.lulBuyDistricts = buyDistricts;
     })();
 </script>

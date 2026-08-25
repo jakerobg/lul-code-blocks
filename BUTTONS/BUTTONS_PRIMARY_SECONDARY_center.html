@@ -13,7 +13,7 @@
         --lul-ink: #393347; /* secondary border + label */
         --lul-primary: #594496; /* primary fill + border */
         --lul-primary-hover: #3f2e70;
-        --lul-secondary-hover: #f9f9f9;
+        --lul-secondary-hover: #ffffff;
         --lul-btn-pad: 10px 26px;
 
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -42,7 +42,6 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
         font-weight: 500;
         font-size: 1rem;
         padding: var(--lul-btn-pad);
@@ -54,11 +53,7 @@
         transition:
             background 0.25s ease,
             border-color 0.25s ease,
-            color 0.25s ease,
-            gap 0.25s ease;
-    }
-    .lul-actions .lul-actions__btn:hover {
-        gap: 12px;
+            color 0.25s ease;
     }
 
     .lul-actions .lul-actions__btn--primary {
@@ -79,44 +74,15 @@
     .lul-actions .lul-actions__btn--secondary:hover {
         background: var(--lul-secondary-hover);
     }
-
-    .lul-actions .lul-actions__btn svg {
-        width: 14px;
-        height: 14px;
-        transition: transform 0.25s ease;
-    }
-    .lul-actions .lul-actions__btn:hover svg {
-        transform: translateX(2px);
-    }
 </style>
 
 <div class="lul-actions lul-actions--center">
     <a
         class="lul-actions__btn lul-actions__btn--primary"
         href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?usp=sharing&ouid=110910152404947585012&rtpof=true&sd=true"
-        >Data Dictionary
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path
-                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            />
-        </svg>
-    </a>
+        >Data Dictionary</a>
     <a
         class="lul-actions__btn lul-actions__btn--secondary"
         href="https://www.landuselabs.com/s/lafayette_co_slices_sample.geojson"
-        >Download Sample
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path
-                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            />
-        </svg>
-    </a>
+        >Download Sample</a>
 </div>

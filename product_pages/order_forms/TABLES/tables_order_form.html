@@ -1,0 +1,1293 @@
+<!--
+  ZONING TABLES ORDER FORM — geography → instant pricing.
+
+  Same design as SLICES/slices_order_form.html (panel, step rail, two-column
+  split, sidebar, buttons, typeahead). Tables differs in WHAT you pick: there
+  are no variables to choose, so the flow is
+
+      1. Unit of Analysis  →  2. Select Geography  →  3. Search Area  →  buy
+
+  and the step rail has two steps rather than three.
+
+  LOGIC is ported from TABLES/tables_order_OLD.html unchanged — same
+  /price/ and /payments/checkout/ payloads (product "tables", plus
+  unit_of_analysis and with_geometries), same ALLOWED_SCOPES matrix, same
+  dynamic scope/boundary wording, same partial-coverage warnings.
+
+  ▶ ROOT ID is #lul-tables, deliberately NOT #lul-order — the site-wide
+    Squarespace CSS caps #lul-order at 560px and carries the OLD form's rules.
+    Class prefix is lul-tb__ (slices uses lul-sl__), so the forms can coexist.
+
+  ▶ TYPEAHEAD is the shared site-wide helper (window.lulMountGeoSearch from
+    lul-geo-search.html in Code Injection → Header). The element ids it binds
+    to (lul-geo-search, lul-geo-results, lul-geo-status, lul-state-select …)
+    are preserved verbatim. If the helper is missing, the form says so instead
+    of failing silently.
+
+  ▶ SCOPE MATRIX: only jurisdiction-level tables can be bought for a single
+    jurisdiction; block group / tract / ZCTA / county are county-or-larger.
+    That's ALLOWED_SCOPES below, and the backend enforces it with a 422.
+
+  ▶ EDIT THESE (product decisions, not derived from the API):
+      UNITS          — the unit-of-analysis tiles
+      ALLOWED_SCOPES — which scopes each unit permits
+      UNIT_NOUN(_PLURAL) / SCOPE_NOUN — wording in the dynamic copy
+-->
+<div id="lul-tables">
+    <style>
+
+    #lul-tables {
+        /* ── Colour system ──────────────────────────────────────────────────
+           Two brand colours are the only place a literal value appears. The
+           -rgb triplets exist so every tint below can be derived from the same
+           source with rgba(), instead of re-typing the equivalent hex by hand.
+           Change --lul-ink-rgb / --lul-accent-rgb and the whole ramp follows.
+           Call sites always use the semantic names, never a raw colour. */
+        --lul-ink-rgb: 57, 51, 72;
+        --lul-accent-rgb: 89, 68, 150;
+        --lul-green-rgb: 224, 229, 194; /* preset-package chips when active */
+
+        --lul-ink: rgb(var(--lul-ink-rgb));
+        --lul-accent: rgb(var(--lul-accent-rgb));
+        --lul-accent-dark: #3f2e70;
+        --lul-green: rgb(var(--lul-green-rgb));
+        --lul-green-line: rgb(191, 199, 150); /* a readable stroke against the fill */
+
+        /* Surfaces are opaque on purpose — they stack (card on panel on page),
+           and translucent fills would composite differently depending on what
+           happens to sit behind them. */
+        --lul-surface: #ffffff; /* cards, inputs, tiles */
+        --lul-on-accent: #ffffff; /* text sitting on the accent */
+        /* Warm neutral ramp, lightest to darkest. Kept in one family on purpose
+           — a warm panel behind cool grey fills reads as a mismatch. */
+        --lul-panel: #efedec; /* grey panel behind the cards */
+        --lul-chip: #eeecea; /* pills, tags, accordion headers */
+        --lul-fill: #e7e4e1; /* step numbers, accordion hover */
+
+        /* Ink tints — same colour, varying opacity */
+        --lul-muted: rgba(var(--lul-ink-rgb), 0.55); /* secondary text */
+        --lul-faint: rgba(var(--lul-ink-rgb), 0.4); /* placeholder, icons */
+        --lul-line-strong: rgba(var(--lul-ink-rgb), 0.3); /* radio + badge strokes */
+        --lul-rule: rgba(var(--lul-ink-rgb), 0.2); /* step connector */
+        --lul-line: rgba(var(--lul-ink-rgb), 0.13); /* card + input borders */
+        --lul-shadow: rgba(var(--lul-ink-rgb), 0.1); /* dropdown shadow */
+
+        /* Accent tints */
+        --lul-accent-soft: rgba(var(--lul-accent-rgb), 0.08); /* hover wash, info tile */
+        --lul-accent-hover: rgba(var(--lul-accent-rgb), 0.5); /* hover borders */
+
+        /* ── Layout knob ──
+           How far below the top of the window the "Your Selection" card parks
+           when it sticks. Squarespace's header is fixed and sits ABOVE this
+           block, so a small value leaves the card hidden behind it. Raise this
+           until the card clears your header — it wants to be roughly the header
+           height plus a little breathing room. Headers that shrink on scroll
+           should be measured in their SHRUNK state. */
+        --lul-sticky-top: 120px;
+
+        /* Max width of the whole form block */
+        --lul-max-w: 1280px;
+
+        /* Error state */
+        --lul-error-bg: #fff3f3;
+        --lul-error-line: rgba(180, 0, 0, 0.2);
+        --lul-error-ink: #7a0000;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--lul-ink);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        /* Caps the form on a wide screen instead of letting it run to the edge;
+           narrower blocks just fill their width. Because this sits on the same
+           element as container-type below, the @container breakpoints measure
+           the CAPPED width, so they stay tied to the space the form actually
+           has. */
+        max-width: var(--lul-max-w);
+        margin-inline: auto;
+        box-sizing: border-box;
+        /* the step row and the two-column split size against the BLOCK, not the
+           viewport — this sits in a Squarespace column of unknown width */
+        container-type: inline-size;
+        container-name: lultables;
+    }
+    #lul-tables *,
+    #lul-tables *::before,
+    #lul-tables *::after {
+        box-sizing: border-box;
+    }
+
+    /* ── Panel + columns ── */
+    .lul-tb__panel {
+        background: var(--lul-panel);
+        border-radius: 0;
+        padding: 36px clamp(16px, 3cqi, 30px) 30px;
+    }
+    .lul-tb__cols {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 24px;
+        align-items: start;
+    }
+    @container lultables (max-width: 860px) {
+        .lul-tb__cols {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    /* ── Step indicator ──
+       Same inline-block construction as reports_order_form.html: Squarespace's
+       stylesheet breaks a flex row here (staggered baselines, stray
+       underlines), and inline-block is much harder for it to disturb. */
+    #lul-tables .lul-steps {
+        display: block !important;
+        white-space: nowrap !important;
+        text-align: center;
+        margin: 0 0 24px;
+        padding: 0;
+        border: 0;
+        font-size: 0;
+        line-height: 1;
+        overflow: hidden;
+    }
+    #lul-tables .lul-step {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+        border: 0 !important;
+        text-decoration: none !important;
+    }
+    #lul-tables .lul-step__num {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 0;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--lul-fill);
+        color: var(--lul-muted);
+        margin: 0 8px 0 0;
+        padding: 0;
+        border: 0 !important;
+        transition:
+            background 0.25s ease,
+            color 0.25s ease;
+    }
+    #lul-tables .lul-step__label {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        font-size: 12.5px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: var(--lul-muted);
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+        border: 0 !important;
+        text-decoration: none !important;
+        transition: color 0.25s ease;
+    }
+    #lul-tables .lul-step.is-active .lul-step__num {
+        background: var(--lul-accent) !important;
+        color: var(--lul-on-accent) !important;
+    }
+    #lul-tables .lul-step.is-active .lul-step__label {
+        color: var(--lul-ink) !important;
+        font-weight: 700;
+    }
+    #lul-tables .lul-steps__rule {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        width: clamp(20px, 5cqi, 64px);
+        height: 1px;
+        background: var(--lul-rule);
+        margin: 0 14px;
+        border: 0 !important;
+    }
+    @container lultables (max-width: 560px) {
+        #lul-tables .lul-step:not(.is-active) .lul-step__label {
+            display: none !important;
+        }
+        #lul-tables .lul-steps__rule {
+            margin: 0 8px;
+        }
+    }
+
+    /* ── Cards + sections ── */
+    .lul-tb__card {
+        background: var(--lul-surface);
+        border-radius: 0;
+        padding: 22px clamp(16px, 2.4cqi, 24px);
+        margin-bottom: 16px;
+    }
+    .lul-tb__card:last-child {
+        margin-bottom: 0;
+    }
+    .lul-tb__intro {
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: var(--lul-ink);
+        margin: 0 0 22px;
+    }
+    .lul-tb__h {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 0 0 12px;
+        color: var(--lul-ink);
+    }
+    .lul-tb__hint {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--lul-muted);
+        margin: 0 0 14px;
+    }
+    .lul-tb__hint a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    .lul-tb__eyebrow {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--lul-muted);
+        margin: 0 0 10px;
+    }
+    .lul-tb__rule {
+        border: 0;
+        border-top: 1px solid var(--lul-line);
+        margin: 20px 0 18px;
+    }
+
+    /* ── Scope tiles ── */
+    .lul-tb__tiles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    @container lultables (max-width: 620px) {
+        .lul-tb__tiles {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    .lul-tb__tile {
+        position: relative;
+    }
+    .lul-tb__tile input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .lul-tb__tile label {
+        display: block;
+        height: 100%;
+        border: 1px solid var(--lul-line);
+        border-radius: 0;
+        background: var(--lul-surface);
+        padding: 14px 38px 14px 15px;
+        cursor: pointer;
+        margin: 0;
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+    .lul-tb__tile label:hover {
+        border-color: var(--lul-accent-hover);
+    }
+    /* the radio dot, drawn rather than native so it sits where the mock has it */
+    .lul-tb__tile label::after {
+        content: "";
+        position: absolute;
+        top: 16px;
+        right: 14px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid var(--lul-line-strong);
+        background: var(--lul-surface);
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+    .lul-tb__tile input:checked + label {
+        border-color: var(--lul-accent);
+        box-shadow: inset 0 0 0 1px var(--lul-accent);
+    }
+    .lul-tb__tile input:checked + label::after {
+        border-color: var(--lul-accent);
+        background: var(--lul-accent);
+        box-shadow: inset 0 0 0 2.5px var(--lul-surface);
+    }
+    .lul-tb__tile input:focus-visible + label {
+        outline: 2px solid var(--lul-accent);
+        outline-offset: 2px;
+    }
+    .lul-tb__tile-name {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .lul-tb__tile-desc {
+        display: block;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--lul-muted);
+    }
+    /* non-interactive "contact us" tile */
+    .lul-tb__tile--info {
+        border: 1px solid transparent;
+        border-radius: 0;
+        background: var(--lul-accent-soft);
+        padding: 14px 15px;
+    }
+    .lul-tb__tile--info a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    /* ── Search field (ids below are the shared typeahead's mount points) ── */
+    .lul-tb__search {
+        position: relative;
+    }
+    .lul-tb__search::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        width: 15px;
+        height: 15px;
+        margin-top: -10px;
+        border: 1.6px solid var(--lul-faint);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .lul-tb__search::after {
+        content: "";
+        position: absolute;
+        left: 27px;
+        top: 50%;
+        width: 6px;
+        height: 1.6px;
+        margin-top: 4px;
+        background: var(--lul-faint);
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+    #lul-tables .lul-input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        padding: 13px 14px;
+        border: 1px solid var(--lul-line);
+        border-radius: 0;
+        background: var(--lul-surface);
+        color: var(--lul-ink);
+        outline: none;
+        width: 100%;
+        transition: border-color 0.15s;
+        -webkit-appearance: none;
+    }
+    /* Needs the #lul-tables prefix: the `padding` shorthand above is id-scoped,
+       so a plain .lul-tb__search .lul-input rule loses on specificity and the
+       text runs under the magnifying glass. */
+    #lul-tables .lul-tb__search .lul-input {
+        padding-left: 42px;
+    }
+    #lul-tables .lul-input::placeholder {
+        color: var(--lul-faint);
+    }
+    #lul-tables .lul-input:focus {
+        border-color: var(--lul-accent);
+    }
+    /* typeahead results — styled here because the site-wide rules for these
+       are scoped to #lul-order, which this block deliberately does not use */
+    #lul-tables .lul-results {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        border: 1px solid var(--lul-line);
+        border-radius: 0;
+        background: var(--lul-surface);
+        max-height: 260px;
+        overflow-y: auto;
+        box-shadow: 0 6px 20px var(--lul-shadow);
+    }
+    #lul-tables .lul-results li {
+        padding: 0;
+        border-bottom: 1px solid var(--lul-line);
+    }
+    #lul-tables .lul-results li:last-child {
+        border-bottom: 0;
+    }
+    /* lul-geo-search.js builds each row as <li class="lul-result"><button
+       data-id>…</button></li> and delegates its click to that button — so the
+       button has to stay a button. Reset it to look like a plain list row and
+       carry the padding, so the whole row is the hit target. !important because
+       Squarespace styles bare <button> elements site-wide. */
+    #lul-tables .lul-results li button {
+        display: block !important;
+        width: 100% !important;
+        text-align: left !important;
+        font-family: inherit !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 1.35 !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        color: var(--lul-ink) !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0;
+        padding: 11px 14px !important;
+        margin: 0 !important;
+        cursor: pointer;
+        min-height: 0 !important;
+    }
+    #lul-tables .lul-results li button:hover,
+    #lul-tables .lul-results li button:focus-visible {
+        background: var(--lul-accent-soft) !important;
+        outline: none;
+    }
+    #lul-geo-status {
+        font-size: 13px;
+        color: var(--lul-muted);
+        margin-top: 8px;
+    }
+
+    /* ── Messages ── */
+    .lul-msg {
+        padding: 14px 16px;
+        border-radius: 0;
+        font-size: 14px;
+        line-height: 1.55;
+        margin-bottom: 16px;
+    }
+    .lul-msg p {
+        margin: 0 0 8px;
+    }
+    .lul-msg p:last-child {
+        margin-bottom: 0;
+    }
+    .lul-warn {
+        background: var(--lul-surface);
+        border: 1px solid var(--lul-line);
+        color: var(--lul-ink);
+    }
+    .lul-error {
+        background: var(--lul-error-bg);
+        border: 1px solid var(--lul-error-line);
+        color: var(--lul-error-ink);
+    }
+
+    /* ── Sidebar ── */
+    .lul-tb__side {
+        position: sticky;
+        top: var(--lul-sticky-top);
+        background: var(--lul-surface);
+        border: 1px solid var(--lul-accent);
+        border-radius: 0;
+        padding: 20px;
+    }
+    @container lultables (max-width: 860px) {
+        .lul-tb__side {
+            position: static;
+        }
+    }
+    .lul-tb__side-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 16px;
+    }
+    .lul-tb__price {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        color: var(--lul-accent);
+    }
+    .lul-tb__price-unit {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--lul-muted);
+        margin-left: 6px;
+    }
+    .lul-tb__side-rule {
+        border: 0;
+        border-top: 1px solid var(--lul-line);
+        margin: 16px 0;
+    }
+    .lul-tb__terms {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--lul-muted);
+        margin: 0 0 14px;
+        cursor: pointer;
+    }
+    .lul-tb__terms input {
+        margin: 1px 0 0;
+        accent-color: var(--lul-accent);
+        flex-shrink: 0;
+    }
+    .lul-tb__terms a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    #lul-tables .lul-btn {
+        width: 100%;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 14.5px;
+        padding: 14px 18px;
+        border-radius: 0;
+        border: 1px solid var(--lul-accent);
+        background: var(--lul-accent);
+        color: var(--lul-on-accent);
+        cursor: pointer;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease;
+    }
+    #lul-tables .lul-btn:hover:not(:disabled) {
+        background: var(--lul-accent-dark);
+        border-color: var(--lul-accent-dark);
+    }
+    #lul-tables .lul-btn:disabled {
+        background: var(--lul-chip);
+        border-color: var(--lul-chip);
+        color: var(--lul-muted);
+        cursor: not-allowed;
+        font-weight: 400;
+        font-size: 13px;
+    }
+
+    /* ── Spinner ── */
+    .lul-spinner-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--lul-muted);
+        padding: 10px 0;
+    }
+    .lul-spinner {
+        width: 15px;
+        height: 15px;
+        border: 2px solid var(--lul-line);
+        border-top-color: var(--lul-accent);
+        border-radius: 50%;
+        animation: lul-spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes lul-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .lul-hidden {
+        display: none !important;
+    }
+    /* ── Geography radio list ──
+       The preview mock shows scope as a bordered list of radio rows rather than
+       the tile grid slices uses, so this block is specific to Tables. */
+    #lul-tables .lul-tb__radios {
+        border: 1px solid var(--lul-line);
+        background: #ffffff;
+    }
+    #lul-tables .lul-tb__radio {
+        position: relative;
+        display: block;
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--lul-line);
+        cursor: pointer;
+    }
+    #lul-tables .lul-tb__radio:last-of-type {
+        border-bottom: none;
+    }
+    #lul-tables .lul-tb__radio input {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        margin: 0;
+        width: 16px;
+        height: 16px;
+        accent-color: var(--lul-accent);
+        cursor: pointer;
+    }
+    #lul-tables .lul-tb__radio-text {
+        display: block;
+        padding-left: 30px;
+    }
+    #lul-tables .lul-tb__radio-name {
+        display: block;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--lul-ink);
+        line-height: 1.3;
+    }
+    #lul-tables .lul-tb__radio-desc {
+        display: block;
+        font-size: 13px;
+        color: var(--lul-muted);
+        line-height: 1.45;
+        margin-top: 2px;
+    }
+    #lul-tables .lul-tb__radio input:checked ~ .lul-tb__radio-text .lul-tb__radio-name {
+        color: var(--lul-accent);
+    }
+    /* hidden when the chosen unit of analysis doesn't allow this scope */
+    #lul-tables .lul-tb__radio.lul-hidden {
+        display: none;
+    }
+    /* Non-interactive footer row: Country isn't a purchasable geography_type,
+       so it routes to the contact form instead of being a radio. */
+    #lul-tables .lul-tb__radio--info {
+        display: block;
+        padding: 16px 18px;
+        background: rgba(89, 68, 150, 0.07);
+        border-top: 1px solid var(--lul-line);
+    }
+
+    /* ── Sidebar summary rows ──
+       Replace the slices sidebar's variable list: Tables has no variables to
+       pick, so the sidebar echoes the geography choices instead. */
+    #lul-tables .lul-tb__sum {
+        margin: 0 0 14px;
+    }
+    #lul-tables .lul-tb__sum:last-of-type {
+        margin-bottom: 0;
+    }
+    #lul-tables .lul-tb__sum-val {
+        font-size: 14px;
+        color: var(--lul-ink);
+        line-height: 1.4;
+        margin: 2px 0 0;
+    }
+    #lul-tables .lul-tb__sum-val.is-empty {
+        color: var(--lul-muted);
+    }
+    /* boundary-polygons checkbox under the search field */
+    #lul-tables .lul-tb__opt {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 18px;
+        font-size: 14px;
+        color: var(--lul-ink);
+        line-height: 1.45;
+        cursor: pointer;
+    }
+    #lul-tables .lul-tb__opt input {
+        margin: 2px 0 0;
+        width: 16px;
+        height: 16px;
+        accent-color: var(--lul-accent);
+        flex: none;
+        cursor: pointer;
+    }
+    </style>
+
+    <!-- No heading here on purpose — the page's own title/subtitle block sits
+         above this Code Block in Squarespace. -->
+    <div class="lul-tb__panel">
+        <!-- Written on ONE source line on purpose: a line break between these
+             inline-blocks becomes a visible whitespace gap. Inline styles repeat
+             the CSS so Squarespace's stylesheet can't break the row. -->
+        <div
+            class="lul-steps"
+            id="lul-steps"
+            style="display: block; white-space: nowrap; font-size: 0; line-height: 1; overflow: hidden"
+        >
+            <span
+                class="lul-step is-active"
+                data-step="1"
+                style="display: inline-block; vertical-align: middle; white-space: nowrap"
+                ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">1</span
+                ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                    >Choose geography</span
+                ></span
+            ><span
+                class="lul-steps__rule"
+                aria-hidden="true"
+                style="display: inline-block; vertical-align: middle"
+            ></span
+            ><span
+                class="lul-step"
+                data-step="2"
+                style="display: inline-block; vertical-align: middle; white-space: nowrap"
+                ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">2</span
+                ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                    >Get instant pricing</span
+                ></span
+            >
+        </div>
+
+        <div class="lul-tb__cols">
+            <!-- ══════════ MAIN COLUMN ══════════ -->
+            <div>
+                <div class="lul-tb__card">
+                    <p class="lul-tb__intro">
+                        Zoning Tables deliver pre-computed summary statistics for every variable at your chosen
+                        geographic level. Select your unit of analysis, scope, and area below.
+                    </p>
+
+                    <!-- ── 1. Unit of analysis ── -->
+                    <h3 class="lul-tb__h">1. Unit of Analysis</h3>
+                    <div class="lul-tb__tiles" role="radiogroup" aria-label="Unit of analysis">
+                        <div class="lul-tb__tile">
+                            <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-jurisdiction" value="jurisdiction" />
+                            <label for="lul-unit-jurisdiction">
+                                <span class="lul-tb__tile-name">Jurisdictions</span>
+                                <span class="lul-tb__tile-desc"
+                                    >Municipalities, townships, and unincorporated counties.</span
+                                >
+                            </label>
+                        </div>
+                        <div class="lul-tb__tile">
+                            <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-county" value="county" />
+                            <label for="lul-unit-county">
+                                <span class="lul-tb__tile-name">Counties</span>
+                                <span class="lul-tb__tile-desc">One row per county.</span>
+                            </label>
+                        </div>
+                        <div class="lul-tb__tile">
+                            <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-tract" value="tract" />
+                            <label for="lul-unit-tract">
+                                <span class="lul-tb__tile-name">Census Tracts</span>
+                                <span class="lul-tb__tile-desc">Census tracts.</span>
+                            </label>
+                        </div>
+                        <div class="lul-tb__tile">
+                            <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-block-group" value="block_group" />
+                            <label for="lul-unit-block-group">
+                                <span class="lul-tb__tile-name">Block Groups</span>
+                                <span class="lul-tb__tile-desc">Census block groups.</span>
+                            </label>
+                        </div>
+                        <div class="lul-tb__tile">
+                            <input type="radio" name="lul-unit" autocomplete="off" id="lul-unit-zcta" value="zcta" />
+                            <label for="lul-unit-zcta">
+                                <span class="lul-tb__tile-name">Zip Codes</span>
+                                <span class="lul-tb__tile-desc">Census ZIP Code Tabulation Areas (ZCTAs).</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- ── 2. Select geography (hidden until a unit is picked) ── -->
+                    <div id="lul-step-scope" class="lul-hidden">
+                        <hr class="lul-tb__rule" />
+                        <h3 class="lul-tb__h">2. Select Geography</h3>
+                        <div class="lul-tb__radios" role="radiogroup" aria-label="Geographic scope">
+                            <label class="lul-tb__radio" id="lul-scope-row-jurisdiction">
+                                <input type="radio" name="lul-scope" autocomplete="off" value="jurisdiction" />
+                                <span class="lul-tb__radio-text">
+                                    <span class="lul-tb__radio-name">Single Jurisdiction</span>
+                                    <span class="lul-tb__radio-desc">Municipality, township, or unincorporated county.</span>
+                                </span>
+                            </label>
+                            <label class="lul-tb__radio" id="lul-scope-row-county">
+                                <input type="radio" name="lul-scope" autocomplete="off" value="county" />
+                                <span class="lul-tb__radio-text">
+                                    <span class="lul-tb__radio-name">County</span>
+                                    <span class="lul-tb__radio-desc lul-scope-desc-county">All jurisdictions in a county.</span>
+                                </span>
+                            </label>
+                            <label class="lul-tb__radio" id="lul-scope-row-cbsa">
+                                <input type="radio" name="lul-scope" autocomplete="off" value="cbsa" />
+                                <span class="lul-tb__radio-text">
+                                    <span class="lul-tb__radio-name">CBSA</span>
+                                    <span class="lul-tb__radio-desc lul-scope-desc-cbsa">All jurisdictions in a metro/micro area.</span>
+                                </span>
+                            </label>
+                            <label class="lul-tb__radio" id="lul-scope-row-state">
+                                <input type="radio" name="lul-scope" autocomplete="off" value="state" />
+                                <span class="lul-tb__radio-text">
+                                    <span class="lul-tb__radio-name">State</span>
+                                    <span class="lul-tb__radio-desc lul-scope-desc-state">All jurisdictions in a state.</span>
+                                </span>
+                            </label>
+                            <!-- Non-interactive: "country" isn't a supported geography_type, so
+                                 this routes buyers to the contact form rather than a purchase.
+                                 Always visible — not toggled by ALLOWED_SCOPES. -->
+                            <div class="lul-tb__radio--info" aria-hidden="true">
+                                <span class="lul-tb__radio-name">Country</span>
+                                <span class="lul-tb__radio-desc"
+                                    >Full national dataset.
+                                    <a href="https://www.landuselabs.com/contact">Contact us for a tailored quote</a>.</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── 3. Search area (hidden until a scope is picked) ── -->
+                    <div id="lul-step-geopick" class="lul-hidden">
+                        <hr class="lul-tb__rule" />
+                        <h3 class="lul-tb__h" id="lul-geo-label">3. Search Area</h3>
+                        <div id="lul-geo-typeahead">
+                            <p class="lul-tb__hint" id="lul-geo-hint">
+                                Search by name, then select from the results below.
+                            </p>
+                            <div class="lul-tb__search">
+                                <input
+                                    id="lul-geo-search"
+                                    class="lul-input"
+                                    type="text"
+                                    placeholder="Type at least 2 characters to search…"
+                                    autocomplete="off"
+                                />
+                            </div>
+                            <div id="lul-geo-status"></div>
+                            <ul id="lul-geo-results" class="lul-results" style="display: none"></ul>
+                        </div>
+                        <select id="lul-state-select" class="lul-input" style="display: none">
+                            <option value="">Select a state…</option>
+                        </select>
+
+                        <!-- Optional boundary polygons. Label is rewritten per unit + scope. -->
+                        <div id="lul-step-geometries" class="lul-hidden">
+                            <label class="lul-tb__opt" for="lul-with-geometries">
+                                <input type="checkbox" id="lul-with-geometries" />
+                                <span id="lul-with-geometries-label"
+                                    >Include boundary polygons with the download.</span
+                                >
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Partial-coverage warnings from /price/. Hidden when empty. -->
+                <div class="lul-msg lul-warn lul-hidden" id="lul-price-warnings"></div>
+            </div>
+
+            <!-- ══════════ SIDEBAR ══════════ -->
+            <aside class="lul-tb__side">
+                <p class="lul-tb__side-title">Your Selection</p>
+
+                <p class="lul-tb__eyebrow">Estimated price</p>
+                <div>
+                    <span class="lul-tb__price" id="lul-price">$0</span
+                    ><span class="lul-tb__price-unit">/ one-time download</span>
+                </div>
+
+                <hr class="lul-tb__side-rule" />
+
+                <div class="lul-tb__sum">
+                    <p class="lul-tb__eyebrow">Unit of analysis</p>
+                    <p class="lul-tb__sum-val is-empty" id="lul-sum-unit">Not selected yet</p>
+                </div>
+                <div class="lul-tb__sum">
+                    <p class="lul-tb__eyebrow">Geographic scope</p>
+                    <p class="lul-tb__sum-val is-empty" id="lul-sum-scope">Not selected yet</p>
+                </div>
+                <div class="lul-tb__sum">
+                    <p class="lul-tb__eyebrow">Area</p>
+                    <p class="lul-tb__sum-val is-empty" id="lul-sum-area">Not selected yet</p>
+                </div>
+                <div class="lul-tb__sum">
+                    <p class="lul-tb__eyebrow">Boundary polygons</p>
+                    <p class="lul-tb__sum-val is-empty" id="lul-sum-geom">Not included</p>
+                </div>
+
+                <hr class="lul-tb__side-rule" />
+
+                <label class="lul-tb__terms" for="lul-terms">
+                    <input type="checkbox" id="lul-terms" />
+                    <span
+                        >I have read and agree to the
+                        <a href="https://www.landuselabs.com/license" target="_blank" rel="noopener"
+                            >Data Licensing Agreement</a
+                        >.</span
+                    >
+                </label>
+                <button class="lul-btn" id="lul-buy-btn" disabled>Select a geography to continue</button>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<!-- Shared typeahead helper (window.lulMountGeoSearch / lulSpinner / lulErrHtml /
+     lulEscHtml) is loaded site-wide via lul-geo-search.html in
+     Settings → Advanced → Code Injection → Header. -->
+<script>
+    (function () {
+        // ── Configuration ────────────────────────────────────────────────────
+
+        var API_BASE = "https://extracts.landuselabs.com";
+
+        /* Scope tiles available per unit of analysis. Block group / tract /
+           ZCTA / county are county-or-larger only per the pricing doc; the
+           backend also enforces this with a 422. */
+        var ALLOWED_SCOPES = {
+            jurisdiction: ["jurisdiction", "county", "cbsa", "state"],
+            block_group: ["county", "cbsa", "state"],
+            tract: ["county", "cbsa", "state"],
+            zcta: ["county", "cbsa", "state"],
+            county: ["county", "cbsa", "state"],
+        };
+
+        // Singular noun for each unit, used in the dynamic boundary-label copy.
+        var UNIT_NOUN = {
+            jurisdiction: "jurisdiction",
+            block_group: "block group",
+            tract: "census tract",
+            zcta: "zip code",
+            county: "county",
+        };
+        // Plural noun for each unit, used in the scope descriptions.
+        var UNIT_NOUN_PLURAL = {
+            jurisdiction: "jurisdictions",
+            block_group: "block groups",
+            tract: "census tracts",
+            zcta: "zip codes",
+            county: "counties",
+        };
+        var SCOPE_NOUN = { jurisdiction: "jurisdiction", county: "county", cbsa: "CBSA", state: "state" };
+        // Sidebar wording for the two pickers.
+        var UNIT_LABEL = {
+            jurisdiction: "Jurisdictions",
+            county: "Counties",
+            tract: "Census Tracts",
+            block_group: "Block Groups",
+            zcta: "Zip Codes",
+        };
+        var SCOPE_LABEL = {
+            jurisdiction: "Single Jurisdiction",
+            county: "County",
+            cbsa: "CBSA",
+            state: "State",
+        };
+
+        // Per-scope picker config — endpoint and result-list hint.
+        var SCOPES = {
+            jurisdiction: {
+                label: "3. Search Area",
+                endpoint: "/jurisdictions/",
+                hint: "Type in the name of the jurisdiction (e.g., city, town, township, county) without typing in the state name. Then select the jurisdiction from the results.",
+            },
+            county: {
+                label: "3. Search Area",
+                endpoint: "/counties/",
+                hint: "Type in the name of the county without typing in the state name. Then select the county from the results.",
+            },
+            cbsa: {
+                label: "3. Search Area",
+                endpoint: "/cbsas/",
+                hint: "Type in the name of the metro or micro area. Then select it from the results.",
+            },
+            state: { label: "3. Search Area", endpoint: null, hint: "" },
+        };
+
+        // ── State ────────────────────────────────────────────────────────────
+
+        var _unit = null; // 'jurisdiction' | 'county' | 'tract' | 'block_group' | 'zcta'
+        var _geoType = null; // 'jurisdiction' | 'county' | 'cbsa' | 'state'
+        var _geoId = null;
+        var _geoLabel = null;
+        var _price = null;
+        var _withGeometries = false;
+
+        var root = document.getElementById("lul-tables");
+        if (!root) return;
+        function $(id) {
+            return document.getElementById(id);
+        }
+        function showEl(id, visible) {
+            var el = $(id);
+            if (el) el.classList.toggle("lul-hidden", !visible);
+        }
+
+        // The shared helper must be present — say so rather than failing silently.
+        if (typeof window.lulMountGeoSearch !== "function") {
+            $("lul-geo-status").innerHTML =
+                '<div class="lul-msg lul-error"><p>Location search is unavailable on this page. ' +
+                "The shared lul-geo-search script is not loaded.</p></div>";
+            return;
+        }
+
+        var _geoSearch = window.lulMountGeoSearch({
+            apiBase: API_BASE,
+            scopes: SCOPES,
+            onPick: function (geoType, geoId, label) {
+                _geoId = geoId;
+                _geoLabel = label || null;
+                updateGeometriesLabel();
+                showEl("lul-step-geometries", true);
+                refreshSidebar();
+                refreshPrice();
+            },
+            onClear: function () {
+                _geoId = null;
+                _geoLabel = null;
+                showEl("lul-step-geometries", false);
+                resetPrice();
+                refreshSidebar();
+            },
+        });
+
+        // ── Step rail ────────────────────────────────────────────────────────
+
+        function setStep(n) {
+            root.querySelectorAll(".lul-step").forEach(function (el) {
+                el.classList.toggle("is-active", Number(el.getAttribute("data-step")) === n);
+            });
+        }
+
+        // ── Wire up listeners ────────────────────────────────────────────────
+
+        root.querySelectorAll('input[name="lul-unit"]').forEach(function (el) {
+            el.addEventListener("change", onUnitChange);
+        });
+        root.querySelectorAll('input[name="lul-scope"]').forEach(function (el) {
+            el.addEventListener("change", onScopeChange);
+        });
+        $("lul-with-geometries").addEventListener("change", onWithGeometriesChange);
+        $("lul-terms").addEventListener("change", onTermsChange);
+        $("lul-buy-btn").addEventListener("click", buyTables);
+
+        /* Firefox / Safari restore checked radios + checkboxes across reload
+           (bfcache and cross-navigation form-state persistence). The state
+           machine only advances via change events, so a restored selection
+           leaves the UI stuck on step 1 with an already-picked tile the user
+           has to click off and back on to progress. Force-clear on load. */
+        root.querySelectorAll('input[name="lul-unit"], input[name="lul-scope"]').forEach(function (el) {
+            el.checked = false;
+        });
+        $("lul-with-geometries").checked = false;
+        $("lul-terms").checked = false;
+
+        // ── Step handlers ────────────────────────────────────────────────────
+
+        function onUnitChange(evt) {
+            _unit = evt.target.value;
+            var allowed = ALLOWED_SCOPES[_unit];
+
+            // Show/hide scope rows per the unit's allowed scopes.
+            ["jurisdiction", "county", "cbsa", "state"].forEach(function (scope) {
+                var row = $("lul-scope-row-" + scope);
+                if (row) row.classList.toggle("lul-hidden", allowed.indexOf(scope) < 0);
+            });
+
+            /* Rewrite the scope copy that mentions the unit (county / CBSA /
+               state all read "All [unit-plural] in a [scope]").
+
+               County unit at county scope is the one combination where that
+               phrasing collapses — "All counties in a county" — because the
+               unit and the scope are the same thing. It's a valid purchase (a
+               single summary row), so the row stays; only the wording changes. */
+            var plural = UNIT_NOUN_PLURAL[_unit];
+            root.querySelector(".lul-scope-desc-county").textContent =
+                _unit === "county" ? "A single row summarizing the county." : "All " + plural + " in a county.";
+            root.querySelector(".lul-scope-desc-cbsa").textContent = "All " + plural + " in a CBSA.";
+            root.querySelector(".lul-scope-desc-state").textContent = "All " + plural + " in a state.";
+
+            showEl("lul-step-scope", true);
+            refreshSidebar();
+
+            /* Preserve the later-step picks if they're still valid under the new
+               unit. Only invalidate the scope (and downstream geography) when
+               the previously-chosen scope isn't allowed for this unit. */
+            if (_geoType && allowed.indexOf(_geoType) < 0) {
+                resetScope();
+                return;
+            }
+            if (_geoId != null) {
+                // Scope + geography survive — but the per-unit rate changed, so
+                // re-quote and refresh the boundary-label phrasing.
+                updateGeometriesLabel();
+                refreshPrice();
+            }
+        }
+
+        function onScopeChange(evt) {
+            _geoType = evt.target.value;
+            resetGeo();
+            _geoSearch.setScope(_geoType);
+            showEl("lul-step-geopick", true);
+            refreshSidebar();
+        }
+        // onGeoSearch / onResultClick / onStateChange are owned by lul-geo-search.js.
+
+        function onWithGeometriesChange() {
+            _withGeometries = this.checked;
+            refreshSidebar();
+            refreshPrice();
+        }
+
+        function onTermsChange() {
+            updateBuyBtn();
+        }
+
+        // ── Reset helpers ────────────────────────────────────────────────────
+
+        function resetScope() {
+            _geoType = null;
+            root.querySelectorAll('input[name="lul-scope"]').forEach(function (el) {
+                el.checked = false;
+            });
+            resetGeo();
+            showEl("lul-step-geopick", false);
+        }
+
+        function resetGeo() {
+            _geoId = null;
+            _geoLabel = null;
+            _geoSearch.reset();
+            $("lul-with-geometries").checked = false;
+            _withGeometries = false;
+            showEl("lul-step-geometries", false);
+            resetPrice();
+            refreshSidebar();
+        }
+
+        function resetPrice() {
+            _price = null;
+            $("lul-price").textContent = "$0";
+            renderWarnings([]);
+            setStep(1);
+            updateBuyBtn();
+        }
+
+        // ── Dynamic boundary-polygons label ──────────────────────────────────
+
+        function updateGeometriesLabel() {
+            /* Two singular cases, both where the unit and the scope are the same
+               thing and "each [unit] in the [scope]" would repeat itself:
+               jurisdiction-unit at jurisdiction scope, and county-unit at county
+               scope. Everything else reads as "each [unit] in the [scope]". */
+            var text;
+            if (_unit === _geoType) {
+                text = "Include the " + UNIT_NOUN[_unit] + " boundary polygon with the download.";
+            } else {
+                text =
+                    "Include boundary polygons for each " + UNIT_NOUN[_unit] + " in the " + SCOPE_NOUN[_geoType] + ".";
+            }
+            $("lul-with-geometries-label").textContent = text;
+        }
+
+        // ── Sidebar ──────────────────────────────────────────────────────────
+
+        function setSum(id, value) {
+            var el = $(id);
+            el.textContent = value || "Not selected yet";
+            el.classList.toggle("is-empty", !value);
+        }
+        function refreshSidebar() {
+            setSum("lul-sum-unit", _unit ? UNIT_LABEL[_unit] : null);
+            setSum("lul-sum-scope", _geoType ? SCOPE_LABEL[_geoType] : null);
+            setSum("lul-sum-area", _geoId != null ? _geoLabel || "Selected" : null);
+            var geom = $("lul-sum-geom");
+            geom.textContent = _withGeometries ? "Included" : "Not included";
+            geom.classList.toggle("is-empty", !_withGeometries);
+        }
+
+        function updateBuyBtn() {
+            var btn = $("lul-buy-btn");
+            var ready = _geoId != null && _price != null;
+            btn.disabled = !ready || !$("lul-terms").checked;
+            btn.textContent = ready ? "Purchase →" : "Select a geography to continue";
+        }
+
+        // ── Pricing ──────────────────────────────────────────────────────────
+
+        function refreshPrice() {
+            if (_geoId == null) return;
+            _price = null;
+            $("lul-price").textContent = "…";
+            $("lul-terms").checked = false;
+            updateBuyBtn();
+
+            fetch(API_BASE + "/price/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product: "tables",
+                    geography_type: _geoType,
+                    geography_id: _geoId,
+                    unit_of_analysis: _unit,
+                    with_geometries: _withGeometries,
+                }),
+            })
+                .then(function (res) {
+                    return res.json().then(function (data) {
+                        return { ok: res.ok, data: data };
+                    });
+                })
+                .then(function (r) {
+                    if (!r.ok) {
+                        $("lul-price").textContent = "Unavailable";
+                        renderWarnings([{ message: (r.data && r.data.detail) || "Price unavailable for this selection." }]);
+                        updateBuyBtn();
+                        return;
+                    }
+                    _price = r.data.total_cents;
+                    renderPrice();
+                    renderWarnings(r.data.warnings || []);
+                    setStep(2);
+                    updateBuyBtn();
+                })
+                .catch(function () {
+                    $("lul-price").textContent = "Unavailable";
+                    renderWarnings([]);
+                    updateBuyBtn();
+                });
+        }
+
+        function renderPrice() {
+            var fmt = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            });
+            $("lul-price").textContent = fmt.format(_price / 100);
+        }
+
+        function renderWarnings(warnings) {
+            var box = $("lul-price-warnings");
+            if (!warnings || warnings.length === 0) {
+                box.classList.add("lul-hidden");
+                box.innerHTML = "";
+                return;
+            }
+            box.innerHTML = warnings
+                .map(function (w) {
+                    return "<p>" + window.lulEscHtml(w.message) + "</p>";
+                })
+                .join("");
+            box.classList.remove("lul-hidden");
+        }
+
+        // ── Checkout redirect ────────────────────────────────────────────────
+
+        function buyTables() {
+            if (_geoId == null) return;
+            var params = new URLSearchParams({
+                product: "tables",
+                type: _geoType,
+                id: String(_geoId),
+                unit: _unit,
+                with_geometries: String(_withGeometries),
+            });
+            window.location.href = API_BASE + "/payments/checkout/?" + params.toString();
+        }
+        window.lulBuyTables = buyTables;
+
+        refreshSidebar();
+    })();
+</script>

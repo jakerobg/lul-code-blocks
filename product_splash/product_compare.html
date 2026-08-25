@@ -1,0 +1,385 @@
+<!--
+  PRODUCT COMPARISON TABLE — five products, six columns (Squarespace Code Block).
+
+  Splash-page companion to product_grid.html. Uppercase eyebrow headers on a
+  grey band, alternating white / grey row stripes, product name and pricing
+  in bold.
+
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window. Under
+    880px each row becomes a STACKED CARD — every cell keeps its column name
+    as a label, so nothing depends on a header row that's scrolled off. Above
+    that it's a real table.
+  ▶ TO EDIT A ROW: each <tr> is one product; cells are in column order. The
+    data-label on each <td> is what shows as the field name in stacked mode —
+    keep it matching the <th> above it.
+  ▶ HEADING: "Compare Specifications" + its subheading sit in the same
+    max-width wrapper as the table, so they share its left edge and stay
+    flush left at every width — including stacked mode.
+  ▶ COLOURS/SIZE: the vars at the top of .lul-ptab.
+  ▶ All classes are prefixed lul-ptab- / --lult- so this can share a page with
+    product_grid.html and product_table.html without collisions.
+-->
+
+<section class="lul-ptab" aria-label="Compare products">
+    <style>
+        .lul-ptab {
+            --lult-ink: #393348;
+            --lult-body: rgba(57, 51, 72, 0.78);
+            --lult-grey: #efedec; /* standard LUL grey — header band + row stripe */
+            --lult-line: rgba(57, 51, 72, 0.12);
+            --lult-eyebrow: #393348; /* header label colour */
+            --lult-cell-pad: 20px 22px;
+            --lult-head-pad: 16px 22px;
+            --lult-fs: 14px; /* body cell size */
+            --lult-fs-head: 12px; /* column label size */
+            --lult-fs-title: 40px; /* heading above the table */
+            --lult-fs-intro: 16px; /* subheading under it */
+            --lult-intro: #5c5c5c; /* subheading grey */
+            --lult-head-gap: 40px; /* space between heading and table */
+
+            /* Max width of the table, so it lines up with product_grid.html
+               rather than running to the edge of a wide block. That grid's
+               cards span 3 * --lulg-card-w + 2 * --lulg-gap = 3*350 + 2*28 =
+               1106px. KEEP IN SYNC: if you resize the grid's cards or gap,
+               recompute this. Anything narrower than it just fills the block. */
+            --lult-max-w: 1206px;
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--lult-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            /* side padding matches product_grid.html so the two blocks'
+               outer edges align when stacked on a page */
+            padding: 32px 20px;
+            container-type: inline-size;
+            container-name: lulptab;
+        }
+        .lul-ptab *,
+        .lul-ptab *::before,
+        .lul-ptab *::after {
+            box-sizing: border-box;
+        }
+
+        /* Heading + table share this wrapper, so they share a left edge and
+           the same max width. */
+        .lul-ptab__inner {
+            width: 100%;
+            max-width: var(--lult-max-w);
+            margin-inline: auto; /* center it in the leftover space */
+        }
+
+        /* ── HEADING ── always flush left, whatever the block width ── */
+        .lul-ptab__head {
+            text-align: left;
+            margin-bottom: var(--lult-head-gap);
+        }
+        .lul-ptab__title {
+            font-size: var(--lult-fs-title);
+            font-weight: 600;
+            line-height: 1.25;
+            letter-spacing: -0.015em;
+            color: var(--lult-ink);
+            margin: 0 0 14px;
+        }
+        .lul-ptab__intro {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: var(--lult-fs-intro);
+            line-height: 1.5;
+            color: var(--lult-intro);
+            margin: 0;
+        }
+
+        .lul-ptab__table {
+            width: 100%;
+            border-collapse: collapse;
+            /* fixed keeps the columns at the widths set below instead of
+               letting the longest cell dictate them */
+            table-layout: fixed;
+        }
+
+        /* ── HEADER ── uppercase eyebrow on the grey band ── */
+        .lul-ptab__table thead th {
+            background: var(--lult-grey);
+            text-align: left;
+            vertical-align: bottom;
+            font-size: var(--lult-fs-head);
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            line-height: 1.3;
+            color: var(--lult-eyebrow);
+            padding: var(--lult-head-pad);
+        }
+
+        /* ── BODY ── */
+        .lul-ptab__table tbody td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: var(--lult-fs);
+            line-height: 1.5;
+            color: var(--lult-body);
+            vertical-align: top;
+            padding: var(--lult-cell-pad);
+            border-bottom: 1px solid var(--lult-line);
+        }
+        /* alternating stripe — every other product row picks up the grey */
+        .lul-ptab__table tbody tr:nth-child(even) td {
+            background: var(--lult-grey);
+        }
+        /* product name + pricing read as the anchors of each row */
+        .lul-ptab__name,
+        .lul-ptab__price {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+            font-weight: 700;
+            color: var(--lult-ink) !important;
+        }
+
+        /* Column widths. Percentages, so they scale with the block. */
+        .lul-ptab__col--name {
+            width: 15%;
+        }
+        .lul-ptab__col--get {
+            width: 21%;
+        }
+        .lul-ptab__col--best {
+            width: 22%;
+        }
+        .lul-ptab__col--unit {
+            width: 15%;
+        }
+        .lul-ptab__col--format {
+            width: 13%;
+        }
+        .lul-ptab__col--price {
+            width: 14%;
+        }
+
+        /* ── STACKED MODE ──
+           Under 880px a 6-column table can't stay legible, and a horizontal
+           scroller hides the header row as you scroll. Instead each row becomes
+           a card and every cell carries its own label from data-label. */
+        @container lulptab (max-width: 880px) {
+            .lul-ptab__table,
+            .lul-ptab__table tbody,
+            .lul-ptab__table tr,
+            .lul-ptab__table td {
+                display: block;
+                width: 100%;
+            }
+            /* Header row is redundant once each cell is labelled. Clip rather
+               than display:none so it stays in the accessibility tree. */
+            .lul-ptab__table thead {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip: rect(0 0 0 0);
+                clip-path: inset(50%);
+                white-space: nowrap;
+            }
+            .lul-ptab__table tbody tr {
+                border: 1px solid var(--lult-line);
+                margin-bottom: 16px;
+                padding: 6px 0;
+            }
+            .lul-ptab__table tbody tr:nth-child(even) {
+                background: var(--lult-grey);
+            }
+            .lul-ptab__table tbody tr:nth-child(even) td {
+                background: transparent; /* the row carries the stripe now */
+            }
+            .lul-ptab__table tbody td {
+                border-bottom: none;
+                padding: 8px 20px;
+            }
+            /* the column name, in the same eyebrow treatment as the header */
+            .lul-ptab__table tbody td::before {
+                content: attr(data-label);
+                display: block;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: var(--lult-fs-head);
+                font-weight: 700;
+                letter-spacing: 0.09em;
+                text-transform: uppercase;
+                line-height: 1.3;
+                color: var(--lult-eyebrow);
+                opacity: 0.65;
+                margin-bottom: 3px;
+            }
+            /* the product name is the card's heading — no label needed */
+            .lul-ptab__table tbody td.lul-ptab__name {
+                font-size: 18px;
+                padding-top: 14px;
+            }
+            .lul-ptab__table tbody td.lul-ptab__name::before {
+                content: none;
+            }
+        }
+
+        /* Fallback for browsers without container queries (pre-2023): same
+           stacking, keyed to the viewport instead. */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 940px) {
+                .lul-ptab__table,
+                .lul-ptab__table tbody,
+                .lul-ptab__table tr,
+                .lul-ptab__table td {
+                    display: block;
+                    width: 100%;
+                }
+                .lul-ptab__table thead {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    overflow: hidden;
+                    clip: rect(0 0 0 0);
+                    clip-path: inset(50%);
+                    white-space: nowrap;
+                }
+                .lul-ptab__table tbody tr {
+                    border: 1px solid var(--lult-line);
+                    margin-bottom: 16px;
+                    padding: 6px 0;
+                }
+                .lul-ptab__table tbody tr:nth-child(even) {
+                    background: var(--lult-grey);
+                }
+                .lul-ptab__table tbody tr:nth-child(even) td {
+                    background: transparent;
+                }
+                .lul-ptab__table tbody td {
+                    border-bottom: none;
+                    padding: 8px 20px;
+                }
+                .lul-ptab__table tbody td::before {
+                    content: attr(data-label);
+                    display: block;
+                    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    font-size: var(--lult-fs-head);
+                    font-weight: 700;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    line-height: 1.3;
+                    color: var(--lult-eyebrow);
+                    opacity: 0.65;
+                    margin-bottom: 3px;
+                }
+                .lul-ptab__table tbody td.lul-ptab__name {
+                    font-size: 18px;
+                    padding-top: 14px;
+                }
+                .lul-ptab__table tbody td.lul-ptab__name::before {
+                    content: none;
+                }
+            }
+        }
+    </style>
+
+    <div class="lul-ptab__inner">
+        <div class="lul-ptab__head">
+            <h3 class="lul-ptab__title">Compare Specifications</h3>
+            <p class="lul-ptab__intro">Select the right depth and format for your geospatial or regulatory workflow</p>
+        </div>
+
+        <table class="lul-ptab__table">
+            <colgroup>
+                <col class="lul-ptab__col--name" />
+                <col class="lul-ptab__col--get" />
+                <col class="lul-ptab__col--best" />
+                <col class="lul-ptab__col--unit" />
+                <col class="lul-ptab__col--format" />
+                <col class="lul-ptab__col--price" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">What you get</th>
+                    <th scope="col">Best for</th>
+                    <th scope="col">Unit of analysis</th>
+                    <th scope="col">Format</th>
+                    <th scope="col">Pricing</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ══ ZONING DISTRICTS ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Zoning Districts</td>
+                    <td data-label="What you get">
+                        GIS layers summarizing how each base and overlay district regulates, rule by rule.
+                    </td>
+                    <td data-label="Best for">
+                        Regulatory comparisons, map display. For when you need regulatory layers.
+                    </td>
+                    <td data-label="Unit of analysis">Zoning district</td>
+                    <td data-label="Format">GeoJSON, Geodatabase, GeoPackage</td>
+                    <td class="lul-ptab__price" data-label="Pricing">Per-district, per-variable pricing</td>
+                </tr>
+
+                <!-- ══ PARCEL REPORTS ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Parcel Reports</td>
+                    <td data-label="What you get">
+                        A PDF detailing the zoning rules that apply to your selected parcel, including allowed uses,
+                        dimensional requirements, district names, and more.
+                    </td>
+                    <td data-label="Best for">
+                        Due diligence on a specific address. Quick one-off lookups for developers, lawyers, consultants.
+                        For when you need comprehensive zoning rules for a single parcel.
+                    </td>
+                    <td data-label="Unit of analysis">Individual parcel</td>
+                    <td data-label="Format">PDF</td>
+                    <td class="lul-ptab__price" data-label="Pricing">$250 per report</td>
+                </tr>
+
+                <!-- ══ ZONING RASTERS ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Zoning Rasters</td>
+                    <td data-label="What you get">
+                        30×30m grid cells with residential and nonresidential use categories.
+                    </td>
+                    <td data-label="Best for">
+                        Environmental analysis, land use modeling, integration with other geospatial datasets. For when
+                        you need land use regulations.
+                    </td>
+                    <td data-label="Unit of analysis">30×30m grid cells</td>
+                    <td data-label="Format">GeoTIFF</td>
+                    <td class="lul-ptab__price" data-label="Pricing">Per-acreage, per-category pricing</td>
+                </tr>
+
+                <!-- ══ ZONING SLICES ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Zoning Slices</td>
+                    <td data-label="What you get">
+                        Flattened GIS layers showing the outcome after base and overlay districts are combined,
+                        containing one set of rules per polygon.
+                    </td>
+                    <td data-label="Best for">
+                        Site selection, data pipelines, scenario planning, policy research, regulatory comparison,
+                        academic analysis. For when you need regulatory outcomes.
+                    </td>
+                    <td data-label="Unit of analysis">Block group, census tract, jurisdiction, or custom geography</td>
+                    <td data-label="Format">GeoJSON, Geodatabase, GeoPackage</td>
+                    <td class="lul-ptab__price" data-label="Pricing">Per-slice, per-variable pricing</td>
+                </tr>
+
+                <!-- ══ ZONING TABLES ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Zoning Tables</td>
+                    <td data-label="What you get">
+                        A table of summary statistics for nearly fifty land cover, demographic, housing, and zoning
+                        characteristics.
+                    </td>
+                    <td data-label="Best for">
+                        Cross-geography comparisons, housing research, zoning reform advocacy. For when you need
+                        regulatory summaries for a neighborhood, city, or region.
+                    </td>
+                    <td data-label="Unit of analysis">Selected geographic area</td>
+                    <td data-label="Format">CSV, GeoJSON (optional), GeoPackage (optional)</td>
+                    <td class="lul-ptab__price" data-label="Pricing">Per-geographic unit pricing</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>

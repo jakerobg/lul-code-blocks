@@ -1,0 +1,179 @@
+<!--
+  HOW WE BUILD THE DATA — three icon cards, 3 across (Squarespace Code Block).
+  Same card system as use_case_cards.html / use_case_cards_reports.html:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  Informational, not links — <article> elements, no hover lift.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, stacked under 640px.
+  ▶ ICONS: inline SVG, swap the <path> data for any 24x24 outline icon.
+
+  Note: the source SVG drew a lighter card border (#393347 @ 10%) and a 48px
+  icon well. This uses the shared card system's values instead, so it sits
+  consistently beside the use-case cards.
+-->
+<section class="lul-uc" aria-label="How we build the data">
+    <style>
+        .lul-uc {
+            --lul-ink: #393348;
+            --lul-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px 0;
+            container-type: inline-size;
+            container-name: luluc;
+        }
+        .lul-uc *,
+        .lul-uc *::before,
+        .lul-uc *::after {
+            box-sizing: border-box;
+        }
+        .lul-uc__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lul-gap);
+        }
+        .lul-uc__card {
+            flex: 1 1 calc(33.333% - (var(--lul-gap) * 2 / 3));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        /* uncomment if you turn these into links
+        .lul-uc__card:hover {
+            border-color: rgba(57, 51, 72, 0.4);
+            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
+            transform: translateY(-2px);
+        } */
+        .lul-uc__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lul-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-uc__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-uc__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lul-ink);
+            margin: 0 0 12px;
+        }
+        .lul-uc__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 640px  →  3 across
+             ≤ 640px  →  stacked                                      */
+        @container luluc (max-width: 640px) {
+            .lul-uc {
+                --lul-gap: 16px;
+            }
+            .lul-uc__card {
+                flex-basis: 100%;
+            }
+        }
+        /* fallback for browsers without container queries */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 760px) {
+                .lul-uc__card {
+                    flex-basis: 100%;
+                }
+            }
+        }
+    </style>
+    <div class="lul-uc__grid">
+        <!-- Derived From Verified District Data -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m12 2 9 5-9 5-9-5 9-5Z" />
+                    <path d="m3 12 9 5 9-5" />
+                    <path d="m3 17 9 5 9-5" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Derived From Verified District Data</h4>
+            <p class="lul-uc__body">
+                Each Slice is computed by flattening our verified base and overlay Zoning District data into
+                non-overlapping polygons, so every Slice inherits the same sourcing rigor as our District-level data.
+            </p>
+        </article>
+        <!-- Human Verification -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M2 21v-2a5 5 0 0 1 5-5h4" />
+                    <path d="m15 18 2 2 4-4" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Human Verification</h4>
+            <p class="lul-uc__body">
+                All classifications are reviewed for accuracy and consistency before publication.
+            </p>
+        </article>
+        <!-- Regular Update Cycles -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-7.6-4.2" />
+                    <path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 7.6 4.2" />
+                    <path d="M20 3v4.5h-4.5" />
+                    <path d="M4 21v-4.5h4.5" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Regular Update Cycles</h4>
+            <p class="lul-uc__body">
+                Our platform continuously monitors municipal updates and reflows affected Slices to keep outputs
+                aligned with the latest zoning amendments.
+            </p>
+        </article>
+    </div>
+</section>

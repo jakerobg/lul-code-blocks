@@ -1,9 +1,19 @@
 <!--
-  Primary + secondary buttons, each with a dropdown menu.
+  Data action buttons, CENTERED — primary (filled purple, plain link) +
+  secondary (outlined) with a dropdown menu.
+
+  Only the SECONDARY is a dropdown here; the primary is an ordinary link.
+  Compare buttons_PRIMARY_SECONDARY_dropdown.html, where both are dropdowns.
 
   ▶ Colours and padding are the vars at the top. A button's border always
-    matches its own fill/outline, and each menu inherits its parent button's
-    colour via --lul-menu-accent so the seam under the button lines up.
+    matches its own fill/outline, and the menu inherits the secondary's ink
+    via --lul-menu-accent so the seam under the button lines up.
+  ▶ Centering lives on the --center modifier, not the base class, so this block
+    and the left-aligned ones can coexist on the same page without fighting.
+  ▶ The menu is centred under its button rather than left-aligned to it, since
+    the pair itself is centred.
+  ▶ SET THE PRIMARY: its label and href are marked below — it defaults to the
+    Data Dictionary link used by the other centred button block.
 -->
 <style>
     .lul-actions {
@@ -23,13 +33,16 @@
         gap: 18px;
         flex-wrap: wrap;
     }
+    .lul-actions--center {
+        justify-content: center;
+    }
     .lul-actions *,
     .lul-actions *::before,
     .lul-actions *::after {
         box-sizing: border-box;
     }
 
-    /* Each dropdown passes its button's colour down to its own menu. */
+    /* The dropdown passes its button's colour down to its own menu. */
     .lul-actions .lul-actions__dropdown {
         position: relative;
         display: inline-block;
@@ -64,7 +77,8 @@
             color 0.25s ease,
             gap 0.25s ease;
     }
-    .lul-actions .lul-actions__btn:hover {
+    /* only the dropdown button has a caret to nudge */
+    .lul-actions .lul-actions__toggle:hover {
         gap: 12px;
     }
 
@@ -87,13 +101,6 @@
         background: var(--lul-secondary-hover);
     }
 
-    .lul-actions .lul-actions__or {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        color: var(--lul-ink);
-        font-size: 1rem;
-        opacity: 0.7;
-    }
-
     .lul-actions .lul-actions__btn svg {
         width: 14px;
         height: 14px;
@@ -103,11 +110,12 @@
         transform: rotate(180deg);
     }
 
-    /* Dropdown menu */
+    /* Dropdown menu — centred on the button, since the pair is centred. */
     .lul-actions .lul-actions__menu {
         position: absolute;
         top: calc(100% - 1px); /* overlap the button's bottom border */
-        left: 0;
+        left: 50%;
+        transform: translateX(-50%);
         min-width: 100%;
         background: #ffffff;
         border: 1px solid var(--lul-menu-accent);
@@ -140,41 +148,11 @@
     }
 </style>
 
-<div class="lul-actions">
-    <div class="lul-actions__dropdown">
-        <a href="#" role="button" class="lul-actions__btn lul-actions__btn--primary lul-actions__toggle">
-            View Data Dictionary
-            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path
-                    d="M5 8l5 5 5-5"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
-        </a>
-        <div class="lul-actions__menu">
-            <a
-                class="lul-actions__option"
-                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?pli=1&gid=386090160#gid=386090160"
-                >Jurisdictions</a
-            >
-            <a
-                class="lul-actions__option"
-                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?pli=1&gid=1992686153#gid=1992686153"
-                >Census Tracts</a
-            >
-            <a
-                class="lul-actions__option"
-                href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?pli=1&gid=594917890#gid=594917890"
-                >Block Groups</a
-            >
-        </div>
-    </div>
+<div class="lul-actions lul-actions--center">
+    <!-- PRIMARY — plain link, no menu. Change the label and href here. -->
+    <a class="lul-actions__btn lul-actions__btn--primary" href="#order">Get Instant Pricing</a>
 
-    <span class="lul-actions__or">or</span>
-
+    <!-- SECONDARY — dropdown of sample downloads -->
     <div class="lul-actions__dropdown">
         <a href="#" role="button" class="lul-actions__btn lul-actions__btn--secondary lul-actions__toggle">
             Download Sample
@@ -189,17 +167,17 @@
             </svg>
         </a>
         <div class="lul-actions__menu">
-            <a class="lul-actions__option" href="https://www.landuselabs.com/s/zoning_tables_jurisdiction_sample.csv"
+            <a class="lul-actions__option" href="https://www.landuselabs.com/s/jurisdiction_table_sample.csv"
                 >Jurisdictions</a
             >
             <a
                 class="lul-actions__option"
-                href="https://www.landuselabs.com/s/sullivan_county_nh_censustract_table_sample.csv"
+                href="https://www.landuselabs.com/s/belknap_county_nh_censustract_table_sample.csv"
                 >Census Tracts</a
             >
             <a
                 class="lul-actions__option"
-                href="https://www.landuselabs.com/s/sullivan_county_nh_blockgroup_table_sample.csv"
+                href="https://www.landuselabs.com/s/belknap_county_nh_blockgroup_table_sample.csv"
                 >Block Groups</a
             >
         </div>

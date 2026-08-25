@@ -1,0 +1,49 @@
+<div style="text-align: center; margin-top: -10px">
+    <h3 class="lul-h3">Explore the data before you buy.</h3>
+    <p class="lul-p">
+        Check out our data dictionary for
+        <a
+            href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=112307427#gid=112307427"
+            >general</a
+        >,
+        <a
+            href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1343210928#gid=1343210928"
+            >residential</a
+        >, or
+        <a
+            href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=421718271#gid=421718271"
+            >nonresidential</a
+        >
+        uses to see every regulation we collect, how we code them, and how they're defined.
+    </p>
+</div>
+<style>
+    .lul-h3 {
+        margin: 0 0 12px;
+        font-weight: 600;
+        color: #393348;
+    }
+    .lul-p {
+        margin: 0;
+        color: #5c5c5c;
+    }
+    /* Links inside the paragraph: underline only, never a colour change.
+       They inherit the paragraph's grey in every state — including :visited
+       and :hover — so the link reads as emphasis rather than as a swatch.
+       !important because Squarespace's theme CSS sets link colours with
+       selectors that would otherwise win. */
+    .lul-p a,
+    .lul-p a:link,
+    .lul-p a:visited,
+    .lul-p a:hover,
+    .lul-p a:active,
+    .lul-p a:focus {
+        color: inherit !important;
+        text-decoration: underline !important;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+        /* stop the theme adding its own border/box underline on hover */
+        border-bottom: none !important;
+        background-image: none !important;
+    }
+</style>

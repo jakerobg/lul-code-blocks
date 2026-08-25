@@ -20,6 +20,18 @@
   ▶ data-fallback is what shows if the API is unreachable, so the page never
     renders an empty slot. Update it when the real numbers move.
 
+  ▶ NUMBER FORMAT: abbreviated with K / M / B, same rules as the
+    coverage_stats blocks. Per-stat overrides on the <span>:
+      data-dp="0|1"   decimal places (default 1; 0 = whole number)
+      data-unit="K"   force a unit instead of picking one by magnitude
+    e.g. 1337510 → "1.3M+", 11015 with data-unit="K" → "11K+".
+    Anything under 100,000 falls back to comma grouping.
+
+  ▶ Each number counts up 0 → target the first time it scrolls into view,
+    then the highlight sweeps across it. The sweep waits for the count to
+    finish so the swatch is sized to the final digits, not to a mid-count
+    width. prefers-reduced-motion skips the count.
+
   ▶ COLOURS/SIZE: the vars at the top of .lul-nza-row.
 -->
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
@@ -122,17 +134,19 @@
 
 <div class="lul-nza-row">
     <div class="lul-nza-stat">
-        <span class="lul-nza" data-field="jurisdictions_covered" data-fallback="11015">11,015+</span>
+        <span class="lul-nza" data-field="jurisdictions_covered" data-fallback="11015" data-unit="K" data-dp="1"
+            >11K+</span
+        >
         <p class="lul-nza-label">Jurisdictions Published to the National Zoning Atlas</p>
     </div>
 
     <div class="lul-nza-stat">
-        <span class="lul-nza" data-field="pages_analyzed" data-fallback="1337510">1,337,510+</span>
+        <span class="lul-nza" data-field="pages_analyzed" data-fallback="1337510" data-dp="1">1.3M+</span>
         <p class="lul-nza-label">Pages of Zoning Codes Read</p>
     </div>
 
     <div class="lul-nza-stat">
-        <span class="lul-nza" data-field="population_covered" data-fallback="224494683">224,494,683+</span>
+        <span class="lul-nza" data-field="population_covered" data-fallback="224494683" data-dp="0">224M+</span>
         <p class="lul-nza-label">People Living in Published Jurisdictions</p>
     </div>
 </div>
@@ -159,10 +173,36 @@
         var nodes = document.querySelectorAll(".lul-nza:not([data-lul-nza-done])");
         if (!nodes.length) return;
 
-        function render(el, value) {
-            el.setAttribute("data-lul-nza-done", "1");
-            // Round: tracts_covered / blockgroups_covered come back fractional.
-            el.textContent = Number(value).toLocaleString("en-US", { maximumFractionDigits: 0 }) + "+";
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        // ── Number formatting (same rules as the coverage_stats blocks) ──
+        // Round to `dp` decimals; dp 0 → whole number, else drop trailing ".0".
+        function roundDp(x, dp) {
+            if (dp === 0) return String(Math.round(x));
+            return (Math.round(x * 10) / 10).toFixed(1).replace(/\.0$/, "");
+        }
+        // Format with K / M / B. `dp` = decimal places (default 1). `unit`
+        // (optional) forces "K" | "M" | "B"; otherwise it's picked by
+        // magnitude, and anything under 100,000 is shown with commas.
+        function abbr(n, dp, unit) {
+            if (dp == null) dp = 1;
+            var a = Math.abs(n);
+            if (unit === "B" || (!unit && a >= 1e9)) return roundDp(n / 1e9, dp) + "B";
+            if (unit === "M" || (!unit && a >= 1e6)) return roundDp(n / 1e6, dp) + "M";
+            if (unit === "K" || (!unit && a > 99999)) return roundDp(n / 1e3, dp) + "K";
+            return Math.round(n).toLocaleString("en-US");
+        }
+        // Per-stat overrides from the markup: data-dp / data-unit.
+        function fmt(el, n) {
+            var dp = el.dataset.dp === undefined ? null : parseInt(el.dataset.dp, 10);
+            return abbr(n, isNaN(dp) ? null : dp, el.dataset.unit || null);
+        }
+
+        // ── Count up, then sweep the highlight ─────────────────────────
+        // The swatch is sized to the element's box, so it's lit only once the
+        // number has landed on its final width — otherwise it would resize
+        // under the digits while they tick.
+        function light(el) {
             // Next frame, so the browser paints the 0%-width swatch before the
             // class change animates it — set in the same frame it would jump.
             requestAnimationFrame(function () {
@@ -171,18 +211,63 @@
                 });
             });
         }
+        function countUp(el, target) {
+            if (reduce) {
+                el.textContent = fmt(el, target) + "+";
+                light(el);
+                return;
+            }
+            var duration = 1000;
+            var start = null;
+            requestAnimationFrame(function frame(now) {
+                if (start === null) start = now;
+                var p = Math.min((now - start) / duration, 1);
+                var eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+                // number only while counting; the "+" appears once it lands
+                if (p < 1) {
+                    el.textContent = fmt(el, target * eased);
+                    requestAnimationFrame(frame);
+                } else {
+                    el.textContent = fmt(el, target) + "+";
+                    light(el);
+                }
+            });
+        }
+
+        // Hold the resolved value until the stat scrolls into view.
+        function arm(el, value) {
+            el.setAttribute("data-lul-nza-done", "1");
+            var target = Number(value);
+            if (isNaN(target)) return;
+            if (!("IntersectionObserver" in window)) {
+                countUp(el, target);
+                return;
+            }
+            var io = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            io.unobserve(entry.target);
+                            countUp(el, target);
+                        }
+                    });
+                },
+                { threshold: 0.4 },
+            );
+            io.observe(el);
+        }
 
         window.__lulNza
             .then(function (data) {
                 nodes.forEach(function (el) {
                     var v = data[el.dataset.field];
-                    render(el, v == null ? el.dataset.fallback : v);
+                    arm(el, v == null ? el.dataset.fallback : v);
                 });
             })
             .catch(function () {
                 // Leave the hardcoded fallback in place rather than blanking it.
                 nodes.forEach(function (el) {
-                    render(el, el.dataset.fallback);
+                    arm(el, el.dataset.fallback);
                 });
             });
     })();

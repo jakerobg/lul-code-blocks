@@ -1,0 +1,217 @@
+<!--
+  PRODUCT SPECS CARDS — ZONING TABLES — three icon cards, 3 across
+  (Squarespace Code Block).
+
+  Same card system as product_specs_cards_slices.html:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  Informational, not links — <article> elements, no hover lift.
+
+  Content is the Zoning Tables spec copy (Unit of Analysis / What's Included /
+  Format), reworked from the bordered-grid treatment into these cards: each
+  spec's VALUE becomes the card title and its detail becomes the body, the way
+  the slices cards read.
+
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, stacked under 640px.
+  ▶ ICONS: card 1 is a new glyph for geographic units (a region subdivided
+    into smaller areas); card 3 is a table/grid glyph, since this product
+    ships tabular data rather than GIS layers. Swap the <path> data for any
+    24x24 outline icon.
+  ▶ Card 3 lists the formats as a sentence, exactly like the slices card —
+    no chips, so all three cards are icon + title + body throughout.
+  ▶ NAMESPACE: prefixed lul-tsp- / --lultsp-, container lultsp — deliberately
+    NOT the shared lul-uc- namespace, so this block can share a page with the
+    use-case cards or the slices specs without either overriding the other.
+-->
+<section class="lul-tsp" aria-label="Product specifications">
+    <style>
+        .lul-tsp {
+            --lultsp-ink: #393348;
+            --lultsp-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px 0;
+            container-type: inline-size;
+            container-name: lultsp;
+        }
+        .lul-tsp *,
+        .lul-tsp *::before,
+        .lul-tsp *::after {
+            box-sizing: border-box;
+        }
+        .lul-tsp__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lultsp-gap);
+        }
+        .lul-tsp__card {
+            flex: 1 1 calc(33.333% - (var(--lultsp-gap) * 2 / 3));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        /* uncomment if you turn these into links
+        .lul-tsp__card:hover {
+            border-color: rgba(57, 51, 72, 0.4);
+            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
+            transform: translateY(-2px);
+        } */
+        .lul-tsp__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lultsp-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-tsp__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-tsp__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lultsp-ink);
+            margin: 0 0 12px;
+        }
+        .lul-tsp__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        .lul-tsp__body + .lul-tsp__body {
+            margin-top: 14px;
+        }
+        /* Links inside the body: underline only, never a colour change, in
+           every state (incl. :visited). !important because Squarespace's theme
+           sets link colours with selectors that would otherwise win. */
+        .lul-tsp__body a,
+        .lul-tsp__body a:link,
+        .lul-tsp__body a:visited,
+        .lul-tsp__body a:hover,
+        .lul-tsp__body a:active,
+        .lul-tsp__body a:focus {
+            color: inherit !important;
+            text-decoration: underline !important;
+            text-underline-offset: 2px;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 640px  →  3 across
+             ≤ 640px  →  stacked                                      */
+        @container lultsp (max-width: 640px) {
+            .lul-tsp {
+                --lultsp-gap: 16px;
+            }
+            .lul-tsp__card {
+                flex-basis: 100%;
+            }
+        }
+        /* fallback for browsers without container queries */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 760px) {
+                .lul-tsp__card {
+                    flex-basis: 100%;
+                }
+            }
+        }
+    </style>
+    <div class="lul-tsp__grid">
+        <!-- Geographic unit — a region subdivided into smaller reporting areas -->
+        <article class="lul-tsp__card">
+            <span class="lul-tsp__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M3.5 5.2 9 3.4l6 2 5.5-1.8v14.2L15 19.6l-6-2-5.5 1.8V5.2Z" />
+                    <path d="M9 3.4v14.2" />
+                    <path d="M15 5.4v14.2" />
+                    <path d="M3.9 11.4h16.4" />
+                </svg>
+            </span>
+            <h4 class="lul-tsp__title">Geographic unit</h4>
+            <p class="lul-tsp__body">
+                Block group, census tract, and jurisdiction level;
+                <a href="https://www.landuselabs.com/contact">contact us</a> for purchase by a different geography
+                (e.g., zip code or Congressional district).
+            </p>
+        </article>
+        <!-- Selected variables — sliders -->
+        <article class="lul-tsp__card">
+            <span class="lul-tsp__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M4 6h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 18h16" />
+                    <circle cx="9" cy="6" r="2" />
+                    <circle cx="15" cy="12" r="2" />
+                    <circle cx="8" cy="18" r="2" />
+                </svg>
+            </span>
+            <h4 class="lul-tsp__title">Selected variables</h4>
+            <p class="lul-tsp__body">
+                Demographic characteristics for each selected geography, zoning code summary details, and land area in
+                each selected geography subject to specific zoning rules as further described in our
+                <a
+                    href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=386090160#gid=386090160"
+                    >data dictionary</a
+                >.
+            </p>
+        </article>
+        <!-- Analysis-ready tables — spreadsheet grid -->
+        <article class="lul-tsp__card">
+            <span class="lul-tsp__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <rect x="3" y="4" width="18" height="16" />
+                    <path d="M3 9h18" />
+                    <path d="M9 9v11" />
+                    <path d="M3 14.5h18" />
+                </svg>
+            </span>
+            <h4 class="lul-tsp__title">Analysis-ready tables</h4>
+            <p class="lul-tsp__body">
+                CSV, or with the geospatial add-on, File Geodatabase (.gdb), GeoJSON, and GeoPackage (.gpkg) formats
+                ready for direct ingestion.
+            </p>
+        </article>
+    </div>
+</section>

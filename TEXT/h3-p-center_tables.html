@@ -1,0 +1,52 @@
+<div style="text-align: center; margin-top: -10px">
+    <h3 class="lul-h3">Explore the data before you buy.</h3>
+    <!-- PASTE THE THREE URLs into the empty href="" attributes below:
+         jurisdictions / census tracts / block groups (in that order). -->
+    <p class="lul-p">
+        Download a sample Zoning Table that shows information for three jurisdictions — and check out our data
+        dictionary for
+        <a
+            href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=386090160#gid=386090160"
+            >jurisdictions</a
+        >,
+        <a
+            href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1992686153#gid=1992686153"
+            >census tracts</a
+        >, or
+        <a
+            href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=594917890#gid=594917890"
+            >block groups</a
+        >
+        to see every regulation we collect, how we code them, and how they're defined.
+    </p>
+</div>
+<style>
+    .lul-h3 {
+        margin: 0 0 12px;
+        font-weight: 600;
+        color: #393348;
+    }
+    .lul-p {
+        margin: 0;
+        color: #5c5c5c;
+    }
+    /* Links inside the paragraph: underline only, never a colour change.
+       They inherit the paragraph's grey in every state — including :visited
+       and :hover — so the link reads as emphasis rather than as a swatch.
+       !important because Squarespace's theme CSS sets link colours with
+       selectors that would otherwise win. */
+    .lul-p a,
+    .lul-p a:link,
+    .lul-p a:visited,
+    .lul-p a:hover,
+    .lul-p a:active,
+    .lul-p a:focus {
+        color: inherit !important;
+        text-decoration: underline !important;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+        /* stop the theme adding its own border/box underline on hover */
+        border-bottom: none !important;
+        background-image: none !important;
+    }
+</style>

@@ -1,0 +1,387 @@
+<!--
+  PRODUCT COMPARISON CARDS — five products, one row (Squarespace Code Block).
+
+  The SAME block goes on every product page. Set CURRENT (one line at the top
+  of the <script> below) to whichever product that page is, and the script
+  outlines that card and swaps its button for a disabled "Currently viewing".
+
+      CURRENT = "reports" | "districts" | "rasters" | "slices" | "tables"
+
+  Everything else is static HTML, so all five cards render in the Squarespace
+  editor. With JS off, every card simply shows its "View product" link.
+
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    5 across, 3 across under 1000px, 2 under 680px, 1 under 380px.
+  ▶ CARD STYLE: matches the audience cards and carousel — 1px
+    rgba(57,51,72,.3) border, radius 0, soft shadow + lift on hover.
+-->
+
+<section class="lul-prod" aria-label="Compare products">
+    <style>
+        .lul-prod {
+            --lul-ink: #393348;
+            --lul-accent: #594496;
+            --lul-accent-dark: #3f2e70;
+            --lul-body: rgba(57, 51, 72, 0.75);
+            --lul-line: rgba(57, 51, 72, 0.15);
+            --lul-border: rgba(57, 51, 72, 0.3);
+            --lul-eyebrow: rgba(57, 51, 72, 0.6); /* same grey as the specs eyebrow */
+            --lul-gap: 16px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--lul-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 32px 0;
+            container-type: inline-size;
+            container-name: lulprod;
+        }
+        .lul-prod *,
+        .lul-prod *::before,
+        .lul-prod *::after {
+            box-sizing: border-box;
+        }
+
+        /* ── GRID ──
+           Real grid + subgrid, not flex. Flex made every card the same HEIGHT,
+           but each card's internal sections still stacked independently, so the
+           rule above "Unit / Format" landed at a different height per card
+           (the specs and price blocks below it differ in line count). With
+           subgrid, all five cards share one set of row tracks, so every
+           internal boundary lines up across the row. */
+        .lul-prod__grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: var(--lul-gap);
+        }
+
+        .lul-prod__card {
+            /* 7 children: pill, title, "best for", use, specs, price, button */
+            grid-row: span 7;
+            display: grid;
+            grid-template-rows: subgrid;
+            /* A subgrid inherits the parent's gap, which would add --lul-gap
+               between every row INSIDE the card on top of each element's own
+               margin. Spacing here is margin-driven, so zero it out. */
+            row-gap: 0;
+            min-width: 0;
+            background: #ffffff;
+            border: 1px solid var(--lul-border);
+            border-radius: 0;
+            padding: 22px 20px 20px;
+        }
+
+        /* Browsers without subgrid fall back to the old flex behaviour: cards
+           are equal height and the button sits on a shared baseline, but the
+           inner rules may not align perfectly. */
+        @supports not (grid-template-rows: subgrid) {
+            .lul-prod__grid {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            .lul-prod__card {
+                flex: 1 1 calc(20% - (var(--lul-gap) * 4 / 5));
+                display: flex;
+                flex-direction: column;
+            }
+            .lul-prod__use {
+                flex-grow: 1;
+            }
+        }
+
+        /* the page you're on */
+        .lul-prod__card--current {
+            border: 2px solid var(--lul-accent);
+            padding: 21px 19px 19px; /* keeps the box the same size */
+        }
+
+        /* ── CATEGORY PILL ── */
+        .lul-prod__pill {
+            justify-self: start; /* grid equivalent of align-self: flex-start */
+            align-self: start;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            line-height: 1;
+            padding: 7px 12px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+        }
+        .lul-prod__pill--document {
+            background: #e2def2;
+            color: #453a72;
+        }
+        .lul-prod__pill--vector {
+            background: #d8deec;
+            color: #33406b;
+        }
+        .lul-prod__pill--raster {
+            background: #eaddc7;
+            color: #6b5330;
+        }
+        .lul-prod__pill--summary {
+            background: #e0e5c2;
+            color: #4a5620;
+        }
+
+        .lul-prod__title {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            line-height: 1.2;
+            color: var(--lul-ink);
+            margin: 0 0 18px;
+        }
+
+        /* ── BEST FOR ──
+           Uppercase eyebrow, same treatment as product_specs.html's eyebrow. */
+        .lul-prod__bestfor {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--lul-eyebrow);
+            margin: 0 0 4px;
+        }
+        .lul-prod__use {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--lul-body);
+            margin: 0 0 16px;
+        }
+
+        /* ── SPECS ── */
+        .lul-prod__specs {
+            border-top: 1px solid var(--lul-line);
+            padding-top: 14px;
+            margin-bottom: 12px;
+        }
+        .lul-prod__specs p {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--lul-body);
+            margin: 0 0 6px;
+        }
+        .lul-prod__specs p:last-child {
+            margin-bottom: 0;
+        }
+        .lul-prod__specs b {
+            font-weight: 700;
+            color: var(--lul-ink);
+        }
+
+        /* ── PRICING + BUTTON ── */
+        .lul-prod__price {
+            border-top: 1px solid var(--lul-line);
+            padding-top: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--lul-ink);
+            margin: 0 0 12px;
+        }
+        /* Primary button style — filled accent with a matching border, same as
+           buttons/BUTTONS_PRIMARY_SECONDARY.html. Sized down for the card. */
+        .lul-prod__btn {
+            display: block;
+            align-self: end;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            padding: 10px 14px;
+            border: 1px solid var(--lul-accent);
+            border-radius: 0;
+            background: var(--lul-accent);
+            color: #ffffff;
+            text-decoration: none;
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+        .lul-prod__btn:hover {
+            background: var(--lul-accent-dark);
+            border-color: var(--lul-accent-dark);
+        }
+        /* current page: flat, unclickable */
+        .lul-prod__btn--current,
+        .lul-prod__btn--current:hover {
+            background: rgba(57, 51, 72, 0.12);
+            border-color: transparent;
+            color: rgba(57, 51, 72, 0.55);
+            cursor: default;
+            pointer-events: none;
+        }
+        /* Squarespace link-color override safety */
+        .lul-prod a,
+        .lul-prod a:visited {
+            text-decoration: none;
+        }
+
+        /* ── RESPONSIVE ──
+           Column count changes on the GRID now, not flex-basis on the card.
+           Each wrapped band gets its own row tracks, so cards stay aligned
+           with the others on their row at every breakpoint. */
+        @container lulprod (max-width: 1000px) {
+            .lul-prod__grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        @container lulprod (max-width: 680px) {
+            .lul-prod__grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @container lulprod (max-width: 380px) {
+            .lul-prod__grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+        /* flex fallback keeps its own basis-driven reflow */
+        @supports not (grid-template-rows: subgrid) {
+            @container lulprod (max-width: 1000px) {
+                .lul-prod__card {
+                    flex-basis: calc(33.333% - (var(--lul-gap) * 2 / 3));
+                }
+            }
+            @container lulprod (max-width: 680px) {
+                .lul-prod__card {
+                    flex-basis: calc(50% - (var(--lul-gap) / 2));
+                }
+            }
+            @container lulprod (max-width: 380px) {
+                .lul-prod__card {
+                    flex-basis: 100%;
+                }
+            }
+        }
+        @supports not (container-type: inline-size) {
+            @media (max-width: 1100px) {
+                .lul-prod__grid {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                }
+                .lul-prod__card {
+                    flex-basis: calc(33.333% - (var(--lul-gap) * 2 / 3));
+                }
+            }
+            @media (max-width: 760px) {
+                .lul-prod__grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+                .lul-prod__card {
+                    flex-basis: calc(50% - (var(--lul-gap) / 2));
+                }
+            }
+        }
+    </style>
+
+    <div class="lul-prod__grid">
+        <!-- ══ PARCEL REPORTS ══ -->
+        <article class="lul-prod__card" data-product="reports">
+            <span class="lul-prod__pill lul-prod__pill--document">Document</span>
+            <h4 class="lul-prod__title">Parcel Reports</h4>
+            <p class="lul-prod__bestfor">Best for:</p>
+            <p class="lul-prod__use">
+                Due diligence on a specific address, quick one-off lookups for developers, lawyers, consultants
+            </p>
+            <div class="lul-prod__specs">
+                <p><b>Unit:</b> Individual parcel</p>
+                <p><b>Format:</b> PDF</p>
+            </div>
+            <p class="lul-prod__price">$250 per report</p>
+            <a class="lul-prod__btn" href="https://www.landuselabs.com/reports">View product</a>
+        </article>
+
+        <!-- ══ ZONING DISTRICTS ══ -->
+        <article class="lul-prod__card" data-product="districts">
+            <span class="lul-prod__pill lul-prod__pill--vector">GIS vector layer</span>
+            <h4 class="lul-prod__title">Zoning Districts</h4>
+            <p class="lul-prod__bestfor">Best for:</p>
+            <p class="lul-prod__use">Regulatory comparisons, map display</p>
+            <div class="lul-prod__specs">
+                <p><b>Unit:</b> Zoning district</p>
+                <p><b>Format:</b> GeoJSON, Geodatabase, GeoPackage</p>
+            </div>
+            <p class="lul-prod__price">Per-district, per-variable pricing</p>
+            <a class="lul-prod__btn" href="https://www.landuselabs.com/districts">View product</a>
+        </article>
+
+        <!-- ══ ZONING RASTERS ══ -->
+        <article class="lul-prod__card" data-product="rasters">
+            <span class="lul-prod__pill lul-prod__pill--raster">GIS raster layer</span>
+            <h4 class="lul-prod__title">Zoning Rasters</h4>
+            <p class="lul-prod__bestfor">Best for:</p>
+            <p class="lul-prod__use">
+                Environmental analysis, land use modeling, integration with other geospatial datasets
+            </p>
+            <div class="lul-prod__specs">
+                <p><b>Unit:</b> 30×30m grid cells</p>
+                <p><b>Format:</b> GeoTIFF</p>
+            </div>
+            <p class="lul-prod__price">Per-acreage, per-category pricing</p>
+            <a class="lul-prod__btn" href="https://www.landuselabs.com/rasters">View product</a>
+        </article>
+
+        <!-- ══ ZONING SLICES ══ -->
+        <article class="lul-prod__card" data-product="slices">
+            <span class="lul-prod__pill lul-prod__pill--vector">GIS vector layer</span>
+            <h4 class="lul-prod__title">Zoning Slices</h4>
+            <p class="lul-prod__bestfor">Best for:</p>
+            <p class="lul-prod__use">Site selection, scenario planning, policy research</p>
+            <div class="lul-prod__specs">
+                <p><b>Unit:</b> Block group, census tract, jurisdiction, or custom geography</p>
+                <p><b>Format:</b> GeoJSON, Geodatabase, GeoPackage</p>
+            </div>
+            <p class="lul-prod__price">Per-slice, per-variable pricing</p>
+            <a class="lul-prod__btn" href="https://www.landuselabs.com/slices">View product</a>
+        </article>
+
+        <!-- ══ ZONING TABLES ══ -->
+        <article class="lul-prod__card" data-product="tables">
+            <span class="lul-prod__pill lul-prod__pill--summary">Summary data</span>
+            <h4 class="lul-prod__title">Zoning Tables</h4>
+            <p class="lul-prod__bestfor">Best for:</p>
+            <p class="lul-prod__use">Cross-geography comparisons, housing research, zoning reform advocacy</p>
+            <div class="lul-prod__specs">
+                <p><b>Unit:</b> Selected geographic area</p>
+                <p><b>Format:</b> CSV, GeoJSON (optional), GeoPackage (optional)</p>
+            </div>
+            <p class="lul-prod__price">Per-geographic unit pricing</p>
+            <a class="lul-prod__btn" href="https://www.landuselabs.com/tables">View product</a>
+        </article>
+    </div>
+
+    <script>
+        (function () {
+            /* ════════════════════════════════════════════════════════════
+               SET THIS PER PAGE. Options:
+                 "reports" | "districts" | "rasters" | "slices" | "tables"
+               Use "" (empty) on a page that isn't one of the five.
+               ════════════════════════════════════════════════════════════ */
+            var CURRENT = "slices";
+
+            var script = document.currentScript;
+            var root = script ? script.closest(".lul-prod") : document.querySelector(".lul-prod");
+            if (!root || !CURRENT) return;
+
+            var card = root.querySelector('.lul-prod__card[data-product="' + CURRENT + '"]');
+            if (!card) return;
+
+            card.classList.add("lul-prod__card--current");
+            card.setAttribute("aria-current", "page");
+
+            // swap the link for a flat, unclickable state
+            var link = card.querySelector(".lul-prod__btn");
+            if (link) {
+                var span = document.createElement("span");
+                span.className = "lul-prod__btn lul-prod__btn--current";
+                span.textContent = "Currently viewing";
+                link.parentNode.replaceChild(span, link);
+            }
+        })();
+    </script>
+</section>

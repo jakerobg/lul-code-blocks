@@ -1,0 +1,295 @@
+<!--
+  ORDER FORM — paste into a Squarespace Code Block on the rasters order page.
+
+  Styling comes from the shared Land Use Labs storefront CSS (`custom-css.css`,
+  already loaded via Squarespace → Website → Custom CSS, scoped to `#lul-order`).
+  This embed carries NO <style> of its own, so it tracks the shared design system
+  (and the site's accent color) like the Tables / Districts / parcel-report forms.
+
+  Geography picker: this form mirrors the data-extracts forms — it reuses the
+  shared `lulMountGeoSearch` typeahead/state-select component. That component is
+  the canonical `lul-geo-search.html` in the lul_data_extracts repo, injected
+  once site-wide via Squarespace → Settings → Advanced → Code Injection → HEADER,
+  BEFORE this Code Block (it is not duplicated here). It provides
+  window.lulMountGeoSearch and the lulSpinner/lulErrHtml/lulEscHtml helpers, and
+  expects the `lul-geo-*` / `lul-state-select` DOM ids present below.
+
+  Set API_BASE to the rasterization API origin — it must be allow-listed in the
+  API's CORS config for the /jurisdictions/, /counties/, /cbsas/,
+  /geographies/price and /geographies/completeness calls.
+-->
+<div id="lul-order">
+    <!-- Step 1: scope. Always visible. -->
+    <div class="lul-step" id="lro-step-scope">
+        <span class="lul-label">I want a zoning raster for a:</span>
+        <div class="lul-tiles" role="radiogroup" aria-label="Scope">
+            <div class="lul-tile">
+                <input
+                    type="radio"
+                    name="lro-scope"
+                    autocomplete="off"
+                    id="lro-scope-jurisdiction"
+                    value="jurisdiction"
+                />
+                <label for="lro-scope-jurisdiction">
+                    <span class="lul-tile-name">Single Jurisdiction</span>
+                    <span class="lul-tile-desc">Municipality, township, or unincorporated county.</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lro-scope" autocomplete="off" id="lro-scope-county" value="county" />
+                <label for="lro-scope-county">
+                    <span class="lul-tile-name">County</span>
+                    <span class="lul-tile-desc">All jurisdictions in a county.</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lro-scope" autocomplete="off" id="lro-scope-cbsa" value="cbsa" />
+                <label for="lro-scope-cbsa">
+                    <span class="lul-tile-name">CBSA (metro/micro area)</span>
+                    <span class="lul-tile-desc">A Core-Based Statistical Area.</span>
+                </label>
+            </div>
+            <!-- State scope intentionally omitted (product decision); available to
+           internal users via the INTERNAL_API_KEY /rasterize path. -->
+        </div>
+    </div>
+
+    <!-- Step 2: pick the specific geography. Hidden until scope chosen.
+       Typeahead for jurisdiction/county/cbsa, dropdown for state. The
+       lul-geo-* ids are driven by the shared lulMountGeoSearch component. -->
+    <div class="lul-step lul-step-hidden" id="lro-step-geopick">
+        <span class="lul-label" id="lul-geo-label">Choose Geography:</span>
+
+        <div id="lul-geo-typeahead">
+            <p class="lul-hint" id="lul-geo-hint"></p>
+            <input
+                id="lul-geo-search"
+                class="lul-input"
+                type="text"
+                placeholder="Type at least 2 characters to search&hellip;"
+                autocomplete="off"
+            />
+            <div id="lul-geo-status"></div>
+            <ul id="lul-geo-results" class="lul-results" style="display: none"></ul>
+        </div>
+
+        <select id="lul-state-select" class="lul-input" style="display: none">
+            <option value="">Select a state&hellip;</option>
+        </select>
+    </div>
+
+    <!-- Step 3: detail level. Hidden until a geography is picked. -->
+    <div class="lul-step lul-step-hidden" id="lro-level-step">
+        <span class="lul-label">Detail level</span>
+        <div class="lul-tiles" role="radiogroup" aria-label="Detail level">
+            <div class="lul-tile">
+                <input type="radio" name="lro-level" id="lro-level-1" value="1" checked />
+                <label for="lro-level-1">
+                    <span class="lul-tile-name">General</span>
+                    <span class="lul-tile-desc">7 categories</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lro-level" id="lro-level-2" value="2" />
+                <label for="lro-level-2">
+                    <span class="lul-tile-name">Residential</span>
+                    <span class="lul-tile-desc">15 categories</span>
+                </label>
+            </div>
+            <div class="lul-tile">
+                <input type="radio" name="lro-level" id="lro-level-3" value="3" />
+                <label for="lro-level-3">
+                    <span class="lul-tile-name">Nonresidential</span>
+                    <span class="lul-tile-desc">32 categories</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: price, terms, buy. -->
+    <div class="lul-step lul-step-hidden" id="lro-buy-step">
+        <div id="lro-coverage"></div>
+        <p id="lro-price" class="lul-price"></p>
+        <button id="lro-buy" class="lul-btn lul-btn-buy" disabled>Buy raster</button>
+        <div id="lro-error"></div>
+        <p class="lul-fineprint">
+            The download is a <code>.zip</code> containing the GeoTIFF and its class-label sidecar, delivered by email
+            after payment.
+        </p>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var API_BASE = "https://lul-rasters-api.greenrock-61472e16.eastus.azurecontainerapps.io";
+
+        var el = function (id) {
+            return document.getElementById(id);
+        };
+        var geopickStep = el("lro-step-geopick"),
+            levelStep = el("lro-level-step"),
+            buyStep = el("lro-buy-step");
+        var priceEl = el("lro-price"),
+            buy = el("lro-buy"),
+            errorEl = el("lro-error"),
+            coverageEl = el("lro-coverage");
+
+        var selected = null; // {geography_type, geography_id, name}
+        var lastQuoteCents = null;
+
+        // Only warn when coverage is meaningfully incomplete. At/above this, a metro
+        // with a stray unpublished jurisdiction (98–99%) stays quiet; Nashville (~49%)
+        // still warns.
+        var COVERAGE_WARN_THRESHOLD = 97;
+
+        function show(node, on) {
+            node.classList.toggle("lul-step-hidden", !on);
+        }
+
+        function level() {
+            var r = document.querySelector("input[name=lro-level]:checked");
+            return r ? parseInt(r.value, 10) : 1;
+        }
+
+        function setError(msg) {
+            errorEl.innerHTML = msg ? '<div class="lul-msg lul-error"><p>' + msg + "</p></div>" : "";
+        }
+
+        function refreshBuyState() {
+            buy.disabled = !(selected && lastQuoteCents != null);
+        }
+
+        // Selection cleared (state dropdown reset, or scope changed): collapse
+        // everything downstream of the geography pick.
+        function clearSelection() {
+            selected = null;
+            show(levelStep, false);
+            show(buyStep, false);
+            priceEl.textContent = "";
+            lastQuoteCents = null;
+            coverageEl.innerHTML = "";
+            setError("");
+            refreshBuyState();
+        }
+
+        function geoQuery() {
+            return (
+                "geography_type=" +
+                encodeURIComponent(selected.geography_type) +
+                "&geography_id=" +
+                encodeURIComponent(selected.geography_id)
+            );
+        }
+
+        function coverage() {
+            coverageEl.innerHTML = "";
+            fetch(API_BASE + "/geographies/completeness?" + geoQuery())
+                .then(function (r) {
+                    return r.ok ? r.json() : Promise.reject(r);
+                })
+                .then(function (d) {
+                    if (d.pct_complete >= COVERAGE_WARN_THRESHOLD) {
+                        return;
+                    } // near-complete: no warning
+                    coverageEl.innerHTML =
+                        '<div class="lul-msg lul-error"><p>Heads up: this area is ' +
+                        d.pct_complete +
+                        "% mapped in the Zoning Atlas (" +
+                        d.jurisdictions_mapped +
+                        " of " +
+                        d.jurisdictions_total +
+                        " jurisdictions). Unmapped areas appear as " +
+                        "unzoned in the raster.</p></div>";
+                })
+                .catch(function () {
+                    /* coverage is advisory; stay silent on error */
+                });
+        }
+
+        function quote() {
+            lastQuoteCents = null;
+            priceEl.textContent = "Calculating price…";
+            refreshBuyState();
+            if (!selected) {
+                return;
+            }
+            fetch(API_BASE + "/geographies/price?" + geoQuery() + "&level=" + level())
+                .then(function (r) {
+                    return r.ok ? r.json() : Promise.reject(r);
+                })
+                .then(function (data) {
+                    lastQuoteCents = data.price_cents;
+                    priceEl.textContent =
+                        "$" + (data.price_cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    refreshBuyState();
+                })
+                .catch(function () {
+                    priceEl.textContent = "";
+                    setError("Pricing is unavailable for this geography. Please contact us.");
+                });
+        }
+
+        // Per-scope hints + endpoints for the shared typeahead. State is intentionally
+        // omitted here (public product decision); internal users get it via /rasterize.
+        var SCOPES = {
+            jurisdiction: {
+                label: "Choose Geography:",
+                endpoint: "/jurisdictions/",
+                hint: "Type the jurisdiction name (city, town, township) without the state, then pick from the results.",
+            },
+            county: {
+                label: "Choose Geography:",
+                endpoint: "/counties/",
+                hint: "Type the county name without the state, then pick from the results.",
+            },
+            cbsa: {
+                label: "Choose Geography:",
+                endpoint: "/cbsas/",
+                hint: "Type the metro/micro area name, then pick from the results.",
+            },
+        };
+
+        var geoSearch = window.lulMountGeoSearch({
+            apiBase: API_BASE,
+            scopes: SCOPES,
+            onPick: function (geoType, geoId, label) {
+                selected = { geography_type: geoType, geography_id: geoId, name: label };
+                setError("");
+                show(levelStep, true);
+                show(buyStep, true);
+                coverage();
+                quote();
+            },
+            onClear: clearSelection,
+        });
+
+        // Scope tiles: reveal the picker and switch the component's active scope.
+        Array.prototype.forEach.call(document.querySelectorAll("input[name=lro-scope]"), function (r) {
+            r.addEventListener("change", function () {
+                clearSelection();
+                show(geopickStep, true);
+                geoSearch.setScope(r.value);
+            });
+        });
+
+        Array.prototype.forEach.call(document.querySelectorAll("input[name=lro-level]"), function (r) {
+            r.addEventListener("change", quote);
+        });
+
+        buy.addEventListener("click", function () {
+            if (buy.disabled) {
+                return;
+            }
+            window.location.href =
+                API_BASE +
+                "/payments/checkout/" +
+                "?" +
+                geoQuery() +
+                "&geography_name=" +
+                encodeURIComponent(selected.name) +
+                "&level=" +
+                level();
+        });
+    })();
+</script>

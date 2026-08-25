@@ -1,0 +1,183 @@
+<!--
+  PRODUCT SPECS CARDS — three icon cards, 3 across (Squarespace Code Block).
+  Same card system as use_case_cards.html / use_case_cards_reports.html /
+  how_we_build.html:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  Informational, not links — <article> elements, no hover lift.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, stacked under 640px.
+  ▶ ICONS: the mockup used the same wrench on all three cards as a
+    placeholder; these are three distinct glyphs instead. Swap the <path>
+    data for any 24x24 outline icon.
+
+  Note: this is the CARD version of the specs. product_specs.html is the older
+  bordered-grid treatment of similar content (Unit of Analysis / What's
+  Included / Format) — keep whichever the page calls for, they are not meant
+  to appear together.
+-->
+<section class="lul-uc" aria-label="Product specifications">
+    <style>
+        .lul-uc {
+            --lul-ink: #393348;
+            --lul-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px 0;
+            container-type: inline-size;
+            container-name: luluc;
+        }
+        .lul-uc *,
+        .lul-uc *::before,
+        .lul-uc *::after {
+            box-sizing: border-box;
+        }
+        .lul-uc__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lul-gap);
+        }
+        .lul-uc__card {
+            flex: 1 1 calc(33.333% - (var(--lul-gap) * 2 / 3));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        /* uncomment if you turn these into links
+        .lul-uc__card:hover {
+            border-color: rgba(57, 51, 72, 0.4);
+            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
+            transform: translateY(-2px);
+        } */
+        .lul-uc__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lul-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-uc__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-uc__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lul-ink);
+            margin: 0 0 12px;
+        }
+        .lul-uc__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 640px  →  3 across
+             ≤ 640px  →  stacked                                      */
+        @container luluc (max-width: 640px) {
+            .lul-uc {
+                --lul-gap: 16px;
+            }
+            .lul-uc__card {
+                flex-basis: 100%;
+            }
+        }
+        /* fallback for browsers without container queries */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 760px) {
+                .lul-uc__card {
+                    flex-basis: 100%;
+                }
+            }
+        }
+    </style>
+    <div class="lul-uc__grid">
+        <!-- Zoning Slice — overlapping shapes, for the geometric intersection -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <rect x="3" y="3" width="12" height="12" />
+                    <rect x="9" y="9" width="12" height="12" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Zoning Slice</h4>
+            <p class="lul-uc__body">
+                Every geometric intersection maps a discrete combination of base and overlay regulations.
+            </p>
+        </article>
+        <!-- Customizable Variables — sliders -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M4 6h16" />
+                    <path d="M4 12h16" />
+                    <path d="M4 18h16" />
+                    <circle cx="9" cy="6" r="2" />
+                    <circle cx="15" cy="12" r="2" />
+                    <circle cx="8" cy="18" r="2" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Customizable Variables</h4>
+            <p class="lul-uc__body">
+                Select from residential and nonresidential use permissions, ADU allowances, building heights, parking
+                mandates, and minimum lot sizes.
+            </p>
+        </article>
+        <!-- Standard GIS Vector — layered map -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4Z" />
+                    <path d="M9 4v13" />
+                    <path d="M15 7v13" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Standard GIS Vector</h4>
+            <p class="lul-uc__body">
+                File Geodatabase (.gdb), GeoJSON, and GeoPackage (.gpkg) formats ready for direct ingestion.
+            </p>
+        </article>
+    </div>
+</section>

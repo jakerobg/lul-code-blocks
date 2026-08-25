@@ -1,0 +1,1099 @@
+<!--
+  ZONING RASTERS ORDER FORM — geography → detail level → instant pricing.
+
+  Same design as SLICES/slices_order_form.html (panel, step rail, two-column
+  split, sidebar, buttons, typeahead). The flow is
+
+      1. Select Geographic Scope  →  2. Search Area  →  3. Detail Level  →  buy
+
+  LOGIC is ported from RASTERS/order_rasters_OLD.html unchanged. Note this
+  product talks to a DIFFERENT API from Slices/Tables/Districts — the raster
+  service, with GET /geographies/price and /geographies/completeness and its
+  own /payments/checkout/ query shape. API_BASE below must be allow-listed in
+  that service's CORS config.
+
+  ▶ ROOT ID is #lul-rasters, deliberately NOT #lul-order — the site-wide
+    Squarespace CSS caps #lul-order at 560px and carries the OLD form's rules.
+    Class prefix is lul-rf__, so this can share a page with the other forms.
+
+  ▶ TYPEAHEAD is the shared site-wide helper (window.lulMountGeoSearch from
+    lul-geo-search.html in Code Injection → Header). The element ids it binds
+    to (lul-geo-search, lul-geo-results, lul-geo-status, lul-state-select …)
+    are preserved verbatim. If the helper is missing, the form says so instead
+    of failing silently.
+
+  ▶ SCOPES: jurisdiction / county / CBSA only. State is deliberately omitted
+    (product decision) — internal users get it via the /rasterize path.
+
+  ▶ COVERAGE: /geographies/completeness drives an advisory notice when an area
+    is under COVERAGE_WARN_THRESHOLD% mapped. It never blocks a purchase, and
+    a failed check stays silent.
+
+  ▶ EDIT THESE (product decisions, not derived from the API):
+      LEVELS                   — the three detail-level tiles
+      COVERAGE_WARN_THRESHOLD  — when the coverage notice appears
+-->
+<div id="lul-rasters">
+    <style>
+
+    #lul-rasters {
+        /* ── Colour system ──────────────────────────────────────────────────
+           Two brand colours are the only place a literal value appears. The
+           -rgb triplets exist so every tint below can be derived from the same
+           source with rgba(), instead of re-typing the equivalent hex by hand.
+           Change --lul-ink-rgb / --lul-accent-rgb and the whole ramp follows.
+           Call sites always use the semantic names, never a raw colour. */
+        --lul-ink-rgb: 57, 51, 72;
+        --lul-accent-rgb: 89, 68, 150;
+        --lul-green-rgb: 224, 229, 194; /* preset-package chips when active */
+
+        --lul-ink: rgb(var(--lul-ink-rgb));
+        --lul-accent: rgb(var(--lul-accent-rgb));
+        --lul-accent-dark: #3f2e70;
+        --lul-green: rgb(var(--lul-green-rgb));
+        --lul-green-line: rgb(191, 199, 150); /* a readable stroke against the fill */
+
+        /* Surfaces are opaque on purpose — they stack (card on panel on page),
+           and translucent fills would composite differently depending on what
+           happens to sit behind them. */
+        --lul-surface: #ffffff; /* cards, inputs, tiles */
+        --lul-on-accent: #ffffff; /* text sitting on the accent */
+        /* Warm neutral ramp, lightest to darkest. Kept in one family on purpose
+           — a warm panel behind cool grey fills reads as a mismatch. */
+        --lul-panel: #efedec; /* grey panel behind the cards */
+        --lul-chip: #eeecea; /* pills, tags, accordion headers */
+        --lul-fill: #e7e4e1; /* step numbers, accordion hover */
+
+        /* Ink tints — same colour, varying opacity */
+        --lul-muted: rgba(var(--lul-ink-rgb), 0.55); /* secondary text */
+        --lul-faint: rgba(var(--lul-ink-rgb), 0.4); /* placeholder, icons */
+        --lul-line-strong: rgba(var(--lul-ink-rgb), 0.3); /* radio + badge strokes */
+        --lul-rule: rgba(var(--lul-ink-rgb), 0.2); /* step connector */
+        --lul-line: rgba(var(--lul-ink-rgb), 0.13); /* card + input borders */
+        --lul-shadow: rgba(var(--lul-ink-rgb), 0.1); /* dropdown shadow */
+
+        /* Accent tints */
+        --lul-accent-soft: rgba(var(--lul-accent-rgb), 0.08); /* hover wash, info tile */
+        --lul-accent-hover: rgba(var(--lul-accent-rgb), 0.5); /* hover borders */
+
+        /* ── Layout knob ──
+           How far below the top of the window the "Your Selection" card parks
+           when it sticks. Squarespace's header is fixed and sits ABOVE this
+           block, so a small value leaves the card hidden behind it. Raise this
+           until the card clears your header — it wants to be roughly the header
+           height plus a little breathing room. Headers that shrink on scroll
+           should be measured in their SHRUNK state. */
+        --lul-sticky-top: 120px;
+
+        /* Max width of the whole form block */
+        --lul-max-w: 1280px;
+
+        /* Error state */
+        --lul-error-bg: #fff3f3;
+        --lul-error-line: rgba(180, 0, 0, 0.2);
+        --lul-error-ink: #7a0000;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--lul-ink);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        /* Caps the form on a wide screen instead of letting it run to the edge;
+           narrower blocks just fill their width. Because this sits on the same
+           element as container-type below, the @container breakpoints measure
+           the CAPPED width, so they stay tied to the space the form actually
+           has. */
+        max-width: var(--lul-max-w);
+        margin-inline: auto;
+        box-sizing: border-box;
+        /* the step row and the two-column split size against the BLOCK, not the
+           viewport — this sits in a Squarespace column of unknown width */
+        container-type: inline-size;
+        container-name: lulrasters;
+    }
+    #lul-rasters *,
+    #lul-rasters *::before,
+    #lul-rasters *::after {
+        box-sizing: border-box;
+    }
+
+    /* ── Panel + columns ── */
+    .lul-rf__panel {
+        background: var(--lul-panel);
+        border-radius: 0;
+        padding: 36px clamp(16px, 3cqi, 30px) 30px;
+    }
+    .lul-rf__cols {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 24px;
+        align-items: start;
+    }
+    @container lulrasters (max-width: 860px) {
+        .lul-rf__cols {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    /* ── Step indicator ──
+       Same inline-block construction as reports_order_form.html: Squarespace's
+       stylesheet breaks a flex row here (staggered baselines, stray
+       underlines), and inline-block is much harder for it to disturb. */
+    #lul-rasters .lul-steps {
+        display: block !important;
+        white-space: nowrap !important;
+        text-align: center;
+        margin: 0 0 24px;
+        padding: 0;
+        border: 0;
+        font-size: 0;
+        line-height: 1;
+        overflow: hidden;
+    }
+    #lul-rasters .lul-step {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+        border: 0 !important;
+        text-decoration: none !important;
+    }
+    #lul-rasters .lul-step__num {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 0;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--lul-fill);
+        color: var(--lul-muted);
+        margin: 0 8px 0 0;
+        padding: 0;
+        border: 0 !important;
+        transition:
+            background 0.25s ease,
+            color 0.25s ease;
+    }
+    #lul-rasters .lul-step__label {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        font-size: 12.5px;
+        font-weight: 400;
+        line-height: 1.2;
+        color: var(--lul-muted);
+        white-space: nowrap;
+        margin: 0;
+        padding: 0;
+        border: 0 !important;
+        text-decoration: none !important;
+        transition: color 0.25s ease;
+    }
+    #lul-rasters .lul-step.is-active .lul-step__num {
+        background: var(--lul-accent) !important;
+        color: var(--lul-on-accent) !important;
+    }
+    #lul-rasters .lul-step.is-active .lul-step__label {
+        color: var(--lul-ink) !important;
+        font-weight: 700;
+    }
+    #lul-rasters .lul-steps__rule {
+        display: inline-block !important;
+        vertical-align: middle !important;
+        width: clamp(20px, 5cqi, 64px);
+        height: 1px;
+        background: var(--lul-rule);
+        margin: 0 14px;
+        border: 0 !important;
+    }
+    @container lulrasters (max-width: 560px) {
+        #lul-rasters .lul-step:not(.is-active) .lul-step__label {
+            display: none !important;
+        }
+        #lul-rasters .lul-steps__rule {
+            margin: 0 8px;
+        }
+    }
+
+    /* ── Cards + sections ── */
+    .lul-rf__card {
+        background: var(--lul-surface);
+        border-radius: 0;
+        padding: 22px clamp(16px, 2.4cqi, 24px);
+        margin-bottom: 16px;
+    }
+    .lul-rf__card:last-child {
+        margin-bottom: 0;
+    }
+    .lul-rf__intro {
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: var(--lul-ink);
+        margin: 0 0 22px;
+    }
+    .lul-rf__h {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin: 0 0 12px;
+        color: var(--lul-ink);
+    }
+    .lul-rf__hint {
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--lul-muted);
+        margin: 0 0 14px;
+    }
+    .lul-rf__hint a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    .lul-rf__eyebrow {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--lul-muted);
+        margin: 0 0 10px;
+    }
+    .lul-rf__rule {
+        border: 0;
+        border-top: 1px solid var(--lul-line);
+        margin: 20px 0 18px;
+    }
+
+    /* ── Scope tiles ── */
+    .lul-rf__tiles {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    @container lulrasters (max-width: 620px) {
+        .lul-rf__tiles {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    .lul-rf__tile {
+        position: relative;
+    }
+    .lul-rf__tile input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .lul-rf__tile label {
+        display: block;
+        height: 100%;
+        border: 1px solid var(--lul-line);
+        border-radius: 0;
+        background: var(--lul-surface);
+        padding: 14px 38px 14px 15px;
+        cursor: pointer;
+        margin: 0;
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+    .lul-rf__tile label:hover {
+        border-color: var(--lul-accent-hover);
+    }
+    /* the radio dot, drawn rather than native so it sits where the mock has it */
+    .lul-rf__tile label::after {
+        content: "";
+        position: absolute;
+        top: 16px;
+        right: 14px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid var(--lul-line-strong);
+        background: var(--lul-surface);
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+    .lul-rf__tile input:checked + label {
+        border-color: var(--lul-accent);
+        box-shadow: inset 0 0 0 1px var(--lul-accent);
+    }
+    .lul-rf__tile input:checked + label::after {
+        border-color: var(--lul-accent);
+        background: var(--lul-accent);
+        box-shadow: inset 0 0 0 2.5px var(--lul-surface);
+    }
+    .lul-rf__tile input:focus-visible + label {
+        outline: 2px solid var(--lul-accent);
+        outline-offset: 2px;
+    }
+    .lul-rf__tile-name {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .lul-rf__tile-desc {
+        display: block;
+        font-size: 12.5px;
+        line-height: 1.45;
+        color: var(--lul-muted);
+    }
+    /* non-interactive "contact us" tile */
+    .lul-rf__tile--info {
+        border: 1px solid transparent;
+        border-radius: 0;
+        background: var(--lul-accent-soft);
+        padding: 14px 15px;
+    }
+    .lul-rf__tile--info a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    /* ── Search field (ids below are the shared typeahead's mount points) ── */
+    .lul-rf__search {
+        position: relative;
+    }
+    .lul-rf__search::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        width: 15px;
+        height: 15px;
+        margin-top: -10px;
+        border: 1.6px solid var(--lul-faint);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .lul-rf__search::after {
+        content: "";
+        position: absolute;
+        left: 27px;
+        top: 50%;
+        width: 6px;
+        height: 1.6px;
+        margin-top: 4px;
+        background: var(--lul-faint);
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+    #lul-rasters .lul-input {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 15px;
+        padding: 13px 14px;
+        border: 1px solid var(--lul-line);
+        border-radius: 0;
+        background: var(--lul-surface);
+        color: var(--lul-ink);
+        outline: none;
+        width: 100%;
+        transition: border-color 0.15s;
+        -webkit-appearance: none;
+    }
+    /* Needs the #lul-rasters prefix: the `padding` shorthand above is id-scoped,
+       so a plain .lul-rf__search .lul-input rule loses on specificity and the
+       text runs under the magnifying glass. */
+    #lul-rasters .lul-rf__search .lul-input {
+        padding-left: 42px;
+    }
+    #lul-rasters .lul-input::placeholder {
+        color: var(--lul-faint);
+    }
+    #lul-rasters .lul-input:focus {
+        border-color: var(--lul-accent);
+    }
+    /* typeahead results — styled here because the site-wide rules for these
+       are scoped to #lul-order, which this block deliberately does not use */
+    #lul-rasters .lul-results {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+        border: 1px solid var(--lul-line);
+        border-radius: 0;
+        background: var(--lul-surface);
+        max-height: 260px;
+        overflow-y: auto;
+        box-shadow: 0 6px 20px var(--lul-shadow);
+    }
+    #lul-rasters .lul-results li {
+        padding: 0;
+        border-bottom: 1px solid var(--lul-line);
+    }
+    #lul-rasters .lul-results li:last-child {
+        border-bottom: 0;
+    }
+    /* lul-geo-search.js builds each row as <li class="lul-result"><button
+       data-id>…</button></li> and delegates its click to that button — so the
+       button has to stay a button. Reset it to look like a plain list row and
+       carry the padding, so the whole row is the hit target. !important because
+       Squarespace styles bare <button> elements site-wide. */
+    #lul-rasters .lul-results li button {
+        display: block !important;
+        width: 100% !important;
+        text-align: left !important;
+        font-family: inherit !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        line-height: 1.35 !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        color: var(--lul-ink) !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0;
+        padding: 11px 14px !important;
+        margin: 0 !important;
+        cursor: pointer;
+        min-height: 0 !important;
+    }
+    #lul-rasters .lul-results li button:hover,
+    #lul-rasters .lul-results li button:focus-visible {
+        background: var(--lul-accent-soft) !important;
+        outline: none;
+    }
+    #lul-geo-status {
+        font-size: 13px;
+        color: var(--lul-muted);
+        margin-top: 8px;
+    }
+
+    /* ── Messages ── */
+    .lul-msg {
+        padding: 14px 16px;
+        border-radius: 0;
+        font-size: 14px;
+        line-height: 1.55;
+        margin-bottom: 16px;
+    }
+    .lul-msg p {
+        margin: 0 0 8px;
+    }
+    .lul-msg p:last-child {
+        margin-bottom: 0;
+    }
+    .lul-warn {
+        background: var(--lul-surface);
+        border: 1px solid var(--lul-line);
+        color: var(--lul-ink);
+    }
+    .lul-error {
+        background: var(--lul-error-bg);
+        border: 1px solid var(--lul-error-line);
+        color: var(--lul-error-ink);
+    }
+
+    /* ── Sidebar ── */
+    .lul-rf__side {
+        position: sticky;
+        top: var(--lul-sticky-top);
+        background: var(--lul-surface);
+        border: 1px solid var(--lul-accent);
+        border-radius: 0;
+        padding: 20px;
+    }
+    @container lulrasters (max-width: 860px) {
+        .lul-rf__side {
+            position: static;
+        }
+    }
+    .lul-rf__side-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 16px;
+    }
+    .lul-rf__price {
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        color: var(--lul-accent);
+    }
+    .lul-rf__price-unit {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--lul-muted);
+        margin-left: 6px;
+    }
+    .lul-rf__side-rule {
+        border: 0;
+        border-top: 1px solid var(--lul-line);
+        margin: 16px 0;
+    }
+    .lul-rf__terms {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 11.5px;
+        line-height: 1.45;
+        color: var(--lul-muted);
+        margin: 0 0 14px;
+        cursor: pointer;
+    }
+    .lul-rf__terms input {
+        margin: 1px 0 0;
+        accent-color: var(--lul-accent);
+        flex-shrink: 0;
+    }
+    .lul-rf__terms a {
+        color: var(--lul-ink);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    #lul-rasters .lul-btn {
+        width: 100%;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 14.5px;
+        padding: 14px 18px;
+        border-radius: 0;
+        border: 1px solid var(--lul-accent);
+        background: var(--lul-accent);
+        color: var(--lul-on-accent);
+        cursor: pointer;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease;
+    }
+    #lul-rasters .lul-btn:hover:not(:disabled) {
+        background: var(--lul-accent-dark);
+        border-color: var(--lul-accent-dark);
+    }
+    #lul-rasters .lul-btn:disabled {
+        background: var(--lul-chip);
+        border-color: var(--lul-chip);
+        color: var(--lul-muted);
+        cursor: not-allowed;
+        font-weight: 400;
+        font-size: 13px;
+    }
+
+    /* ── Spinner ── */
+    .lul-spinner-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--lul-muted);
+        padding: 10px 0;
+    }
+    .lul-spinner {
+        width: 15px;
+        height: 15px;
+        border: 2px solid var(--lul-line);
+        border-top-color: var(--lul-accent);
+        border-radius: 50%;
+        animation: lul-spin 0.7s linear infinite;
+        flex-shrink: 0;
+    }
+    @keyframes lul-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .lul-hidden {
+        display: none !important;
+    }
+    /* ── Sidebar summary rows ──
+       Rasters has no variable list to show, so the sidebar echoes the three
+       choices instead. */
+    #lul-rasters .lul-rf__sum {
+        margin: 0 0 14px;
+    }
+    #lul-rasters .lul-rf__sum:last-of-type {
+        margin-bottom: 0;
+    }
+    #lul-rasters .lul-rf__sum-val {
+        font-size: 14px;
+        color: var(--lul-ink);
+        line-height: 1.4;
+        margin: 2px 0 0;
+    }
+    #lul-rasters .lul-rf__sum-val.is-empty {
+        color: var(--lul-muted);
+    }
+    /* Delivery note under the buy button. */
+    #lul-rasters .lul-rf__fine {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--lul-muted);
+        margin: 12px 0 0;
+    }
+    #lul-rasters .lul-rf__fine code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+    }
+    </style>
+
+    <!-- No heading here on purpose — the page's own title/subtitle block sits
+         above this Code Block in Squarespace. -->
+    <div class="lul-rf__panel">
+        <!-- Written on ONE source line on purpose: a line break between these
+             inline-blocks becomes a visible whitespace gap. Inline styles repeat
+             the CSS so Squarespace's stylesheet can't break the row. -->
+        <div
+            class="lul-steps"
+            id="lul-steps"
+            style="display: block; white-space: nowrap; font-size: 0; line-height: 1; overflow: hidden"
+        >
+            <span
+                class="lul-step is-active"
+                data-step="1"
+                style="display: inline-block; vertical-align: middle; white-space: nowrap"
+                ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">1</span
+                ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                    >Choose geography</span
+                ></span
+            ><span
+                class="lul-steps__rule"
+                aria-hidden="true"
+                style="display: inline-block; vertical-align: middle"
+            ></span
+            ><span
+                class="lul-step"
+                data-step="2"
+                style="display: inline-block; vertical-align: middle; white-space: nowrap"
+                ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">2</span
+                ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                    >Choose detail level</span
+                ></span
+            ><span
+                class="lul-steps__rule"
+                aria-hidden="true"
+                style="display: inline-block; vertical-align: middle"
+            ></span
+            ><span
+                class="lul-step"
+                data-step="3"
+                style="display: inline-block; vertical-align: middle; white-space: nowrap"
+                ><span class="lul-step__num" style="display: inline-block; vertical-align: middle">3</span
+                ><span class="lul-step__label" style="display: inline-block; vertical-align: middle"
+                    >Get instant pricing</span
+                ></span
+            >
+        </div>
+
+        <div class="lul-rf__cols">
+            <!-- ══════════ MAIN COLUMN ══════════ -->
+            <div>
+                <div class="lul-rf__card">
+                    <p class="lul-rf__intro">
+                        Zoning Rasters standardize allowable land uses onto 30x30 meter grid cells, so zoning can be
+                        analyzed alongside any other raster dataset. You choose the geography and the classification
+                        scheme. We deliver the GeoTIFF.
+                    </p>
+
+                    <!-- ── 1. Scope ── -->
+                    <h3 class="lul-rf__h">1. Select Geographic Scope</h3>
+                    <div class="lul-rf__tiles" role="radiogroup" aria-label="Geographic scope">
+                        <div class="lul-rf__tile">
+                            <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-jurisdiction" value="jurisdiction" />
+                            <label for="lul-scope-jurisdiction">
+                                <span class="lul-rf__tile-name">Single Jurisdiction</span>
+                                <span class="lul-rf__tile-desc">Municipality, township, or unincorporated county.</span>
+                            </label>
+                        </div>
+                        <div class="lul-rf__tile">
+                            <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-county" value="county" />
+                            <label for="lul-scope-county">
+                                <span class="lul-rf__tile-name">County</span>
+                                <span class="lul-rf__tile-desc">All jurisdictions in a county.</span>
+                            </label>
+                        </div>
+                        <div class="lul-rf__tile">
+                            <input type="radio" name="lul-scope" autocomplete="off" id="lul-scope-cbsa" value="cbsa" />
+                            <label for="lul-scope-cbsa">
+                                <span class="lul-rf__tile-name">CBSA (metro/micro area)</span>
+                                <span class="lul-rf__tile-desc">A Core-Based Statistical Area.</span>
+                            </label>
+                        </div>
+                        <!-- State scope intentionally omitted (product decision); available to
+                             internal users via the INTERNAL_API_KEY /rasterize path. -->
+                        <div class="lul-rf__tile--info" aria-hidden="true">
+                            <span class="lul-rf__tile-name">State or Country</span>
+                            <span class="lul-rf__tile-desc"
+                                ><a href="https://www.landuselabs.com/contact">Contact us</a> for a tailored regional
+                                quote.</span
+                            >
+                        </div>
+                    </div>
+
+                    <!-- ── 2. Search area (hidden until a scope is picked) ── -->
+                    <div id="lul-step-geopick" class="lul-hidden">
+                        <hr class="lul-rf__rule" />
+                        <h3 class="lul-rf__h" id="lul-geo-label">2. Search Area</h3>
+                        <div id="lul-geo-typeahead">
+                            <p class="lul-rf__hint" id="lul-geo-hint"></p>
+                            <div class="lul-rf__search">
+                                <input
+                                    id="lul-geo-search"
+                                    class="lul-input"
+                                    type="text"
+                                    placeholder="Type at least 2 characters to search…"
+                                    autocomplete="off"
+                                />
+                            </div>
+                            <div id="lul-geo-status"></div>
+                            <ul id="lul-geo-results" class="lul-results" style="display: none"></ul>
+                        </div>
+                        <select id="lul-state-select" class="lul-input" style="display: none">
+                            <option value="">Select a state…</option>
+                        </select>
+                    </div>
+
+                    <!-- ── 3. Detail level (hidden until a geography is picked) ── -->
+                    <div id="lul-step-level" class="lul-hidden">
+                        <hr class="lul-rf__rule" />
+                        <h3 class="lul-rf__h">3. Detail Level</h3>
+                        <p class="lul-rf__hint">
+                            Each raster classifies the same 30x30 meter cells at a different level of detail.
+                        </p>
+                        <div class="lul-rf__tiles" role="radiogroup" aria-label="Detail level">
+                            <div class="lul-rf__tile">
+                                <input type="radio" name="lul-level" autocomplete="off" id="lul-level-1" value="1" />
+                                <label for="lul-level-1">
+                                    <span class="lul-rf__tile-name">General</span>
+                                    <span class="lul-rf__tile-desc">General residential and nonresidential uses. 7 categories.</span>
+                                </label>
+                            </div>
+                            <div class="lul-rf__tile">
+                                <input type="radio" name="lul-level" autocomplete="off" id="lul-level-2" value="2" />
+                                <label for="lul-level-2">
+                                    <span class="lul-rf__tile-name">Residential</span>
+                                    <span class="lul-rf__tile-desc">Residential density categories. 15 categories.</span>
+                                </label>
+                            </div>
+                            <div class="lul-rf__tile">
+                                <input type="radio" name="lul-level" autocomplete="off" id="lul-level-3" value="3" />
+                                <label for="lul-level-3">
+                                    <span class="lul-rf__tile-name">Nonresidential</span>
+                                    <span class="lul-rf__tile-desc">Nonresidential use categories. 32 categories.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisory coverage notice from /geographies/completeness. Never blocks. -->
+                <div class="lul-msg lul-warn lul-hidden" id="lul-coverage"></div>
+                <!-- Hard errors (pricing unavailable). -->
+                <div class="lul-msg lul-error lul-hidden" id="lul-error"></div>
+            </div>
+
+            <!-- ══════════ SIDEBAR ══════════ -->
+            <aside class="lul-rf__side">
+                <p class="lul-rf__side-title">Your Selection</p>
+
+                <p class="lul-rf__eyebrow">Estimated price</p>
+                <div>
+                    <span class="lul-rf__price" id="lul-price">$0</span
+                    ><span class="lul-rf__price-unit">/ one-time download</span>
+                </div>
+
+                <hr class="lul-rf__side-rule" />
+
+                <div class="lul-rf__sum">
+                    <p class="lul-rf__eyebrow">Geographic scope</p>
+                    <p class="lul-rf__sum-val is-empty" id="lul-sum-scope">Not selected yet</p>
+                </div>
+                <div class="lul-rf__sum">
+                    <p class="lul-rf__eyebrow">Area</p>
+                    <p class="lul-rf__sum-val is-empty" id="lul-sum-area">Not selected yet</p>
+                </div>
+                <div class="lul-rf__sum">
+                    <p class="lul-rf__eyebrow">Detail level</p>
+                    <p class="lul-rf__sum-val is-empty" id="lul-sum-level">Not selected yet</p>
+                </div>
+
+                <hr class="lul-rf__side-rule" />
+
+                <label class="lul-rf__terms" for="lul-terms">
+                    <input type="checkbox" id="lul-terms" />
+                    <span
+                        >I have read and agree to the
+                        <a href="https://www.landuselabs.com/license" target="_blank" rel="noopener"
+                            >Data Licensing Agreement</a
+                        >.</span
+                    >
+                </label>
+                <button class="lul-btn" id="lul-buy-btn" disabled>Select a geography to continue</button>
+                <p class="lul-rf__fine">
+                    The download is a <code>.zip</code> containing the GeoTIFF and its class-label sidecar, delivered
+                    by email after payment.
+                </p>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<!-- Shared typeahead helper (window.lulMountGeoSearch / lulSpinner / lulErrHtml /
+     lulEscHtml) is loaded site-wide via lul-geo-search.html in
+     Settings → Advanced → Code Injection → Header. -->
+<script>
+    (function () {
+        // ── Configuration ────────────────────────────────────────────────────
+
+        /* NOTE: the raster service, not the extracts API the other forms use. */
+        var API_BASE = "https://lul-rasters-api.greenrock-61472e16.eastus.azurecontainerapps.io";
+
+        /* Only warn when coverage is meaningfully incomplete. At/above this, a
+           metro with a stray unpublished jurisdiction (98–99%) stays quiet;
+           Nashville (~49%) still warns. */
+        var COVERAGE_WARN_THRESHOLD = 97;
+
+        // Detail levels — value is the API's `level` parameter.
+        var LEVELS = {
+            1: "General (7 categories)",
+            2: "Residential (15 categories)",
+            3: "Nonresidential (32 categories)",
+        };
+        var SCOPE_LABEL = { jurisdiction: "Single Jurisdiction", county: "County", cbsa: "CBSA" };
+
+        /* Per-scope hints + endpoints for the shared typeahead. State is
+           intentionally omitted (public product decision). */
+        var SCOPES = {
+            jurisdiction: {
+                label: "2. Search Area",
+                endpoint: "/jurisdictions/",
+                hint: "Type the jurisdiction name (city, town, township) without the state, then pick from the results.",
+            },
+            county: {
+                label: "2. Search Area",
+                endpoint: "/counties/",
+                hint: "Type the county name without the state, then pick from the results.",
+            },
+            cbsa: {
+                label: "2. Search Area",
+                endpoint: "/cbsas/",
+                hint: "Type the metro/micro area name, then pick from the results.",
+            },
+        };
+
+        // ── State ────────────────────────────────────────────────────────────
+
+        var _scope = null;
+        var _selected = null; // { geography_type, geography_id, name }
+        var _priceCents = null;
+
+        var root = document.getElementById("lul-rasters");
+        if (!root) return;
+        function $(id) {
+            return document.getElementById(id);
+        }
+        function showEl(id, visible) {
+            var el = $(id);
+            if (el) el.classList.toggle("lul-hidden", !visible);
+        }
+
+        if (typeof window.lulMountGeoSearch !== "function") {
+            $("lul-geo-status").innerHTML =
+                '<div class="lul-msg lul-error"><p>Location search is unavailable on this page. ' +
+                "The shared lul-geo-search script is not loaded.</p></div>";
+            return;
+        }
+
+        // ── Step rail ────────────────────────────────────────────────────────
+
+        function setStep(n) {
+            root.querySelectorAll(".lul-step").forEach(function (el) {
+                el.classList.toggle("is-active", Number(el.getAttribute("data-step")) === n);
+            });
+        }
+
+        // ── Helpers ──────────────────────────────────────────────────────────
+
+        function level() {
+            var r = root.querySelector("input[name=lul-level]:checked");
+            return r ? parseInt(r.value, 10) : null;
+        }
+        function setError(msg) {
+            var el = $("lul-error");
+            el.innerHTML = msg ? "<p>" + msg + "</p>" : "";
+            el.classList.toggle("lul-hidden", !msg);
+        }
+        function geoQuery() {
+            return (
+                "geography_type=" +
+                encodeURIComponent(_selected.geography_type) +
+                "&geography_id=" +
+                encodeURIComponent(_selected.geography_id)
+            );
+        }
+
+        // ── Sidebar ──────────────────────────────────────────────────────────
+
+        function setSum(id, value) {
+            var el = $(id);
+            el.textContent = value || "Not selected yet";
+            el.classList.toggle("is-empty", !value);
+        }
+        function refreshSidebar() {
+            setSum("lul-sum-scope", _scope ? SCOPE_LABEL[_scope] : null);
+            setSum("lul-sum-area", _selected ? _selected.name : null);
+            var lv = level();
+            setSum("lul-sum-level", lv ? LEVELS[lv] : null);
+        }
+
+        function updateBuyBtn() {
+            var btn = $("lul-buy-btn");
+            var ready = _selected && _priceCents != null;
+            btn.disabled = !ready || !$("lul-terms").checked;
+            btn.textContent = ready
+                ? "Purchase →"
+                : _selected
+                  ? "Choose a detail level"
+                  : "Select a geography to continue";
+        }
+
+        // ── Coverage (advisory) ──────────────────────────────────────────────
+
+        function coverage() {
+            var box = $("lul-coverage");
+            box.innerHTML = "";
+            box.classList.add("lul-hidden");
+            if (!_selected) return;
+            fetch(API_BASE + "/geographies/completeness?" + geoQuery())
+                .then(function (r) {
+                    return r.ok ? r.json() : Promise.reject(r);
+                })
+                .then(function (d) {
+                    if (d.pct_complete >= COVERAGE_WARN_THRESHOLD) return; // near-complete: stay quiet
+                    box.innerHTML =
+                        "<p>Heads up: this area is " +
+                        d.pct_complete +
+                        "% mapped in the Zoning Atlas (" +
+                        d.jurisdictions_mapped +
+                        " of " +
+                        d.jurisdictions_total +
+                        " jurisdictions). Unmapped areas appear as unzoned in the raster.</p>";
+                    box.classList.remove("lul-hidden");
+                })
+                .catch(function () {
+                    /* coverage is advisory; stay silent on error */
+                });
+        }
+
+        // ── Pricing ──────────────────────────────────────────────────────────
+
+        function quote() {
+            _priceCents = null;
+            if (!_selected || level() == null) {
+                $("lul-price").textContent = "$0";
+                updateBuyBtn();
+                return;
+            }
+            $("lul-price").textContent = "…";
+            $("lul-terms").checked = false;
+            updateBuyBtn();
+
+            fetch(API_BASE + "/geographies/price?" + geoQuery() + "&level=" + level())
+                .then(function (r) {
+                    return r.ok ? r.json() : Promise.reject(r);
+                })
+                .then(function (data) {
+                    _priceCents = data.price_cents;
+                    $("lul-price").textContent =
+                        "$" + (data.price_cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2 });
+                    setError("");
+                    setStep(3);
+                    updateBuyBtn();
+                })
+                .catch(function () {
+                    $("lul-price").textContent = "$0";
+                    setError("Pricing is unavailable for this geography. Please contact us.");
+                    updateBuyBtn();
+                });
+        }
+
+        // ── Reset ────────────────────────────────────────────────────────────
+
+        /* Selection cleared (state dropdown reset, or scope changed): collapse
+           everything downstream of the geography pick. */
+        function clearSelection() {
+            _selected = null;
+            _priceCents = null;
+            root.querySelectorAll("input[name=lul-level]").forEach(function (el) {
+                el.checked = false;
+            });
+            showEl("lul-step-level", false);
+            $("lul-price").textContent = "$0";
+            $("lul-coverage").classList.add("lul-hidden");
+            $("lul-coverage").innerHTML = "";
+            setError("");
+            setStep(1);
+            refreshSidebar();
+            updateBuyBtn();
+        }
+
+        // ── Wire up ──────────────────────────────────────────────────────────
+
+        var _geoSearch = window.lulMountGeoSearch({
+            apiBase: API_BASE,
+            scopes: SCOPES,
+            onPick: function (geoType, geoId, label) {
+                _selected = { geography_type: geoType, geography_id: geoId, name: label };
+                setError("");
+                showEl("lul-step-level", true);
+                setStep(2);
+                refreshSidebar();
+                coverage();
+                quote(); // no level picked yet → resets the price and waits
+                updateBuyBtn();
+            },
+            onClear: clearSelection,
+        });
+
+        root.querySelectorAll("input[name=lul-scope]").forEach(function (r) {
+            r.addEventListener("change", function () {
+                _scope = r.value;
+                clearSelection();
+                _geoSearch.reset();
+                showEl("lul-step-geopick", true);
+                _geoSearch.setScope(r.value);
+                refreshSidebar();
+            });
+        });
+
+        root.querySelectorAll("input[name=lul-level]").forEach(function (r) {
+            r.addEventListener("change", function () {
+                refreshSidebar();
+                quote();
+            });
+        });
+
+        $("lul-terms").addEventListener("change", updateBuyBtn);
+
+        $("lul-buy-btn").addEventListener("click", function () {
+            if ($("lul-buy-btn").disabled) return;
+            window.location.href =
+                API_BASE +
+                "/payments/checkout/?" +
+                geoQuery() +
+                "&geography_name=" +
+                encodeURIComponent(_selected.name) +
+                "&level=" +
+                level();
+        });
+
+        /* Firefox / Safari restore checked radios across reload (bfcache and
+           cross-navigation form-state persistence). The state machine only
+           advances via change events, so a restored selection leaves the UI
+           stuck on step 1. Force-clear on load. */
+        root.querySelectorAll('input[name="lul-scope"], input[name="lul-level"]').forEach(function (el) {
+            el.checked = false;
+        });
+        $("lul-terms").checked = false;
+
+        refreshSidebar();
+        updateBuyBtn();
+    })();
+</script>

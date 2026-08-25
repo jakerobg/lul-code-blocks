@@ -1,0 +1,225 @@
+<!--
+  SECTOR GRID — six cards, 2 rows x 3 columns (Squarespace Code Block).
+
+  Same card design as product_splash/product_grid.html — fixed-width cards,
+  faint keyline, radius 0, subtle shadow, secondary (outlined) buttons,
+  subgrid row alignment — with a simpler card: title, description, button.
+  No category pill and no pricing block, and no heading above the grid.
+
+  ▶ SUBGRID keeps every button on a shared baseline across a row even when
+    one card's description runs to two lines (e.g. Policymaking). Without
+    it that card's button would drop below its neighbours'.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, 2 across under 1106px, 1 under 728px.
+  ▶ All classes are prefixed lul-sgrid- / --luls- so this can share a page
+    with the product blocks without either one clobbering the other.
+-->
+
+<section class="lul-sgrid" aria-label="Sectors we serve">
+    <style>
+        .lul-sgrid {
+            --luls-ink: #393348;
+            --luls-btn-hover: #f9f9f9; /* secondary button hover fill */
+            --luls-body: rgba(57, 51, 72, 0.75);
+            --luls-border: rgba(57, 51, 72, 0.15); /* card keyline — faint */
+            --luls-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+            --luls-gap: 28px; /* space BETWEEN cards */
+            --luls-card-pad: 26px 24px 24px; /* inner card padding */
+            /* Card width is FIXED at this until the block can't fit three of
+               them; the grid centers in whatever space is left rather than
+               stretching to the edge. 3 * 350 + 2 * 28 = 1106px of block width
+               for a full row. Change --luls-card-w to resize every card — and
+               update the two @container breakpoints below to match, since CSS
+               can't compute a breakpoint from a variable. */
+            --luls-card-w: 350px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--luls-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 32px 20px;
+            container-type: inline-size;
+            container-name: lulsgrid;
+        }
+        .lul-sgrid *,
+        .lul-sgrid *::before,
+        .lul-sgrid *::after {
+            box-sizing: border-box;
+        }
+
+        /* ── GRID ──
+           Real grid + subgrid, not flex. Flex would make every card the same
+           HEIGHT, but each card's internal sections would still stack
+           independently, so a two-line description would push that card's
+           button below the others on its row. With subgrid, all cards on a
+           row share one set of row tracks, so the buttons line up. */
+        .lul-sgrid__grid {
+            display: grid;
+            /* Fixed-width tracks, not 1fr — cards stay --luls-card-w wide on a
+               wide block instead of stretching to the edge. minmax(0, …) lets
+               them shrink once the block is narrower than the row needs, so
+               they never overflow. justify-content centers the row in the
+               leftover space. */
+            grid-template-columns: repeat(3, minmax(0, var(--luls-card-w)));
+            justify-content: center;
+            gap: var(--luls-gap);
+        }
+
+        .lul-sgrid__card {
+            /* 3 children: title, description, button */
+            grid-row: span 3;
+            display: grid;
+            grid-template-rows: subgrid;
+            /* A subgrid inherits the parent's gap, which would add --luls-gap
+               between every row INSIDE the card on top of each element's own
+               margin. Spacing here is margin-driven, so zero it out. */
+            row-gap: 0;
+            min-width: 0;
+            background: #ffffff;
+            border: 1px solid var(--luls-border);
+            border-radius: 0;
+            box-shadow: var(--luls-shadow);
+            padding: var(--luls-card-pad);
+        }
+
+        /* Browsers without subgrid fall back to flex: cards are equal height
+           and the button sits on a shared baseline via the description's
+           flex-grow, though inner spacing may differ slightly. */
+        @supports not (grid-template-rows: subgrid) {
+            .lul-sgrid__grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .lul-sgrid__card {
+                /* fixed width here too — grow:0 so they don't stretch to fill
+                   the row; wrapping is what changes the column count. */
+                flex: 0 1 var(--luls-card-w);
+                display: flex;
+                flex-direction: column;
+            }
+            .lul-sgrid__desc {
+                flex-grow: 1;
+            }
+        }
+
+        .lul-sgrid__title {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            line-height: 1.2;
+            color: var(--luls-ink);
+            margin: 0 0 14px;
+        }
+
+        .lul-sgrid__desc {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--luls-body);
+            margin: 0 0 30px;
+        }
+
+        /* Secondary button style — outlined, dark ink label, same as
+           BUTTONS/BUTTONS_PRIMARY_SECONDARY.html. */
+        .lul-sgrid__btn {
+            display: block;
+            align-self: end;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            padding: 8px 14px;
+            border: 1px solid var(--luls-ink);
+            border-radius: 0;
+            background: transparent;
+            color: var(--luls-ink);
+            text-decoration: none;
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+        .lul-sgrid__btn:hover {
+            background: var(--luls-btn-hover);
+        }
+        /* Squarespace link-color override safety */
+        .lul-sgrid a,
+        .lul-sgrid a:visited {
+            text-decoration: none;
+        }
+
+        /* ── RESPONSIVE ──
+           3 across needs 3*350 + 2*28 = 1106px; 2 across needs 728px. Cards
+           keep their fixed width in every tier and the row stays centered —
+           they only shrink below the last breakpoint. */
+        @container lulsgrid (max-width: 1105px) {
+            .lul-sgrid__grid {
+                grid-template-columns: repeat(2, minmax(0, var(--luls-card-w)));
+            }
+        }
+        @container lulsgrid (max-width: 727px) {
+            .lul-sgrid__grid {
+                grid-template-columns: minmax(0, var(--luls-card-w));
+            }
+        }
+        /* Fallback for browsers without container queries (pre-2023): fall
+           back to viewport breakpoints so the block still reflows. */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 1170px) {
+                .lul-sgrid__grid {
+                    grid-template-columns: repeat(2, minmax(0, var(--luls-card-w)));
+                }
+            }
+            @media (max-width: 780px) {
+                .lul-sgrid__grid {
+                    grid-template-columns: minmax(0, var(--luls-card-w));
+                }
+            }
+        }
+    </style>
+
+    <div class="lul-sgrid__grid">
+        <!-- ══ REAL ESTATE ══ -->
+        <article class="lul-sgrid__card" data-sector="real-estate">
+            <h4 class="lul-sgrid__title">Real Estate</h4>
+            <p class="lul-sgrid__desc">Finalizing a deal? Know its zoning before you sign.</p>
+            <a class="lul-sgrid__btn" href="/real-estate">Explore Real Estate</a>
+        </article>
+
+        <!-- ══ PROPERTY OWNERSHIP ══ -->
+        <article class="lul-sgrid__card" data-sector="owners">
+            <h4 class="lul-sgrid__title">Property Ownership</h4>
+            <p class="lul-sgrid__desc">What can you do with your property? Find out fast.</p>
+            <a class="lul-sgrid__btn" href="/owners">Explore Property Ownership</a>
+        </article>
+
+        <!-- ══ FINANCIAL SERVICES ══ -->
+        <article class="lul-sgrid__card" data-sector="financial-services">
+            <h4 class="lul-sgrid__title">Financial Services</h4>
+            <p class="lul-sgrid__desc">Flag zoning issues before they become problems.</p>
+            <a class="lul-sgrid__btn" href="/financial-services">Explore Financial Services</a>
+        </article>
+
+        <!-- ══ DEVELOPMENT ══ -->
+        <article class="lul-sgrid__card" data-sector="developers">
+            <h4 class="lul-sgrid__title">Development</h4>
+            <p class="lul-sgrid__desc">Stop reading zoning codes. Start building.</p>
+            <a class="lul-sgrid__btn" href="/developers">Explore Development</a>
+        </article>
+
+        <!-- ══ POLICYMAKING ══ -->
+        <article class="lul-sgrid__card" data-sector="policymakers">
+            <h4 class="lul-sgrid__title">Policymaking</h4>
+            <p class="lul-sgrid__desc">Debating reform? Inform the vote and benchmark your zoning.</p>
+            <a class="lul-sgrid__btn" href="/policymakers">Explore Policymaking</a>
+        </article>
+
+        <!-- ══ RESEARCH ══ -->
+        <article class="lul-sgrid__card" data-sector="researchers">
+            <h4 class="lul-sgrid__title">Research</h4>
+            <p class="lul-sgrid__desc">Researching land use? Get zoning data at scale.</p>
+            <a class="lul-sgrid__btn" href="/researchers">Explore Research</a>
+        </article>
+    </div>
+</section>

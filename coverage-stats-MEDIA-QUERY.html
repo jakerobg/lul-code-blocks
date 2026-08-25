@@ -21,11 +21,8 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             width: 100%;
-            max-width: 100%;
             box-sizing: border-box;
             padding: 20px 0;
-            /* never let the block paint outside its Squarespace container */
-            overflow-x: clip;
         }
         .lul-cov *,
         .lul-cov *::before,
@@ -35,18 +32,11 @@
 
         .lul-cov__grid {
             display: grid;
-            /* Cards are 180px wide and wrap to the next row instead of
-               stretching to fill. --lul-cols is set by the ResizeObserver in
-               the script below (4 / 2 / 1) from the BLOCK's measured width.
-               minmax(0, 180px) is the safety net: if the block is ever
-               narrower than the row needs, tracks shrink rather than
-               overflowing past the code block's edge. */
-            grid-template-columns: repeat(var(--lul-cols, 1), minmax(0, 180px));
-            justify-content: center; /* centers the row of cards in the block */
+            /* fixed-width cards, centered — they wrap to the next row
+               at each breakpoint instead of stretching to fill. */
+            grid-template-columns: repeat(4, 180px);
+            justify-content: center;
             gap: 25px;
-            width: 100%;
-            max-width: 100%;
-            margin-inline: auto;
         }
 
         .lul-cov__card {
@@ -56,7 +46,7 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            min-height: 150px; /* taller card -> bigger number-to-text gap */
+            min-height: 170px; /* taller card -> bigger number-to-text gap */
             box-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
             text-align: left;
             align-items: flex-start;
@@ -114,9 +104,18 @@
             margin: 0;
         }
 
-        /* Column count is decided in JS (see setCols) — no @media or @container
-           rules here, so nothing depends on the viewport or on how Squarespace
-           wraps the code block. */
+        @media (max-width: 1500px) {
+            .lul-cov__grid {
+                grid-template-columns: repeat(2, 180px);
+            }
+        }
+        @media (max-width: 450px) {
+            .lul-cov__grid {
+                /* never exceed the viewport (minus side margins) on tiny screens */
+                grid-template-columns: min(180px, calc(100vw - 32px));
+                gap: 25px;
+            }
+        }
     </style>
 
     <div class="lul-cov__grid" id="lul-cov-grid"></div>
@@ -326,32 +325,6 @@
                 records.forEach(function (rec) {
                     io.observe(rec.el);
                 });
-            }
-
-            // ── Responsive columns, measured off the BLOCK (not the viewport) ──
-            // Squarespace drops this into a code block of unknown width, so the
-            // column count comes from the block's own measured width. Widths
-            // needed: 4 across = 4*180 + 3*25 = 795; 2 across = 2*180 + 25 = 385.
-            var CARD_W = 180,
-                GAP = 25;
-            function widthFor(cols) {
-                return cols * CARD_W + (cols - 1) * GAP;
-            }
-            function setCols() {
-                // clientWidth excludes any scrollbar; padding here is vertical only
-                var w = root.clientWidth || root.getBoundingClientRect().width || 0;
-                if (!w) return;
-                var cols = w >= widthFor(4) ? 4 : w >= widthFor(2) ? 2 : 1;
-                root.style.setProperty("--lul-cols", cols);
-            }
-            setCols();
-            if ("ResizeObserver" in window) {
-                // fires on block resize AND on the initial layout pass, which
-                // covers Squarespace mounting/animating the block after load
-                new ResizeObserver(setCols).observe(root);
-            } else {
-                window.addEventListener("resize", setCols);
-                window.addEventListener("load", setCols);
             }
 
             // ── Fetch live data, then animate (fall back on failure/timeout) ──

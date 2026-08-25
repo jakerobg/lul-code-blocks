@@ -44,8 +44,11 @@
             flex-direction: column;
             justify-content: flex-start;
             box-shadow: none;
-            text-align: center;
-            align-items: center;
+            /* Label and number are both flush left inside the card, so the
+               label's left edge lines up with the first digit. The grid still
+               centers the row of cards as a whole. */
+            text-align: left;
+            align-items: flex-start;
         }
         .lul-cov__num {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -110,12 +113,7 @@
                       (optional per-card flags: plus:false, accent:true → transparent tile)
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
-            var SELECTED = [
-                "slices",
-                "jurisdictions",
-                "acres",
-                { value: 186, label: "zoning rules", plus: false, accent: true },
-            ];
+            var SELECTED = [{ value: 90000000, label: "parcels", plus: true }, "acres", "residents", "pages"];
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
                e.g. { value: 186, label: "zoning rules offered", plus: false }. */
