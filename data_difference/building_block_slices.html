@@ -1,0 +1,280 @@
+<!--
+  BUILDING BLOCK — Zoning Slices (Squarespace Code Block).
+
+  One of the three "fundamental components" rows. Same shell as
+  building_block_jurisdictions.html and building_block_districts.html — if you
+  change the layout, change it in all three.
+
+  No section title/description here — the page's own heading sits above this
+  block. Each row is self-contained.
+
+  ▶ LAYOUT: title + body + button on the LEFT, image on the RIGHT. Below the
+    @container breakpoint the two columns stack (text first, image below).
+  ▶ MEDIA SIDE: this is the un-flipped row. Districts carries --flip so the
+    three rows alternate down the page.
+  ▶ BUTTON: our standard primary — filled purple, border matching the fill.
+    Same colours as the primary in BUTTONS/BUTTONS_PRIMARY_SECONDARY.html.
+  ▶ COPY + IMAGE both come from the Zoning Slices tab in
+    data_difference_tabs.html, verbatim.
+  ▶ All classes are prefixed lul-bb- / --lulbb- so this can share a page with
+    the tabs block and the product/sector grids.
+-->
+
+<section class="lul-bb" aria-label="Zoning Slices">
+    <style>
+        .lul-bb {
+            --lulbb-header: #393348;
+            --lulbb-text: #333333;
+            --lulbb-primary: #594496; /* button fill + border */
+            --lulbb-primary-hover: #3f2e70;
+            --lulbb-btn-label: #ffffff;
+            --lulbb-btn-pad: 10px 26px;
+
+            --lulbb-gap: 40px; /* space between the text and the image */
+
+            /* Fixed width of the image column when the two sit side by side.
+               It does NOT shrink — the text column absorbs every change in
+               block width, so the image stays exactly this size until the row
+               stacks. This is a width, not a cap. */
+            --lulbb-media-w: 550px;
+
+            /* ── Max-width knobs ──
+                 --lulbb-max-w     the whole block, centered in its column.
+                                   `none` = fill whatever Squarespace gives it.
+                 --lulbb-text-max  the copy column. Caps the measure only — the
+                                   spare width opens up between the text and
+                                   the image, which stays put on the right.
+                                   `none` = the copy takes all the room left
+                                   over beside the image.
+                 --lulbb-media-max the image AFTER the row has stacked, where
+                                   it would otherwise run the full width.
+                 --lulbb-stacked-max-w
+                                   the whole stacked column — text AND image
+                                   together — centered. The one-column
+                                   counterpart to --lulbb-max-w; only bites
+                                   once the row has stacked.
+               Set any of these to a px value; they don't interact.
+
+               Heads up on --lulbb-max-w: the stack breakpoint is measured
+               against the BLOCK, so capping it below the @container
+               breakpoint would make the block stack everywhere.
+               --lulbb-stacked-max-w can't do that — it applies after the
+               decision to stack. */
+            --lulbb-max-w: 1500px;
+            --lulbb-text-max: none;
+            --lulbb-media-max: 550px;
+            --lulbb-stacked-max-w: none;
+            /* Every image in the block is forced to this width:height ratio and
+               object-fit: cover'd into it, so the three building-block rows
+               line up at the same height no matter what the source asset is.
+               Measured sources: slices_grey 1794x1556 = 1.153,
+               districts_grey 1794x1554 = 1.154, jurisdictions 1014x782 =
+               1.297. 1.16 therefore costs Slices and Districts almost nothing
+               (~0.6% off the top and bottom) and takes ~10% off the sides of
+               the Jurisdictions map, which is a full-bleed map and can afford
+               it. Set 1.153 instead if you want the two grey assets pixel-
+               exact with no cover crop at all.
+               Set to 1 if you ever want true squares — that crops all three. */
+            --lulbb-media-ratio: 1.16;
+
+            /* Uniform crop taken off every edge of every image in the block.
+               A percentage, so it scales with the image; percentages resolve
+               against WIDTH on all four sides, so it's the same number of px
+               all round. Same value in all three files on purpose — trims the
+               edge without cropping tight to the artwork. Set to 0 to switch
+               it off. */
+            --lulbb-img-crop: 2%;
+
+            /* Nudges the copy down so its cap-height lines up better with the
+               top of the image. Side-by-side only — it's zeroed out once the
+               row stacks, where there's nothing to line up with. */
+            --lulbb-text-top: 20px;
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: var(--lulbb-text);
+            width: 100%;
+            max-width: var(--lulbb-max-w);
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
+            padding: 32px 0;
+            container-type: inline-size;
+            container-name: lulbb;
+        }
+        .lul-bb *,
+        .lul-bb *::before,
+        .lul-bb *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-bb__row {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--lulbb-gap);
+        }
+        .lul-bb__text {
+            flex: 1 1 0;
+            min-width: 0;
+            max-width: var(--lulbb-text-max);
+            padding-top: var(--lulbb-text-top);
+        }
+        .lul-bb__media {
+            /* 0 0 → the image holds --lulbb-media-w exactly. All the give is in
+               the text column, which is why the @container breakpoint has to
+               fire before that column gets too narrow to read. */
+            flex: 0 0 var(--lulbb-media-w);
+            min-width: 0;
+            align-self: flex-start;
+            margin-left: auto;
+            /* the box owns the shape; the image is cover'd into it */
+            aspect-ratio: var(--lulbb-media-ratio);
+            /* clips the ratio crop and whatever --lulbb-img-crop adds */
+            overflow: hidden;
+        }
+        .lul-bb__media img {
+            /* Grow by the crop on both sides, then pull back by the crop on
+               every side; the parent clips the overhang. Net effect is a
+               centre crop that leaves the COLUMN width untouched — the layout
+               above doesn't shift when you change the crop. */
+            width: calc(100% + 2 * var(--lulbb-img-crop));
+            height: calc(100% + 2 * var(--lulbb-img-crop));
+            object-fit: cover;
+            margin: calc(-1 * var(--lulbb-img-crop));
+            display: block;
+            border: none;
+        }
+        /* image on the left instead — for alternating rows */
+        .lul-bb--flip .lul-bb__row {
+            flex-direction: row-reverse;
+        }
+        .lul-bb--flip .lul-bb__media {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .lul-bb__title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--lulbb-header);
+            letter-spacing: -0.015em;
+            line-height: 1.15;
+            margin: 0 0 16px;
+        }
+        .lul-bb__body {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--lulbb-text);
+            margin: 0 0 18px;
+        }
+        .lul-bb__body:last-of-type {
+            margin-bottom: 32px;
+        }
+
+        /* ── Primary button ──
+           Filled purple, border matching the fill so it reads as a solid
+           block. Same shell and colours as the primary in
+           BUTTONS/BUTTONS_PRIMARY_SECONDARY.html. */
+        .lul-bb__btn {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: var(--lulbb-btn-pad);
+            border: 1px solid var(--lulbb-primary);
+            border-radius: 0;
+            background: var(--lulbb-primary);
+            color: var(--lulbb-btn-label);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease,
+                color 0.25s ease;
+        }
+        .lul-bb__btn:hover {
+            background: var(--lulbb-primary-hover);
+            border-color: var(--lulbb-primary-hover);
+        }
+        /* Squarespace link-color override safety. The label colour is pinned
+           here too: a theme rule like `a:hover { color: … }` is specificity
+           0,1,1 and would otherwise beat .lul-bb__btn's 0,1,0 and turn the
+           white label dark on hover. */
+        .lul-bb a,
+        .lul-bb a:visited,
+        .lul-bb a:hover {
+            text-decoration: none;
+        }
+        .lul-bb a.lul-bb__btn,
+        .lul-bb a.lul-bb__btn:visited,
+        .lul-bb a.lul-bb__btn:hover {
+            color: var(--lulbb-btn-label);
+        }
+
+        /* ── RESPONSIVE ──
+           Below the breakpoint the columns drop to one, text first. The number
+           lives on the @container line and nowhere else — edit it there.
+           It measures the BLOCK's width, not the window, so the block reflows
+           to whatever Squarespace column it sits in. */
+        @container lulbb (max-width: 999px) {
+            .lul-bb__row,
+            .lul-bb--flip .lul-bb__row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 32px;
+                /* Total cap for the stacked column. Lives on the row, not
+                   on .lul-bb — a container query cannot restyle the element
+                   that IS the container. Same result: the row holds all the
+                   content. */
+                max-width: var(--lulbb-stacked-max-w);
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .lul-bb__text {
+                padding-top: 0;
+            }
+            .lul-bb__media,
+            .lul-bb--flip .lul-bb__media {
+                flex: 1 1 auto;
+                width: 100%;
+                max-width: var(--lulbb-media-max);
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+    </style>
+
+    <div class="lul-bb__row">
+        <div class="lul-bb__text">
+            <h3 class="lul-bb__title">Zoning Slices</h3>
+            <p class="lul-bb__body">
+                Comparing zoning rules across jurisdictions would be straightforward if districts never overlapped. But
+                they do. Many zoning codes layer base districts and overlay districts on top of one another, so two or
+                more sets of regulations can apply to the same piece of land at once. Ignoring that complexity doesn't
+                simplify analysis. It undermines it.
+            </p>
+            <p class="lul-bb__body">
+                Zoning Slices are Land Use Labs’s solution to this problem. A Slice is the unique geometric combination
+                of base and overlay districts that reflect how zoning rules actually operate. Our Zoning Slices product
+                applies our tested processes to show regulatory outcomes. The output appears like a stained-glass
+                mosaic, where each Slice represents a distinct set of zoning rules that apply to the underlying land.
+            </p>
+            <p class="lul-bb__body">
+                If you need zoning data to calculate area statistics, run comparative analyses, or conduct scenario
+                planning, Zoning Slices are what you're looking for.
+            </p>
+            <a class="lul-bb__btn" href="/slices">Explore Slices</a>
+        </div>
+        <div class="lul-bb__media">
+            <img
+                src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/1814190a-9889-4f42-b388-4219718c00bd/slices_grey.png?content-type=image%2Fpng"
+                alt="Zoning Slices — a stained-glass mosaic of base and overlay district combinations"
+                loading="lazy"
+            />
+        </div>
+    </div>
+</section>

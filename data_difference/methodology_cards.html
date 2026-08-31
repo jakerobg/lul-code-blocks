@@ -1,0 +1,174 @@
+<!--
+  TRUST/DATA CARDS — three icon cards, 3 across (Squarespace Code Block).
+  Same card system as the use-case cards above:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+  Informational, not links — <article> elements, no hover lift.
+  ▶ REFLOW: 3 across, stacked under 640px (measured against block width).
+-->
+<section class="lul-uc" aria-label="Data quality">
+    <style>
+        .lul-uc {
+            --lul-ink: #393348;
+            --lul-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 32px 0;
+            container-type: inline-size;
+            container-name: luluc;
+        }
+        .lul-uc *,
+        .lul-uc *::before,
+        .lul-uc *::after {
+            box-sizing: border-box;
+        }
+        .lul-uc__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lul-gap);
+        }
+        .lul-uc__card {
+            flex: 1 1 calc(33.333% - (var(--lul-gap) * 2 / 3));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        /* uncomment if you turn these into links
+        .lul-uc__card:hover {
+            border-color: rgba(57, 51, 72, 0.4);
+            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
+            transform: translateY(-2px);
+        } */
+        .lul-uc__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lul-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-uc__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-uc__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lul-ink);
+            margin: 0 0 12px;
+        }
+        .lul-uc__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 640px  →  3 across
+             ≤ 640px  →  stacked                                      */
+        @container luluc (max-width: 640px) {
+            .lul-uc {
+                --lul-gap: 16px;
+            }
+            .lul-uc__card {
+                flex-basis: 100%;
+            }
+        }
+        /* fallback for browsers without container queries */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 760px) {
+                .lul-uc__card {
+                    flex-basis: 100%;
+                }
+            }
+        }
+    </style>
+    <div class="lul-uc__grid">
+        <!-- Direct Code Sourcing -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m8 6-6 6 6 6" />
+                    <path d="m16 6 6 6-6 6" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Direct Code Sourcing</h4>
+            <p class="lul-uc__body">
+                Our analysis is rooted in official zoning codes - the texts and maps published by local jurisdictions.
+                We don’t draw from assessors’ maps, third-party aggregated data, or other unreliable, unofficial
+                sources.
+            </p>
+        </article>
+        <!-- Human Verification -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="m16 11 2 2 4-4" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Human Verification</h4>
+            <p class="lul-uc__body">
+                Our dataset is created, verified, and updated by human experts, not AI. Every entry undergoes a
+                multi-step review process by team members with expertise spanning law, geography, planning, and data
+                science.
+            </p>
+        </article>
+        <!-- Regular Update Cycles -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                    <path d="M8 16H3v5" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Regular Update Cycles</h4>
+            <p class="lul-uc__body">
+                Recognizing the value of refreshed zoning data, we continuously monitor, track, and input updates, and
+                we regularly conduct full-state and full-metro area reviews.
+            </p>
+        </article>
+    </div>
+</section>

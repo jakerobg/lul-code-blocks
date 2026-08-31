@@ -1,0 +1,63 @@
+<!--
+  Single secondary button (outlined ink), left-aligned.
+
+  Copied from BUTTONS_PRIMARY_SECONDARY.html with the primary removed — the
+  shell, padding, weight, letter-spacing and hover are unchanged, so this sits
+  flush with the other buttons.
+
+  ▶ UNIQUE CLASS NAMES: prefixed lul-sbtn- rather than the shared .lul-actions
+    used by the other button files, so two blocks on one page can't clobber
+    each other's rules.
+  ▶ Colours and padding are the vars at the top.
+-->
+<style>
+    .lul-sbtn-row {
+        --lulsb-ink: #393347; /* secondary border + label */
+        --lulsb-hover: #ffffff;
+        --lulsb-pad: 10px 26px;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--lulsb-ink);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+    .lul-sbtn-row *,
+    .lul-sbtn-row *::before,
+    .lul-sbtn-row *::after {
+        box-sizing: border-box;
+    }
+
+    .lul-sbtn-row .lul-sbtn {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 1rem;
+        padding: var(--lulsb-pad);
+        border: 1px solid var(--lulsb-ink);
+        border-radius: 0;
+        background: transparent;
+        color: var(--lulsb-ink);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease,
+            color 0.25s ease;
+    }
+    .lul-sbtn-row .lul-sbtn:hover {
+        background: var(--lulsb-hover);
+    }
+</style>
+
+<div class="lul-sbtn-row">
+    <a class="lul-sbtn" href="#"
+        >Contact Us</a>
+</div>

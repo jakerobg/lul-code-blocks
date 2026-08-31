@@ -1,0 +1,320 @@
+<!--
+  SERVICES GRID — six cards, 3 across (Squarespace Code Block).
+
+  Same card design as sector_splash/sector_grid_splash.html — fixed-width
+  cards centred in the block, faint keyline, radius 0, subtle shadow, subgrid
+  row alignment — with two differences:
+
+    • These cards are NOT links. There's no purple "Explore …" link and no
+      hover lift, since nothing here is clickable; the resting shadow stays.
+    • Each card carries an icon above its title.
+
+  No "Available Services" eyebrow — the page's own heading sits above this
+  Code Block.
+
+  ▶ SUBGRID keeps every card's title and description on shared baselines
+    across a row, even when one description runs longer than its neighbours'.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, 2 across under 1090px of content width, 1 under 720px.
+  ▶ ICONS: 24x24 outline glyphs, one per service. Swap the <path> data for
+    any 24x24 outline icon.
+  ▶ All classes are prefixed lul-svc- / --lulsvc- so this can share a page
+    with the sector and product blocks without either one clobbering the other.
+-->
+
+<section class="lul-svc" aria-label="Available services">
+    <style>
+        .lul-svc {
+            --lulsvc-ink: #393348;
+            --lulsvc-body: rgba(57, 51, 72, 0.75);
+            --lulsvc-border: rgba(57, 51, 72, 0.15); /* card keyline — faint */
+            --lulsvc-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+            --lulsvc-gap: 20px; /* space BETWEEN cards */
+            --lulsvc-card-pad: 26px 24px 24px; /* inner card padding */
+            /* Card width is FIXED at this until the block can't fit three of
+               them; the grid centres in whatever space is left rather than
+               stretching to the edge. 3 * 350 + 2 * 20 = 1090px of content
+               width for a full row. Change --lulsvc-card-w OR --lulsvc-gap and
+               update the two @container breakpoints below to match, since CSS
+               can't compute a breakpoint from a variable. */
+            --lulsvc-card-w: 350px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: var(--lulsvc-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 32px 20px;
+            container-type: inline-size;
+            container-name: lulsvc;
+        }
+        .lul-svc *,
+        .lul-svc *::before,
+        .lul-svc *::after {
+            box-sizing: border-box;
+        }
+
+        /* ── GRID ──
+           Real grid + subgrid, not flex. Flex would make every card the same
+           HEIGHT, but each card's internal sections would still stack
+           independently, so a two-line title would push that card's
+           description out of line with its neighbours'. With subgrid, all
+           cards on a row share one set of row tracks. */
+        .lul-svc__grid {
+            display: grid;
+            /* Fixed-width tracks, not 1fr — cards stay --lulsvc-card-w wide on
+               a wide block instead of stretching to the edge. minmax(0, …) lets
+               them shrink once the block is narrower than the row needs, so
+               they never overflow. justify-content centres the row in the
+               leftover space. */
+            grid-template-columns: repeat(3, minmax(0, var(--lulsvc-card-w)));
+            justify-content: center;
+            gap: var(--lulsvc-gap);
+        }
+
+        .lul-svc__card {
+            /* 3 children: icon, title, description */
+            grid-row: span 3;
+            display: grid;
+            grid-template-rows: subgrid;
+            /* A subgrid inherits the parent's gap, which would add
+               --lulsvc-gap between every row INSIDE the card on top of each
+               element's own margin. Spacing here is margin-driven, so zero
+               it out. */
+            row-gap: 0;
+            min-width: 0;
+            background: #ffffff;
+            border: 1px solid var(--lulsvc-border);
+            border-radius: 0;
+            box-shadow: var(--lulsvc-shadow);
+            padding: var(--lulsvc-card-pad);
+            /* deliberately no :hover state — these cards aren't clickable */
+        }
+
+        /* Browsers without subgrid fall back to flex: cards are equal height,
+           though the inner rules may not align perfectly across a row. */
+        @supports not (grid-template-rows: subgrid) {
+            .lul-svc__grid {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .lul-svc__card {
+                /* fixed width here too — grow:0 so they don't stretch to fill
+                   the row; wrapping is what changes the column count. */
+                flex: 0 1 var(--lulsvc-card-w);
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        .lul-svc__icon {
+            color: var(--lulsvc-ink);
+            line-height: 0;
+            margin-bottom: 18px;
+            align-self: start;
+        }
+        .lul-svc__icon svg {
+            width: 28px;
+            height: 28px;
+            display: block;
+        }
+        .lul-svc__title {
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            line-height: 1.2;
+            color: var(--lulsvc-ink);
+            margin: 0 0 14px;
+        }
+        .lul-svc__desc {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--lulsvc-body);
+            margin: 0;
+        }
+
+        /* ── RESPONSIVE ──
+           3 across needs 3*350 + 2*20 = 1090px; 2 across needs 720px. Cards
+           keep their fixed width in every tier and the row stays centred —
+           they only shrink below the last breakpoint. */
+        @container lulsvc (max-width: 1089px) {
+            .lul-svc__grid {
+                grid-template-columns: repeat(2, minmax(0, var(--lulsvc-card-w)));
+            }
+        }
+        @container lulsvc (max-width: 719px) {
+            .lul-svc__grid {
+                grid-template-columns: minmax(0, var(--lulsvc-card-w));
+            }
+        }
+        /* Fallback for browsers without container queries (pre-2023): fall
+           back to viewport breakpoints so the block still reflows. */
+        @supports not (container-type: inline-size) {
+            @media (max-width: 1154px) {
+                .lul-svc__grid {
+                    grid-template-columns: repeat(2, minmax(0, var(--lulsvc-card-w)));
+                }
+            }
+            @media (max-width: 772px) {
+                .lul-svc__grid {
+                    grid-template-columns: minmax(0, var(--lulsvc-card-w));
+                }
+            }
+        }
+    </style>
+
+    <div class="lul-svc__grid">
+        <!-- Spatial and Demographic Analyses — a map region with scattered data points -->
+        <article class="lul-svc__card">
+            <span class="lul-svc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M3 5.5 9 3l6 2.5L21 3v15.5L15 21l-6-2.5L3 21Z" />
+                    <path d="M9 3v18" />
+                    <path d="M15 5.5V21" />
+                    <circle cx="6" cy="12" r="1.1" />
+                    <circle cx="12" cy="10" r="1.1" />
+                    <circle cx="18" cy="13" r="1.1" />
+                </svg>
+            </span>
+            <h4 class="lul-svc__title">Spatial and Demographic Analyses</h4>
+            <p class="lul-svc__desc">
+                Analysis of the relationship between zoning and existing/future land uses, development, and population
+                patterns.
+            </p>
+        </article>
+
+        <!-- Projections — a trend line rising off a chart axis -->
+        <article class="lul-svc__card">
+            <span class="lul-svc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M3 3v18h18" />
+                    <path d="m7 15 3.5-3.5 3 3L19 8" />
+                    <path d="M15.5 8H19v3.5" />
+                </svg>
+            </span>
+            <h4 class="lul-svc__title">Projections</h4>
+            <p class="lul-svc__desc">
+                Modeling of future growth scenarios relating to zoning, land uses, housing, and population.
+            </p>
+        </article>
+
+        <!-- Parcel-Level Analyses — a single parcel under a magnifier -->
+        <article class="lul-svc__card">
+            <span class="lul-svc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M3 3h10v6" />
+                    <path d="M3 3v11h5" />
+                    <circle cx="15" cy="15" r="5.5" />
+                    <path d="m19.2 19.2 2.3 2.3" />
+                </svg>
+            </span>
+            <h4 class="lul-svc__title">Parcel-Level Analyses</h4>
+            <p class="lul-svc__desc">
+                Site-specific assessment of feasibility, development potential, zoning constraints, and regulatory
+                context; spatial joins to parcel data of our Districts and Slices.
+            </p>
+        </article>
+
+        <!-- Impact Studies — ripples spreading from a point -->
+        <article class="lul-svc__card">
+            <span class="lul-svc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="2" />
+                    <path d="M16.6 7.4a6.5 6.5 0 0 1 0 9.2" />
+                    <path d="M19.8 4.2a11 11 0 0 1 0 15.6" />
+                    <path d="M7.4 16.6a6.5 6.5 0 0 1 0-9.2" />
+                    <path d="M4.2 19.8a11 11 0 0 1 0-15.6" />
+                </svg>
+            </span>
+            <h4 class="lul-svc__title">Impact Studies</h4>
+            <p class="lul-svc__desc">
+                In-depth analysis of the relationship between zoning and mobility, transit access, environmental
+                impacts, infrastructure capacity, and more.
+            </p>
+        </article>
+
+        <!-- Policy Reviews — a document with a check -->
+        <article class="lul-svc__card">
+            <span class="lul-svc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M6 3h8l4 4v14H6z" />
+                    <path d="M14 3v4h4" />
+                    <path d="m9 14.5 2 2 4-4" />
+                </svg>
+            </span>
+            <h4 class="lul-svc__title">Policy Reviews</h4>
+            <p class="lul-svc__desc">
+                Assessment of the impact and utility of current or proposed policy interventions, such as zoning
+                amendments.
+            </p>
+        </article>
+
+        <!-- Graphics and Data Visualization — a bar chart -->
+        <article class="lul-svc__card">
+            <span class="lul-svc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M2.5 20.5h19" />
+                    <path d="M5.5 20.5v-6" />
+                    <path d="M10.5 20.5V8" />
+                    <path d="M15.5 20.5v-9" />
+                    <path d="M20.5 20.5V4.5" />
+                </svg>
+            </span>
+            <h4 class="lul-svc__title">Graphics and Data Visualization</h4>
+            <p class="lul-svc__desc">
+                Custom charts, infographics, maps, and dashboards that make complicated zoning and land use data
+                accessible to any audience.
+            </p>
+        </article>
+    </div>
+</section>

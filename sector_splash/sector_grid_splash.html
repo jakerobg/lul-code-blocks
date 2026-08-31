@@ -19,18 +19,20 @@
     <style>
         .lul-sgrid {
             --luls-ink: #393348;
-            --luls-btn-hover: #f9f9f9; /* secondary button hover fill */
+            --luls-link: #594496; /* card link — matches sector_grid_HOME */
+            --luls-link-hover: #3f2e70;
+            --luls-shadow-hover: 0 6px 28px rgba(57, 51, 72, 0.1);
             --luls-body: rgba(57, 51, 72, 0.75);
             --luls-border: rgba(57, 51, 72, 0.15); /* card keyline — faint */
             --luls-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
-            --luls-gap: 28px; /* space BETWEEN cards */
+            --luls-gap: 20px; /* space BETWEEN cards */
             --luls-card-pad: 26px 24px 24px; /* inner card padding */
             /* Card width is FIXED at this until the block can't fit three of
                them; the grid centers in whatever space is left rather than
-               stretching to the edge. 3 * 350 + 2 * 28 = 1106px of block width
-               for a full row. Change --luls-card-w to resize every card — and
-               update the two @container breakpoints below to match, since CSS
-               can't compute a breakpoint from a variable. */
+               stretching to the edge. 3 * 350 + 2 * 20 = 1090px of block width
+               for a full row. Change --luls-card-w OR --luls-gap and update the
+               two @container breakpoints below to match, since CSS can't
+               compute a breakpoint from a variable. */
             --luls-card-w: 350px;
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             color: var(--luls-ink);
@@ -81,6 +83,17 @@
             border-radius: 0;
             box-shadow: var(--luls-shadow);
             padding: var(--luls-card-pad);
+            /* whole card is the link — same as sector_grid_HOME */
+            text-decoration: none;
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                transform 0.25s ease;
+        }
+        .lul-sgrid__card:hover {
+            border-color: rgba(57, 51, 72, 0.4);
+            box-shadow: var(--luls-shadow-hover);
+            transform: translateY(-2px);
         }
 
         /* Browsers without subgrid fall back to flex: cards are equal height
@@ -121,27 +134,30 @@
             margin: 0 0 30px;
         }
 
-        /* Secondary button style — outlined, dark ink label, same as
-           BUTTONS/BUTTONS_PRIMARY_SECONDARY.html. */
-        .lul-sgrid__btn {
+        /* Purple text link with an arrow — same treatment as
+           sector_grid_HOME.html. The card itself is the anchor, so this is a
+           <span>: it reads as a link but isn't a nested one. */
+        .lul-sgrid__link {
+            /* NOT inline-flex — see sector_grid_HOME.html: a long label wraps
+               and a flex gap would strand the arrow at the card's right edge. */
             display: block;
-            align-self: end;
-            text-align: center;
-            font-size: 14px;
+            align-self: start;
+            font-size: 15px;
             font-weight: 500;
             letter-spacing: 0.02em;
-            padding: 8px 14px;
-            border: 1px solid var(--luls-ink);
-            border-radius: 0;
-            background: transparent;
-            color: var(--luls-ink);
-            text-decoration: none;
-            transition:
-                background 0.25s ease,
-                border-color 0.25s ease;
+            color: var(--luls-link);
+            transition: color 0.25s ease;
         }
-        .lul-sgrid__btn:hover {
-            background: var(--luls-btn-hover);
+        .lul-sgrid__card:hover .lul-sgrid__link {
+            color: var(--luls-link-hover);
+        }
+        .lul-sgrid__arrow {
+            display: inline-block;
+            margin-left: 8px;
+            transition: margin-left 0.25s ease;
+        }
+        .lul-sgrid__card:hover .lul-sgrid__arrow {
+            margin-left: 12px;
         }
         /* Squarespace link-color override safety */
         .lul-sgrid a,
@@ -149,16 +165,26 @@
             text-decoration: none;
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            .lul-sgrid__card,
+            .lul-sgrid__link {
+                transition: none !important;
+            }
+            .lul-sgrid__card:hover {
+                transform: none !important;
+            }
+        }
+
         /* ── RESPONSIVE ──
-           3 across needs 3*350 + 2*28 = 1106px; 2 across needs 728px. Cards
+           3 across needs 3*350 + 2*20 = 1090px; 2 across needs 720px. Cards
            keep their fixed width in every tier and the row stays centered —
            they only shrink below the last breakpoint. */
-        @container lulsgrid (max-width: 1105px) {
+        @container lulsgrid (max-width: 1089px) {
             .lul-sgrid__grid {
                 grid-template-columns: repeat(2, minmax(0, var(--luls-card-w)));
             }
         }
-        @container lulsgrid (max-width: 727px) {
+        @container lulsgrid (max-width: 719px) {
             .lul-sgrid__grid {
                 grid-template-columns: minmax(0, var(--luls-card-w));
             }
@@ -166,12 +192,12 @@
         /* Fallback for browsers without container queries (pre-2023): fall
            back to viewport breakpoints so the block still reflows. */
         @supports not (container-type: inline-size) {
-            @media (max-width: 1170px) {
+            @media (max-width: 1154px) {
                 .lul-sgrid__grid {
                     grid-template-columns: repeat(2, minmax(0, var(--luls-card-w)));
                 }
             }
-            @media (max-width: 780px) {
+            @media (max-width: 772px) {
                 .lul-sgrid__grid {
                     grid-template-columns: minmax(0, var(--luls-card-w));
                 }
@@ -181,45 +207,60 @@
 
     <div class="lul-sgrid__grid">
         <!-- ══ REAL ESTATE ══ -->
-        <article class="lul-sgrid__card" data-sector="real-estate">
+        <a class="lul-sgrid__card" data-sector="real-estate" href="/real-estate">
             <h4 class="lul-sgrid__title">Real Estate</h4>
             <p class="lul-sgrid__desc">Finalizing a deal? Know its zoning before you sign.</p>
-            <a class="lul-sgrid__btn" href="/real-estate">Explore Real Estate</a>
-        </article>
+            <span class="lul-sgrid__link">Explore Real Estate <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
 
         <!-- ══ PROPERTY OWNERSHIP ══ -->
-        <article class="lul-sgrid__card" data-sector="owners">
+        <a class="lul-sgrid__card" data-sector="owners" href="/owners">
             <h4 class="lul-sgrid__title">Property Ownership</h4>
             <p class="lul-sgrid__desc">What can you do with your property? Find out fast.</p>
-            <a class="lul-sgrid__btn" href="/owners">Explore Property Ownership</a>
-        </article>
+            <span class="lul-sgrid__link">Explore Property Ownership <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
 
         <!-- ══ FINANCIAL SERVICES ══ -->
-        <article class="lul-sgrid__card" data-sector="financial-services">
+        <a class="lul-sgrid__card" data-sector="financial-services" href="/financial-services">
             <h4 class="lul-sgrid__title">Financial Services</h4>
             <p class="lul-sgrid__desc">Flag zoning issues before they become problems.</p>
-            <a class="lul-sgrid__btn" href="/financial-services">Explore Financial Services</a>
-        </article>
+            <span class="lul-sgrid__link">Explore Financial Services <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
 
         <!-- ══ DEVELOPMENT ══ -->
-        <article class="lul-sgrid__card" data-sector="developers">
+        <a class="lul-sgrid__card" data-sector="developers" href="/developers">
             <h4 class="lul-sgrid__title">Development</h4>
             <p class="lul-sgrid__desc">Stop reading zoning codes. Start building.</p>
-            <a class="lul-sgrid__btn" href="/developers">Explore Development</a>
-        </article>
+            <span class="lul-sgrid__link">Explore Development <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
 
         <!-- ══ POLICYMAKING ══ -->
-        <article class="lul-sgrid__card" data-sector="policymakers">
+        <a class="lul-sgrid__card" data-sector="policymakers" href="/policymakers">
             <h4 class="lul-sgrid__title">Policymaking</h4>
             <p class="lul-sgrid__desc">Debating reform? Inform the vote and benchmark your zoning.</p>
-            <a class="lul-sgrid__btn" href="/policymakers">Explore Policymaking</a>
-        </article>
+            <span class="lul-sgrid__link">Explore Policymaking <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
 
         <!-- ══ RESEARCH ══ -->
-        <article class="lul-sgrid__card" data-sector="researchers">
+        <a class="lul-sgrid__card" data-sector="researchers" href="/researchers">
             <h4 class="lul-sgrid__title">Research</h4>
             <p class="lul-sgrid__desc">Researching land use? Get zoning data at scale.</p>
-            <a class="lul-sgrid__btn" href="/researchers">Explore Research</a>
-        </article>
+            <span class="lul-sgrid__link">Explore Research <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
+        <!-- ══ ENVIRONMENTAL CONSULTING ══ -->
+        <a class="lul-sgrid__card" data-sector="environmental-consultants" href="/environmental-consultants">
+            <h4 class="lul-sgrid__title">Environmental Consulting</h4>
+            <p class="lul-sgrid__desc">Environmental reviews need zoning analysis.</p>
+            <span class="lul-sgrid__link"
+                >Explore Environmental Consulting <span class="lul-sgrid__arrow">&rarr;</span></span
+            >
+        </a>
+
+        <!-- ══ PLANNING ══ -->
+        <a class="lul-sgrid__card" data-sector="planners" href="/planners">
+            <h4 class="lul-sgrid__title">Planning</h4>
+            <p class="lul-sgrid__desc">Get the tools you need to plan your places.</p>
+            <span class="lul-sgrid__link">Explore Planning <span class="lul-sgrid__arrow">&rarr;</span></span>
+        </a>
     </div>
 </section>

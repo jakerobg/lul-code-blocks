@@ -1,0 +1,307 @@
+<!--
+  AUDIENCE CARDS — eight linked cards, 4 across (Squarespace Code Block).
+  Borders match the products carousel: rgba(57,51,72,.3) at rest, .4 on
+  hover, with a soft lift.
+  ▶ WIDTH: the block now runs the full width of whatever Squarespace section
+    it sits in — no max-width cap and no side padding. Control the inset from
+    the section's own content-width setting in Squarespace. To bring back an
+    internal cap, set a max-width on .lul-aud-grid.
+-->
+<style>
+    /* ── LUL Audience Cards ─────────────────────────────────────────── */
+    .lul-aud {
+        padding: 20px 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .lul-aud-grid {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+    }
+    .lul-aud-card {
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        border: 1px solid rgba(57, 51, 72, 0.3);
+        border-radius: 0; /* corner radius is 0 sitewide */
+        padding: 20px 24px;
+        text-decoration: none;
+        transition:
+            border-color 0.25s ease,
+            box-shadow 0.25s ease,
+            transform 0.25s ease;
+    }
+    .lul-aud-card:hover {
+        border-color: rgba(57, 51, 72, 0.4);
+        box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
+        transform: translateY(-2px);
+    }
+    .lul-aud-icon {
+        color: #393348;
+        margin-bottom: 22px;
+        line-height: 0;
+    }
+    .lul-aud-icon svg {
+        width: 28px;
+        height: 28px;
+        display: block;
+    }
+    .lul-aud-title {
+        font-size: 22px; /* SQS H4 = 1.5 */
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
+        color: #393348;
+        margin: 0 0 14px;
+    }
+    .lul-aud-body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        line-height: 1.55;
+        color: rgba(57, 51, 72, 0.75);
+        margin: 0 0 26px;
+        flex-grow: 1;
+    }
+    .lul-aud-link {
+        /* NOT inline-flex: a long label ("Explore Environmental Consulting")
+           wraps to two lines, and a flex gap would strand the arrow at the far
+           right of the card. Keeping the arrow inline lets it follow the last
+           word, and the hover nudge animates its margin instead of the gap. */
+        display: block;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: #594496;
+        align-self: flex-start;
+        transition: color 0.25s ease;
+    }
+    .lul-aud-card:hover .lul-aud-link {
+        color: #3f2e70;
+    }
+    .lul-aud-link .lul-aud-arrow {
+        display: inline-block;
+        margin-left: 8px;
+        transition: margin-left 0.25s ease;
+    }
+    .lul-aud-card:hover .lul-aud-arrow {
+        margin-left: 12px;
+    }
+    /* Squarespace link-color override safety */
+    .lul-aud a,
+    .lul-aud a:visited,
+    .lul-aud a:hover {
+        text-decoration: none;
+    }
+    @media (max-width: 1024px) {
+        .lul-aud-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+    }
+    @media (max-width: 640px) {
+        .lul-aud {
+            padding: 44px 0;
+        }
+        .lul-aud-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+        }
+        .lul-aud-card {
+            padding: 28px 24px 26px;
+        }
+        .lul-aud-body {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lul-aud-card,
+        .lul-aud-link {
+            transition: none !important;
+        }
+        .lul-aud-card:hover {
+            transform: none !important;
+        }
+    }
+</style>
+<div class="lul-aud">
+    <div class="lul-aud-grid">
+        <!-- Real Estate -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/real-estate">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+                    <path d="M10 6h4" />
+                    <path d="M10 10h4" />
+                    <path d="M10 14h4" />
+                    <path d="M10 18h4" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Real Estate</h4>
+            <p class="lul-aud-body">Due diligence, site selection, and portfolio-level conformity risk analyses.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Financial Services -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/financial-services">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                    <polyline points="16 7 22 7 22 13" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Financial Services</h4>
+            <p class="lul-aud-body">
+                Underwriting, collateral analysis, and loan decisioning with verified zoning data.
+            </p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Development -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/developers">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="m15 9-6 6" />
+                    <path d="m9 9 6 6" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Development</h4>
+            <p class="lul-aud-body">By-right feasibility, entitlement planning, and development potential analysis.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Policymaking -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/policymakers">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8" />
+                    <path d="m16 16 6-6" />
+                    <path d="m8 8 6-6" />
+                    <path d="m9 7 8 8" />
+                    <path d="m21 11-8-8" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Policymaking</h4>
+            <p class="lul-aud-body">Regulatory mapping, housing supply analysis, and land use compliance tracking.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Property Ownership -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/owners">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="7.5" cy="15.5" r="5.5" />
+                    <path d="m21 2-9.6 9.6" />
+                    <path d="m15.5 7.5 3 3L22 7l-3-3" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Property Ownership</h4>
+            <p class="lul-aud-body">Permit guidance, conformity checks, and regulatory dispute documentation.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Research -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/research">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="13" cy="11" r="8" />
+                    <path d="m3 21 4.3-4.3" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Research</h4>
+            <p class="lul-aud-body">Regulatory details, comparative analysis, and use-related modeling.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Environmental Consulting -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/environmental-consulting">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Environmental Consulting</h4>
+            <p class="lul-aud-body">Site screening, multi-layered analysis, and regulatory documentation.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+        <!-- Planning -->
+        <a class="lul-aud-card" href="https://www.landuselabs.com/planning">
+            <span class="lul-aud-icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7 9 4Z" />
+                    <path d="M9 4v13" />
+                    <path d="M15 7v13" />
+                    <path d="M3 12h6" />
+                    <path d="M15 13h6" />
+                </svg>
+            </span>
+            <h4 class="lul-aud-title">Planning</h4>
+            <p class="lul-aud-body">Cross-geographic analysis, regulatory review, and benchmarking.</p>
+            <span class="lul-aud-link">Learn more <span class="lul-aud-arrow">&rarr;</span></span>
+        </a>
+    </div>
+</div>

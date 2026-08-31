@@ -48,6 +48,7 @@
             margin-left: auto;
             margin-right: auto;
             box-sizing: border-box;
+            margin-top: 30px;
         }
         .lul-tabs *,
         .lul-tabs *::before,
@@ -247,102 +248,79 @@
         }
     </style>
 
-    <div class="lul-tabs__bar" role="tablist" aria-label="Find the right product">
-        <button class="lul-tabs__tab is-active" role="tab" aria-selected="true" data-panel="unit">Add a Unit</button>
-        <button class="lul-tabs__tab" role="tab" aria-selected="false" data-panel="extension">Add an Extension</button>
-        <button class="lul-tabs__tab" role="tab" aria-selected="false" data-panel="adu">Build an ADU</button>
-        <button class="lul-tabs__tab" role="tab" aria-selected="false" data-panel="rent">Rent an ADU</button>
+    <div class="lul-tabs__bar" role="tablist" aria-label="Find the right product for planning">
+        <button class="lul-tabs__tab is-active" role="tab" aria-selected="true" data-panel="districts">Get Clean Zoning GIS</button>
+        <button class="lul-tabs__tab" role="tab" aria-selected="false" data-panel="slices">See Which Rules Prevail</button>
+        <button class="lul-tabs__tab" role="tab" aria-selected="false" data-panel="tables">Benchmark Your Zoning</button>
     </div>
 
     <div class="lul-tabs__panels">
-        <div class="lul-tabs__panel is-active" role="tabpanel" data-panel="unit">
+        <div class="lul-tabs__panel is-active" role="tabpanel" data-panel="districts">
             <div class="lul-tabs__text">
-                <h3 class="lul-tabs__title">Can I add another unit to my property?</h3>
+                <h3 class="lul-tabs__title">Get clean zoning GIS with Zoning Districts</h3>
                 <p class="lul-tabs__body">
-                    Whether you can add a unit depends on a lot of factors. Not only does a jurisdiction have to allow
-                    the unit to be built, but lot size and overlay rules matter too. Your Parcel Report pulls every rule
-                    that applies to your lot, so you'll know whether a second unit is realistic before you spend a penny
-                    on plans.
+                    Zoning Districts show how each base and overlay district regulates uses, structures, and
+                    lots—direct from the zoning code. All our code interpretation is done by human experts, not web
+                    scrapers or agents. With Zoning Districts, you can see district boundaries, model rezonings, and
+                    compare your zoning to your neighbor’s zoning. Need public display? Contact us for a custom
+                    license.
                 </p>
                 <div class="lul-tabs__actions">
-                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/reports">
-                        Explore Reports</a>
+                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/districts">Explore Districts</a>
                     <a class="lul-tabs__btn lul-tabs__btn--secondary" href="/contact">Contact Us</a>
                 </div>
             </div>
             <div class="lul-tabs__media">
                 <img
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
-                    alt="Parcel Reports"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/01e1c65f-9130-42ae-8d45-ca3d52dadab0/districts_grey.png?content-type=image%2Fpng"
+                    alt="Zoning Districts"
                     loading="lazy"
                 />
             </div>
         </div>
 
-        <div class="lul-tabs__panel" role="tabpanel" data-panel="extension">
+        <div class="lul-tabs__panel" role="tabpanel" data-panel="slices">
             <div class="lul-tabs__text">
-                <h3 class="lul-tabs__title">Can I add an extension to my property?</h3>
+                <h3 class="lul-tabs__title">See which rules prevail with Zoning Slices</h3>
                 <p class="lul-tabs__body">
-                    Every family could use more space, but zoning dictates whether it's allowed. A Parcel Report gives
-                    you height limits, setbacks, and lot coverage requirements so you can see what's feasible with your
-                    home.
+                    Slices flatten every overlapping base and overlay district into non-overlapping polygons, each
+                    carrying exactly one set of prevailing rules. Resolving that overlay logic is the part that eats
+                    the schedule when you do it in-house. We hand you the finished geometry—what zoning actually
+                    requires—ready for buildout capacity analysis or testing a reform before it goes public.
                 </p>
                 <div class="lul-tabs__actions">
-                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/reports">
-                        Explore Reports</a>
+                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/slices">Explore Slices</a>
                     <a class="lul-tabs__btn lul-tabs__btn--secondary" href="/contact">Contact Us</a>
                 </div>
             </div>
             <div class="lul-tabs__media">
                 <img
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
-                    alt="Parcel Reports"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/1814190a-9889-4f42-b388-4219718c00bd/slices_grey.png?content-type=image%2Fpng"
+                    alt="Zoning Slices"
                     loading="lazy"
                 />
             </div>
         </div>
 
-        <div class="lul-tabs__panel" role="tabpanel" data-panel="adu">
+        <div class="lul-tabs__panel" role="tabpanel" data-panel="tables">
             <div class="lul-tabs__text">
-                <h3 class="lul-tabs__title">Can I add an accessory dwelling unit (ADU)?</h3>
+                <h3 class="lul-tabs__title">Benchmark your zoning with Zoning Tables</h3>
                 <p class="lul-tabs__body">
-                    Sometimes called casitas or granny flats, ADUs let seniors downsize while staying close to family,
-                    or allow kids to move back home and still be independent. ADUs can also bring in income toward the
-                    mortgage or retirement. Your Parcel Report shows whether you can build one and who can occupy it,
-                    before you call an architect.
+                    Zoning Tables summarize statistics on zoning, housing, land cover, and demographics at
+                    standardized geographies available on demand for a single jurisdiction, county, CBSA, or entire
+                    state. Because every place is encoded to the same schema, the comparison holds: show your council
+                    and commission how local standards stack up against peer communities, with hard numbers instead of
+                    anecdotes.
                 </p>
                 <div class="lul-tabs__actions">
-                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/reports">
-                        Explore Reports</a>
+                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/tables">Explore Tables</a>
                     <a class="lul-tabs__btn lul-tabs__btn--secondary" href="/contact">Contact Us</a>
                 </div>
             </div>
             <div class="lul-tabs__media">
                 <img
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
-                    alt="Parcel Reports"
-                    loading="lazy"
-                />
-            </div>
-        </div>
-
-        <div class="lul-tabs__panel" role="tabpanel" data-panel="rent">
-            <div class="lul-tabs__text">
-                <h3 class="lul-tabs__title">Can I rent out my ADU?</h3>
-                <p class="lul-tabs__body">
-                    Localities often limit who can occupy an ADU and whether you can rent it at all. Your Parcel Report
-                    captures these occupancy and rental rules, so you can plan with confidence.
-                </p>
-                <div class="lul-tabs__actions">
-                    <a class="lul-tabs__btn lul-tabs__btn--primary" href="/reports">
-                        Explore Reports</a>
-                    <a class="lul-tabs__btn lul-tabs__btn--secondary" href="/contact">Contact Us</a>
-                </div>
-            </div>
-            <div class="lul-tabs__media">
-                <img
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/38cb580c-1d3f-4586-831e-86dfa538ada4/reports_grey.png?content-type=image%2Fpng"
-                    alt="Parcel Reports"
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/a57622dc-fdb3-42bf-a10d-a6a3cd93f62a/tables_grey.png?content-type=image%2Fpng"
+                    alt="Zoning Tables"
                     loading="lazy"
                 />
             </div>

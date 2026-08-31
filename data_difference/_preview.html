@@ -1,0 +1,12 @@
+<style>body{margin:0;background:#fff;font:11px monospace}
+.f{outline:1px dashed #ddd;margin:10px auto}.lbl{color:#b00;padding:14px 0 2px}</style>
+<div id="a"></div>
+<script>(async()=>{
+ const h=await (await fetch('building_block_slices.html?v='+Date.now(),{cache:'no-store'})).text();
+ for(const w of [1180,1000,940,700]){
+  const l=document.createElement('div');l.className='lbl';l.textContent='block '+w+'px';document.getElementById('a').appendChild(l);
+  const d=document.createElement('div');d.className='f';d.style.width=w+'px';d.dataset.w=w;
+  d.appendChild(document.createRange().createContextualFragment(h));
+  document.getElementById('a').appendChild(d);
+ }
+ document.title='ready';})();</script>
