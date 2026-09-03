@@ -1,0 +1,520 @@
+<!--
+  SLOP STATS — two stacked dark-purple cards (Squarespace Code Blocks).
+
+  Built from slop_stats.png in this folder, extended past it.
+
+  ▶ TWO BLOCKS, ONE FILE. They're meant to become two separate Squarespace
+    code blocks; they're stacked here for now. The <style> below is shared —
+    when you split them, copy the whole <style> into BOTH files.
+
+  ▶ CARD 1 — headline + intro on the LEFT, vertically centred, and a
+    COMPARISON PAIR held to the right. No dividing rule here:
+    two comparison images side by side with a "vs" between them, and the same
+    zoning key as card 2 hung off the bottom-left of the right-hand one.
+    See --lulslop-vs-* and --lulslop-vskey-*.
+    Each tile keeps its OWN aspect ratio — nothing is cropped, so the four
+    are different shapes on purpose (the sources are 0.763, 0.909, 1.047 and
+    1.415). Only --w is set on each; height follows from the image.
+  ▶ CARD 2 — map + key on the LEFT, thin vertical rule, all the copy on the
+    right (title → description → the two figures → closing paragraph).
+
+  ▶ Deliberately omitted, per the brief: the short rule under the question,
+    both source credits, and the asterisk that pointed at them.
+
+  ▶ OVERLAPS: in both cards the second image is absolutely positioned against
+    the first, with every offset a percentage of that first image, so each
+    pair scales as a unit. See --lulslop-key-* and --lulslop-shot-*.
+
+  ▶ COLOURS sampled from slop_stats.png, not eyeballed: card #393348,
+    competitor figure #e08068, truth figure #b8a8d8, copy #e0d8f0.
+
+  ▶ STAT LABELS follow /uppercase_label.html — 13px / 700 / 0.14em / uppercase
+    / nowrap, and that file's 55% ink opacity carried over as 55% of the light
+    copy colour, since this card is a dark ground.
+
+  ▶ All classes are prefixed lul-slop- / --lulslop- so this can share a page
+    with the building blocks and the tabs block.
+-->
+
+<style>
+    .lul-slop {
+        /* ── Colours (sampled from slop_stats.png) ── */
+        --lulslop-card: #393348; /* card background */
+        --lulslop-copy: #e0d8f0; /* base light copy colour */
+        --lulslop-title: #ffffff; /* headlines */
+        --lulslop-body: rgba(224, 216, 240, 0.78); /* paragraphs */
+        --lulslop-label: rgba(224, 216, 240, 0.55); /* uppercase labels */
+        --lulslop-competitor: #e08068; /* the wrong number */
+        --lulslop-truth: #b8a8d8; /* the right one */
+        --lulslop-rule: rgba(224, 216, 240, 0.22); /* vertical divider */
+
+        /* ── Size knobs ── */
+        --lulslop-pad: 40px 64px; /* card padding */
+        /* The seam where the two cards meet. Normally they'd butt together at
+           a full --lulslop-pad each, i.e. twice the padding; this replaces the
+           two facing edges so the join is tighter than the outer edges.
+           Applied via the --seam-above / --seam-below classes on the sections,
+           so it survives them being split into two separate code blocks. */
+        --lulslop-seam: 20px;
+        /* Skinny mode only — extra breathing room at the very top of the
+           first card and the very bottom of the last one. Side by side these
+           do nothing; --lulslop-pad governs there. */
+        --lulslop-skinny-top: 72px;
+        --lulslop-skinny-bottom: 72px;
+        /* Skinny mode only — the gap on EACH side of the seam line. One
+           value, used above and below, so the divider sits centred in its own
+           space instead of hugging the copy underneath it. */
+        --lulslop-skinny-seam: 48px;
+        /* Skinny mode only — the gap between the copy and the images once
+           they stack. */
+        --lulslop-skinny-gap: 28px;
+        /* Same cap as --lulbb-max-w in the building blocks, so this section
+           lines up with them down the page. The background still runs full
+           width; only the content is capped. */
+        --lulslop-max-w: 1500px;
+        --lulslop-row-gap: 26px; /* between stacked items in a column */
+        --lulslop-stat-size: 3.4rem; /* the big figures */
+        --lulslop-label-size: 13px; /* matches /uppercase_label.html */
+
+        /* CARD 1 — the four-tile Zoneomics collage. */
+        /* CARD 1 — the two comparison images side by side.
+           --lulslop-shots-w   total width of the pair (incl. the VS between)
+           --lulslop-shots-shift  shifts the pair LEFT; added to the column's
+                               width but not its padding, so the copy narrows
+                               off its right edge and its left edge stays put
+           --lulslop-vs-ratio  both panes are forced to this shape and the
+                               screenshots object-fit: cover into them, so the
+                               two line up exactly. Sources are 0.785
+                               (ga_zoneomics) and 0.762 (ga_nza), so at 0.77
+                               each loses a sliver off its left and right. */
+        --lulslop-shots-w: 600px;
+        --lulslop-shots-shift: 48px;
+        --lulslop-vs-ratio: 0.77;
+        --lulslop-vs-gap: 20px; /* image → VS → image */
+        --lulslop-vs-size: 13px; /* the VS label */
+
+        /* The key over the RIGHT-hand image. Same three numbers as card 2's
+           key, so it sits in the same relationship to its image — it still
+           renders smaller because the pane it hangs off is narrower than the
+           map. Split out as its own vars so the two can be tuned apart. */
+        --lulslop-vskey-w: 56.7%;
+        --lulslop-vskey-x: 66.9%;
+        /* 0% = flush with the bottom of the image. This is measured UP from
+           that edge, so lower it further with a negative value and the key
+           hangs below the image. */
+        --lulslop-vskey-y: 2%;
+
+        /* CARD 2 — map + key. Taken off the mock: key 300px against a 450px
+           map = 66.7%; left edge 166px left of the map's = -36.9%; bottom
+           32px above the map's = 5% of map height. */
+        --lulslop-map-w: 350px;
+        /* Card 2 only — shifts the map + key right. It's added to BOTH the
+           media column's left padding and its width, so the map moves right
+           and the column grows by the same amount. The copy column is
+           flex: 1 1 0, so it gives up exactly this much: its left edge moves
+           right with the map and its right edge stays pinned by
+           --lulslop-copy-end. Net effect is a narrower copy column, not a
+           relocated one. */
+        --lulslop-map-shift: 8px;
+        --lulslop-key-gutter: 58px; /* map → rule */
+        --lulslop-copy-gap: 32px; /* rule → copy, either side */
+        /* Card 2 only — padding on the RIGHT of the copy, pulling it in from
+           the card's right edge. Padding on the column, so it holds the copy
+           in without capping how wide the column itself can get. */
+        --lulslop-copy-end: 76px;
+
+        /* Card 1 only — the BASE INSET: how far the whole copy block sits in
+           from the card's left padding. It's padding on the column rather
+           than a width, so it holds at any size and never stops the copy
+           filling the room it has. */
+        --lulslop-copy-indent: 50px;
+
+        /* Card 1 only — caps the copy COLUMN (headline and description
+           together), padding included since the block is border-box. A
+           CEILING, not a width: below it the column simply fills whatever
+           space is available, so the copy still stretches out as the browser
+           narrows rather than staying pinned at this number. */
+        --lulslop-copy-max: 900px;
+
+        /* Card 1 only — caps the DESCRIPTION on its own, so the paragraph can
+           be pulled tighter without touching the headline above it. Also a
+           ceiling, so it gives way the same way as the block narrows.
+           `none` = it just uses the full column above. */
+        --lulslop-desc-max: none;
+        /* The key hangs off the map's LEFT edge, and in this card the map is
+           itself on the left, so the card has to be indented to catch it.
+           Must stay >= |--lulslop-key-x| x --lulslop-map-w — at 36.9% of
+           330px that's 122px, so 130px leaves a little clearance. Raise this
+           if you widen the map or deepen the overhang, or the key will run
+           off the edge of the card. */
+        --lulslop-key-inset: 60px;
+        --lulslop-key-w: 66.7%;
+        --lulslop-key-x: -16.9%;
+        --lulslop-key-y: 5%;
+
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        width: 100%;
+        box-sizing: border-box;
+        background: var(--lulslop-card);
+        color: var(--lulslop-copy);
+        container-type: inline-size;
+        container-name: lulslop;
+    }
+    /* the cap lives on an inner wrapper so the purple still bleeds full width */
+    .lul-slop__inner {
+        max-width: var(--lulslop-max-w);
+        margin-left: auto;
+        margin-right: auto;
+        padding: var(--lulslop-pad);
+    }
+    /* tighten only the two edges that face each other */
+    .lul-slop--seam-below .lul-slop__inner {
+        padding-bottom: var(--lulslop-seam);
+    }
+    .lul-slop--seam-above .lul-slop__inner {
+        padding-top: var(--lulslop-seam);
+    }
+    .lul-slop *,
+    .lul-slop *::before,
+    .lul-slop *::after {
+        box-sizing: border-box;
+    }
+
+    /* ── Type. Same scale as .lul-bb__title / .lul-bb__body in the building
+       blocks, recoloured for the dark ground. ── */
+    .lul-slop__title {
+        font-size: 2.5rem;
+        font-weight: 500;
+        color: var(--lulslop-title);
+        letter-spacing: -0.015em;
+        line-height: 1.15;
+        margin: 0 0 16px;
+    }
+    .lul-slop__body {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: var(--lulslop-body);
+        margin: 0;
+    }
+
+    /* ── CARD 1 ── */
+    .lul-slop__head > * + * {
+        margin-top: var(--lulslop-row-gap);
+    }
+    /* the description can be pulled in tighter than the headline above it */
+    .lul-slop__head .lul-slop__body {
+        max-width: var(--lulslop-desc-max);
+    }
+    /* the two comparison images, side by side with a VS between them */
+    .lul-slop__vs-row {
+        display: flex;
+        align-items: center;
+        gap: var(--lulslop-vs-gap);
+        width: var(--lulslop-shots-w);
+        max-width: 100%;
+    }
+    .lul-slop__pane {
+        /* the key is offset against this, and it must NOT clip — the frame
+           inside does the cropping instead */
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+    }
+    /* the cropping box: both panes take the same shape so they line up */
+    .lul-slop__frame {
+        aspect-ratio: var(--lulslop-vs-ratio);
+        overflow: hidden;
+    }
+    .lul-slop__frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .lul-slop__vs {
+        flex: 0 0 auto;
+        font-size: var(--lulslop-vs-size);
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--lulslop-label);
+    }
+    /* Smaller sibling of card 2's key, hung off the right-hand image.
+       Scoped to .lul-slop__pane on purpose: bare .lul-slop__key--vs ties with
+       .lul-slop__key on specificity, and the base rule is defined later in
+       this sheet, so it would win and these three values would do nothing. */
+    .lul-slop__pane .lul-slop__key--vs {
+        width: var(--lulslop-vskey-w);
+        left: var(--lulslop-vskey-x);
+        bottom: var(--lulslop-vskey-y);
+        z-index: 2;
+    }
+
+    /* ── CARD 2 ── */
+    .lul-slop__row {
+        display: flex;
+        align-items: stretch;
+    }
+    /* map on the LEFT, copy on the right */
+    .lul-slop__media {
+        flex: 0 0
+            calc(var(--lulslop-map-w) + var(--lulslop-key-gutter) + var(--lulslop-key-inset) + var(--lulslop-map-shift));
+        padding-left: calc(var(--lulslop-key-inset) + var(--lulslop-map-shift));
+        padding-right: var(--lulslop-key-gutter);
+        display: flex;
+        align-items: flex-start;
+    }
+    .lul-slop__map {
+        position: relative; /* the key is offset against this */
+        width: var(--lulslop-map-w);
+        max-width: 100%;
+    }
+    .lul-slop__map img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .lul-slop__key {
+        position: absolute;
+        width: var(--lulslop-key-w);
+        left: var(--lulslop-key-x);
+        bottom: var(--lulslop-key-y);
+    }
+    .lul-slop__key img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    /* the copy sits centred against the height of the map + key */
+    .lul-slop__row--media-left {
+        align-items: center;
+    }
+    .lul-slop__text {
+        flex: 1 1 0;
+        min-width: 0;
+        /* above the collage tiles that leak over this column */
+        position: relative;
+        z-index: 5;
+    }
+    /* the rule sits to the LEFT of the copy in card 2, to its RIGHT in card 1 */
+    .lul-slop__row--media-left .lul-slop__text {
+        padding-left: var(--lulslop-copy-gap);
+        padding-right: var(--lulslop-copy-end);
+    }
+    .lul-slop__row--media-right .lul-slop__text {
+        padding-right: var(--lulslop-copy-gap);
+        padding-left: var(--lulslop-copy-indent);
+        max-width: var(--lulslop-copy-max);
+    }
+    /* there's much less copy than collage here, so centre it rather than
+       letting it hang off the top */
+    .lul-slop__row--media-right {
+        align-items: center;
+    }
+
+    /* card 1's media column */
+    .lul-slop__vs-col {
+        flex: 0 0 calc(var(--lulslop-shots-w) + var(--lulslop-shots-shift));
+    }
+    .lul-slop__text > * + * {
+        margin-top: var(--lulslop-row-gap);
+    }
+
+    /* ── The two figures ── */
+    .lul-slop__stats {
+        display: flex;
+        gap: 56px;
+    }
+    .lul-slop__stat {
+        min-width: 0;
+    }
+    /* the house uppercase label from /uppercase_label.html */
+    .lul-slop__stat-label {
+        font-size: var(--lulslop-label-size);
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--lulslop-label);
+        white-space: nowrap;
+        line-height: 1.35;
+        margin: 0 0 10px;
+    }
+    .lul-slop__stat-value {
+        font-size: var(--lulslop-stat-size);
+        font-weight: 400;
+        line-height: 1;
+        margin: 0;
+        white-space: nowrap;
+    }
+    .lul-slop__stat--competitor .lul-slop__stat-value {
+        color: var(--lulslop-competitor);
+    }
+    .lul-slop__stat--truth .lul-slop__stat-value {
+        color: var(--lulslop-truth);
+    }
+
+    /* ── RESPONSIVE ──
+       Below the breakpoint both cards drop to one column, copy first. The
+       number lives on the @container line and nowhere else — edit it there.
+       It measures the BLOCK's width, not the window. */
+    @container lulslop (max-width: 1099px) {
+        .lul-slop__row {
+            flex-direction: column;
+            /* undo the side-by-side centring, which would centre the children
+               horizontally once this is a column */
+            align-items: stretch;
+            gap: var(--lulslop-skinny-gap);
+        }
+        /* The seam line, skinny only. It goes on the inner wrapper, not on
+           .lul-slop itself: a container query cannot restyle the element that
+           IS its container, and .lul-slop is the container here. */
+        .lul-slop--seam-above .lul-slop__inner {
+            border-top: 1px solid var(--lulslop-rule);
+            padding-top: var(--lulslop-skinny-seam);
+            padding-bottom: var(--lulslop-skinny-bottom);
+        }
+        .lul-slop--seam-below .lul-slop__inner {
+            padding-top: var(--lulslop-skinny-top);
+            padding-bottom: var(--lulslop-skinny-seam);
+        }
+        /* copy above the map once stacked, and the map centred in the card.
+           The inset is mirrored onto both sides so the map lands centred while
+           the key still has room to hang off its left edge — the key itself
+           therefore sits just left of centre, as it does side by side. */
+        .lul-slop__media {
+            order: 2;
+            flex: 1 1 auto;
+            justify-content: center;
+            /* --lulslop-map-shift is deliberately left out here: the map is
+               centred once stacked, and adding the shift would push it off
+               centre. */
+            padding-left: var(--lulslop-key-inset);
+            padding-right: var(--lulslop-key-inset);
+        }
+        .lul-slop__text {
+            order: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+        /* Stacked: nothing sits beside the copy, so the insets and caps are
+           dead weight — hand it the full width. These need the row-modifier
+           prefix to outrank the side-by-side rules, which are 0,2,0. */
+        .lul-slop__row--media-right .lul-slop__text,
+        .lul-slop__row--media-left .lul-slop__text {
+            padding-left: 0;
+            padding-right: 0;
+            max-width: none;
+        }
+        /* In a column flex container, flex-basis sizes the CROSS-to-main axis
+           — i.e. the height. Left as-is, the collage column would be pinned to
+           its own width in px and the collage would overflow it. */
+        .lul-slop__vs-col {
+            flex: 1 1 auto;
+        }
+        /* centred once stacked, rather than held to one side */
+        .lul-slop__vs-row {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+</style>
+
+<!-- ════════ CARD 1 ════════ -->
+<section class="lul-slop lul-slop--seam-below" aria-label="We don't settle for data slop">
+    <div class="lul-slop__inner">
+        <div class="lul-slop__row lul-slop__row--media-right">
+            <div class="lul-slop__text lul-slop__head">
+                <h2 class="lul-slop__title">We don't settle for data slop.</h2>
+                <p class="lul-slop__body">
+                    Other zoning datasets on the market are riddled with errors, omit key zoning components (like
+                    overlays), and use AI to assemble information.
+                </p>
+            </div>
+
+            <div class="lul-slop__vs-col">
+                <div class="lul-slop__vs-row">
+                    <div class="lul-slop__pane">
+                        <div class="lul-slop__frame">
+                            <img
+                                src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/74ff1951-90d0-440d-89ca-68ba5c7b01d6/ga_zoneomics.png?content-type=image%2Fpng"
+                                alt="Georgia zoning as published by Zoneomics"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+
+                    <span class="lul-slop__vs">vs</span>
+
+                    <div class="lul-slop__pane">
+                        <div class="lul-slop__frame">
+                            <img
+                                src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/a5bb28a4-a6ad-44a9-9534-d77edb08ccf2/ga_nza.png?content-type=image%2Fpng"
+                                alt="Georgia zoning as mapped by the National Zoning Atlas"
+                                loading="lazy"
+                            />
+                        </div>
+                        <div class="lul-slop__key lul-slop__key--vs">
+                            <img
+                                src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9c50f3bf-63e1-4c24-8ee6-0e715baa963a/zoning_type.png?content-type=image%2Fpng"
+                                alt="Key: primarily residential, mixed with residential, nonresidential, unzoned"
+                                loading="lazy"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ CARD 2 ════════ -->
+<section class="lul-slop lul-slop--seam-above" aria-label="And neither should you">
+    <div class="lul-slop__inner">
+        <div class="lul-slop__row lul-slop__row--media-left">
+            <div class="lul-slop__media">
+                <div class="lul-slop__map">
+                    <img
+                        src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/b7b8a69f-a4b6-40e5-a0aa-8b8164c11cb2/Screenshot+2026-04-06+at+10.21.30.png?content-type=image%2Fpng"
+                        alt="Map of Los Angeles zoning districts by type"
+                        loading="lazy"
+                    />
+                    <div class="lul-slop__key">
+                        <img
+                            src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9c50f3bf-63e1-4c24-8ee6-0e715baa963a/zoning_type.png?content-type=image%2Fpng"
+                            alt="Key: primarily residential, mixed with residential, nonresidential, unzoned"
+                            loading="lazy"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="lul-slop__text">
+                <h2 class="lul-slop__title">And neither should you.</h2>
+
+                <p class="lul-slop__body">
+                    We're award-winning researchers who can spot data slop a mile away. Consider the percentage of land
+                    zoned for residential uses in LA:
+                </p>
+
+                <div class="lul-slop__stats">
+                    <div class="lul-slop__stat lul-slop__stat--competitor">
+                        <p class="lul-slop__stat-label">Zoneomics claims</p>
+                        <p class="lul-slop__stat-value">11.5%</p>
+                    </div>
+                    <div class="lul-slop__stat lul-slop__stat--truth">
+                        <p class="lul-slop__stat-label">The truth</p>
+                        <p class="lul-slop__stat-value">90%</p>
+                    </div>
+                </div>
+
+                <p class="lul-slop__body">
+                    We know we’re right because we put in the work analyzing every word in the Los Angeles zoning code.
+                    We mapped every district, and we generated Zoning Slices that calculated regulatory truth. We didn’t
+                    sit back and ask AI to guess, or generate made-up pie charts.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
