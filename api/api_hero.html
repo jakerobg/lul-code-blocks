@@ -1,0 +1,252 @@
+<!--
+  API — HERO / PAGE TITLE (Squarespace Code Block).
+
+  Left aligned. The ">" prompt sits on the title itself, and "Zoning API"
+  types out once on load with a blinking caret. The subtitle sets GET and the
+  {variable} as inline code in the house primary purple.
+
+  ▶ THE {variable} CYCLES through regulation types taken from the Parcel
+    Reports sheet of the data dictionary — min_lot_size, min_parking,
+    treatment, setback and so on. Each one SCRAMBLES into the next: the
+    characters flicker through a code-ish alphabet and lock in left to right.
+    It goes word-to-word with no empty state between, so the braces never
+    flash as "{}".
+  ▶ THE BRACES HUG THE WORD, and nothing gets pushed — the line breaks
+    immediately after the {variable}, so there is nothing to its right to
+    move. That's why no width reservation is needed here: the only thing that
+    changes is where line one ends.
+
+  ▶ TYPES ONCE, not on a loop — it's a page title, not an animation. The
+    caret is shown only while it types and is removed on the last character,
+    so nothing blinks after it lands. Under prefers-reduced-motion the title
+    is written out complete and still.
+  ▶ ACCESSIBILITY: the ">" and the caret are decoration, so they're
+    aria-hidden, and the <h1> carries an aria-label with the real title —
+    otherwise a screen reader would announce a half-typed heading.
+  ▶ NO LAYOUT SHIFT: the heading holds its height from line-height whether or
+    not any characters have been typed yet, and the caret is inline, so
+    nothing below it moves as the title fills in.
+  ▶ Classes are prefixed lul-apihero- / --lulapi- so this can share a page
+    with the terminal graphic and the building blocks.
+-->
+
+<section class="lul-apihero">
+    <style>
+        .lul-apihero {
+            --lulapi-header: #393348;
+            --lulapi-muted: #5c5c5c; /* subtitle */
+            /* the house primary purple, as used on BUTTONS/BUTTONS_PRIMARY_SECONDARY.html */
+            --lulapi-code: #594496; /* GET and the {variable} */
+            --lulapi-code-bg: rgba(89, 68, 150, 0.09);
+            --lulapi-prompt: #594496; /* the ">" on the title */
+
+            --lulapi-max-w: 1100px; /* width of the CONTENT */
+            --lulapi-gutter: 24px; /* added to the cap, not taken out of it */
+            --lulapi-pad-y: 30px;
+
+            --lulapi-title-size: 5rem;
+            --lulapi-sub-size: 1.3rem;
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: var(--lulapi-header);
+            width: 100%;
+            max-width: calc(var(--lulapi-max-w) + 2 * var(--lulapi-gutter));
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 25px 0 0;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .lul-apihero *,
+        .lul-apihero *::before,
+        .lul-apihero *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-apihero__headline {
+            font-weight: 600;
+            font-size: var(--lulapi-title-size);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin: 0;
+            color: var(--lulapi-header);
+        }
+        /* the ">" — a design device, sized and spaced off the title */
+        .lul-apihero__prompt {
+            color: var(--lulapi-prompt);
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+            font-weight: 700;
+            margin-right: 0.28em;
+        }
+        /* Only present while the title is typing — it is removed on the last
+           character rather than left blinking. */
+        .lul-apihero__caret {
+            display: inline-block;
+            width: 0.055em;
+            height: 0.86em;
+            background: currentColor;
+            margin-left: 0.08em;
+            vertical-align: -0.06em;
+        }
+        .lul-apihero.is-typed .lul-apihero__caret {
+            display: none;
+        }
+
+        .lul-apihero__subtitle {
+            font-size: var(--lulapi-sub-size);
+            line-height: 1.55;
+            color: var(--lulapi-muted);
+            margin: 24px 0 0;
+            max-width: 46ch;
+        }
+        /* The cycling regulation type. No reserved width — the braces hug
+           whatever is typed, which is safe because the line BREAKS straight
+           after it, so there's nothing to its right to push around. */
+        .lul-apihero__slot {
+            white-space: pre;
+        }
+
+        /* the parcel count, picked out in the same purple */
+        .lul-apihero__num {
+            color: var(--lulapi-code);
+            font-weight: 700;
+        }
+
+        /* GET and the {variable}, set as code */
+        .lul-apihero__code {
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+            font-size: 0.92em;
+            font-weight: 700;
+            color: var(--lulapi-code);
+            background: var(--lulapi-code-bg);
+            padding: 0.1em 0.34em;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .lul-apihero__caret {
+                display: none;
+            }
+        }
+    </style>
+
+    <h1 class="lul-apihero__headline" aria-label="Zoning API">
+        <span class="lul-apihero__prompt" aria-hidden="true">&gt;</span><span data-hero-title aria-hidden="true"></span
+        ><span class="lul-apihero__caret" aria-hidden="true"></span>
+    </h1>
+
+    <p class="lul-apihero__subtitle">
+        <code class="lul-apihero__code">GET</code> comprehensive information for
+        <code class="lul-apihero__code">{<span class="lul-apihero__slot" data-hero-var></span>}</code><br />
+        across <span class="lul-apihero__num">96+ million</span> parcels with our API endpoint or platform. Just input
+        an address or coordinates and receive a JSON object.
+    </p>
+
+    <script>
+        (function () {
+            var root = document.currentScript.closest(".lul-apihero");
+            var el = root.querySelector("[data-hero-title]");
+
+            var slot = root.querySelector("[data-hero-var]");
+
+            var TITLE = "Zoning API";
+            var SPEED = 55; // ms per character of the title
+
+            /* Regulation types from the Parcel Reports sheet of
+               Land Use Labs - Data Dictionary.xlsx, as field-style tokens. */
+            var VARS = [
+                "min_lot_size",
+                "min_parking",
+                "treatment",
+                "setback",
+                "lot_coverage",
+                "max_height",
+                "unit_cap",
+                "far",
+            ];
+            var VAR_TIMING = {
+                frame: 40, // ms between scramble frames
+                settle: 2.2, // frames each character scrambles before locking
+                hold: 1600, // ms to sit on a finished word
+            };
+            /* what the unresolved characters flicker through — kept to the
+               alphabet a field name would actually use, so mid-scramble it
+               still reads as code rather than noise */
+            var SCRAMBLE_CHARS = "abcdefghijklmnopqrstuvwxyz_0123456789";
+
+            var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            if (reduced) {
+                el.textContent = TITLE;
+                root.classList.add("is-typed");
+                slot.textContent = VARS[0];
+                return;
+            }
+
+            /* title: types once, then the caret goes away for good */
+            var c = 0;
+            (function step() {
+                el.textContent = TITLE.slice(0, ++c);
+                if (c < TITLE.length) return setTimeout(step, SPEED);
+                root.classList.add("is-typed");
+                cycleVars();
+            })();
+
+            function randChar() {
+                return SCRAMBLE_CHARS.charAt(Math.floor(Math.random() * SCRAMBLE_CHARS.length));
+            }
+
+            /* Scrambles from one word straight into the next: no empty state
+               in between, so the braces never collapse to "{}". Characters
+               lock in left to right — each one starts scrambling on its own
+               frame and settles VAR_TIMING.settle frames later — while the
+               word's length eases from the old length to the new one, so the
+               braces grow or shrink smoothly instead of snapping. */
+            function scrambleTo(from, to, done) {
+                var span = Math.max(from.length, to.length);
+                var total = span + Math.ceil(VAR_TIMING.settle) + 1;
+                var frame = 0;
+
+                var timer = setInterval(function () {
+                    var progress = Math.min(1, frame / total);
+                    var len = Math.round(from.length + (to.length - from.length) * progress);
+                    var out = "";
+
+                    for (var i = 0; i < len; i++) {
+                        if (frame >= i + VAR_TIMING.settle) {
+                            // locked: show the real character (or nothing, if
+                            // the target is shorter than we've drawn so far)
+                            out += to.charAt(i) || "";
+                        } else if (frame >= i) {
+                            out += randChar(); // mid-scramble
+                        } else {
+                            out += from.charAt(i) || randChar(); // not reached yet
+                        }
+                    }
+                    slot.textContent = out;
+
+                    if (++frame > total) {
+                        clearInterval(timer);
+                        slot.textContent = to;
+                        done();
+                    }
+                }, VAR_TIMING.frame);
+            }
+
+            /* the {variable}: scramble into the next word, hold, repeat */
+            function cycleVars() {
+                var i = 0;
+                slot.textContent = VARS[0];
+                (function next() {
+                    setTimeout(function () {
+                        var from = VARS[i];
+                        i = (i + 1) % VARS.length;
+                        scrambleTo(from, VARS[i], next);
+                    }, VAR_TIMING.hold);
+                })();
+            }
+        })();
+    </script>
+</section>

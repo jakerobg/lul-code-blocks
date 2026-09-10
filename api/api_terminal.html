@@ -1,0 +1,501 @@
+<!--
+  API — REQUEST / RESPONSE GRAPHIC (Squarespace Code Block).
+
+  Two stacked terminal windows. The thin one on top types out an endpoint
+  URL; the taller one below prints the JSON response. Then it moves to the
+  next example and loops.
+
+  ▶ THE LINE IS A VALID HTTP REQUEST LINE — "GET https://…", no shell prompt
+    in front of it. METHOD sits in its own span so it can be coloured apart
+    from the URL; it is still typed out like the rest.
+  ▶ ONLY THE COORDINATES RETYPE. The base — GET https://api.landuselabs.com/
+    v1/zoning/point?lat= — is typed once and then stays put. Each iteration
+    backspaces only the lat/lng after it and types the next pair back out, so
+    the block reads as one session against one endpoint rather than a fresh
+    command every time. Erasing runs faster than typing (TIMING.erase).
+  ▶ METHOD / SCHEME / ENDPOINT are three separate constants so the host can
+    be swapped without touching the rest of the line.
+
+  ▶ THE DATA IS REAL. All three examples are actual districts from
+    lafayette_co_districts_sample.geojson — R1 (Medium Density Residential),
+    C1 (Regional Business) and M1 (Industrial) — with their real values in the
+    response. The field names follow the "Parcel Reports" sheet of
+    Land Use Labs - Data Dictionary.xlsx (name, abbrvname, type,
+    nonresidential_type, family1_treatment, family1_minlotacres,
+    family1_frontsetbackft, and so on). Edit the EXAMPLES array near the
+    bottom to change any of it.
+  ▶ THE COORDINATES ARE VERIFIED. Each lat/lng has been point-in-polygon
+    tested against that geojson: it falls inside the district it claims, and
+    inside no other district or overlay. So each URL really would return the
+    response printed beneath it. Do NOT hand-edit a coordinate without
+    re-testing — the obvious choice, a polygon's average vertex, is often
+    outside the polygon entirely or inside a neighbouring district.
+  ▶ THE HOST IS A PLACEHOLDER: api.landuselabs.com/v1/zoning/point. Change
+    ENDPOINT below once the real one exists.
+  ▶ TIMING is in the TIMING object — one place for all four phases.
+  ▶ REDUCED MOTION: with prefers-reduced-motion the animation is skipped
+    entirely and the first example is shown complete and still.
+  ▶ BOTH WINDOWS ARE A FIXED HEIGHT, derived in CSS from a line count rather
+    than measured from the DOM, so they are the same size empty, mid-print and
+    full — the animation can't resize them. See --lulterm-res-lines.
+  ▶ NO SCROLLBARS. Lines that outrun a narrow column still scroll, but the
+    bar itself is hidden in all three engines — see .lul-term__body.
+  ▶ Classes are prefixed lul-term- / --lulterm- so this can share a page with
+    the hero and the building blocks.
+-->
+
+<section class="lul-term" aria-label="Example zoning API request and response">
+    <style>
+        .lul-term {
+            --lulterm-bg: #1c1a24; /* terminal body */
+            --lulterm-chrome: #2b2833; /* the title bar */
+            --lulterm-border: #3a3646;
+            --lulterm-text: #e0d8f0;
+            --lulterm-dim: #8b849c; /* punctuation, braces */
+            --lulterm-key: #b8a8d8; /* JSON keys */
+            --lulterm-str: #9fd3b8; /* string values */
+            --lulterm-num: #e08068; /* numbers + booleans */
+            --lulterm-url: #e0d8f0;
+            --lulterm-caret: #b8a8d8;
+
+            --lulterm-max-w: 720px; /* width of the CONTENT */
+            --lulterm-gutter: 0px; /* added to the cap, not taken out of it */
+            --lulterm-gap: 14px; /* between the two windows */
+            --lulterm-radius: 10px;
+            --lulterm-line-h: 1.65; /* unitless, so the height maths works */
+            --lulterm-pad-y: 14px;
+            --lulterm-pad-x: 16px;
+
+            /* Both windows are given a FIXED height derived from these line
+               counts — nothing is measured, so no font-loading or container-
+               query timing can get it wrong, and the boxes can't grow as the
+               response prints or shrink when a shorter example follows.
+               --lulterm-res-lines is overwritten by the script with the real
+               count of the tallest example; this value is the fallback if the
+               script never runs. */
+            --lulterm-req-lines: 1;
+            --lulterm-res-lines: 17;
+            /* Scales with the block so the lines fit without scrolling for as
+               long as possible; the floor is where legibility gives out. */
+            --lulterm-font-size: clamp(10px, 2.1cqw, 14px);
+
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+            -webkit-font-smoothing: antialiased;
+            width: 100%;
+            max-width: calc(var(--lulterm-max-w) + 2 * var(--lulterm-gutter));
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 var(--lulterm-gutter);
+            box-sizing: border-box;
+            /* so --lulterm-font-size's cqw unit resolves against this block */
+            container-type: inline-size;
+            container-name: lulterm;
+        }
+        .lul-term *,
+        .lul-term *::before,
+        .lul-term *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-term__win {
+            background: var(--lulterm-bg);
+            border: 1px solid var(--lulterm-border);
+            border-radius: var(--lulterm-radius);
+            overflow: hidden;
+        }
+        .lul-term__win + .lul-term__win {
+            margin-top: var(--lulterm-gap);
+        }
+
+        /* ── the bar across the top of each window ── */
+        .lul-term__bar {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--lulterm-chrome);
+            border-bottom: 1px solid var(--lulterm-border);
+            padding: 9px 12px;
+        }
+        .lul-term__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+            background: #4a4557;
+        }
+        .lul-term__label {
+            margin-left: 6px;
+            font-size: calc(var(--lulterm-font-size) * 0.85);
+            color: var(--lulterm-dim);
+            letter-spacing: 0.04em;
+        }
+
+        .lul-term__body {
+            padding: var(--lulterm-pad-y) var(--lulterm-pad-x);
+            font-size: var(--lulterm-font-size);
+            line-height: var(--lulterm-line-h);
+            color: var(--lulterm-text);
+            white-space: pre;
+            /* Long lines still scroll — the request URL and the wider JSON
+               values overflow a narrow Squarespace column — but the scrollbar
+               CHROME is hidden. Left visible it drew a bar across the bottom
+               of both windows, and on Windows/Linux, where bars take up
+               layout space rather than overlaying, it also ate a strip of the
+               terminal's height. Trackpad, touch and shift+wheel still
+               scroll normally. */
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* old Edge */
+        }
+        .lul-term__body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+        /* the request window is a single line and stays thin */
+        .lul-term__body--req {
+            white-space: nowrap;
+            height: calc(
+                var(--lulterm-req-lines) * var(--lulterm-font-size) * var(--lulterm-line-h) + 2 *
+                    var(--lulterm-pad-y)
+            );
+            overflow-y: hidden;
+        }
+        .lul-term__url {
+            color: var(--lulterm-url);
+        }
+        /* the HTTP method, coloured apart from the URL it precedes */
+        .lul-term__method {
+            color: var(--lulterm-num);
+            font-weight: 700;
+        }
+
+        /* Fixed at the tallest example's line count, so the window is the
+           same size empty, mid-print and full. */
+        .lul-term__body--res {
+            height: calc(
+                var(--lulterm-res-lines) * var(--lulterm-font-size) * var(--lulterm-line-h) + 2 *
+                    var(--lulterm-pad-y)
+            );
+            overflow-y: hidden;
+        }
+
+        .lul-term__caret {
+            display: inline-block;
+            width: 0.55em;
+            height: 1.05em;
+            background: var(--lulterm-caret);
+            vertical-align: -0.18em;
+            margin-left: 0.1em;
+        }
+        .lul-term.is-blinking .lul-term__caret {
+            animation: lul-term-blink 1s steps(1) infinite;
+        }
+        @keyframes lul-term-blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* JSON colours */
+        .lul-term__k {
+            color: var(--lulterm-key);
+        }
+        .lul-term__s {
+            color: var(--lulterm-str);
+        }
+        .lul-term__n {
+            color: var(--lulterm-num);
+        }
+        .lul-term__p {
+            color: var(--lulterm-dim);
+        }
+
+        .lul-term__line {
+            display: block;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .lul-term__caret {
+                display: none;
+            }
+            .lul-term.is-blinking .lul-term__caret {
+                animation: none;
+            }
+        }
+    </style>
+
+    <div class="lul-term__win">
+        <div class="lul-term__bar" aria-hidden="true">
+            <span class="lul-term__dot"></span>
+            <span class="lul-term__dot"></span>
+            <span class="lul-term__dot"></span>
+            <span class="lul-term__label">request</span>
+        </div>
+        <div class="lul-term__body lul-term__body--req">
+            <span class="lul-term__method" data-term-method></span
+            ><span class="lul-term__url" data-term-url></span
+            ><span class="lul-term__caret" data-term-caret></span>
+        </div>
+    </div>
+
+    <div class="lul-term__win">
+        <div class="lul-term__bar" aria-hidden="true">
+            <span class="lul-term__dot"></span>
+            <span class="lul-term__dot"></span>
+            <span class="lul-term__dot"></span>
+            <span class="lul-term__label">response</span>
+        </div>
+        <div class="lul-term__body lul-term__body--res" data-term-out></div>
+    </div>
+
+    <script>
+        (function () {
+            var root = document.currentScript.closest('.lul-term');
+            var methodEl = root.querySelector('[data-term-method]');
+            var urlEl = root.querySelector('[data-term-url]');
+            var outEl = root.querySelector('[data-term-out]');
+
+            var METHOD = 'GET ';
+            var SCHEME = 'https://';
+            var ENDPOINT = 'api.landuselabs.com/v1/zoning/point';
+
+            var TIMING = {
+                type: 16, // ms per character typed
+                erase: 9, // ms per character deleted (faster than typing)
+                afterErase: 340, // beat after the delete, before retyping
+                beforeResponse: 260, // pause after the URL, before output
+                line: 42, // ms per line of JSON
+                hold: 2600 // ms to sit on a finished example
+            };
+
+            /* The base never gets retyped — only the coordinates after
+               "?lat=" are deleted and typed back out each iteration. */
+            var PREFIX = SCHEME + ENDPOINT + '?lat=';
+
+            /* Real districts from lafayette_co_districts_sample.geojson.
+               `lat`/`lng` are each district's centroid; the values under
+               `json` are that district's actual attributes, named per the
+               Parcel Reports sheet of the data dictionary. */
+            var EXAMPLES = [
+                {
+                    lat: '40.01444',
+                    lng: '-105.08989',
+                    json: {
+                        jurisdiction: 'Lafayette, CO',
+                        abbrvname: 'R1',
+                        name: 'Medium Density Residential',
+                        type: 'residential',
+                        overlay: false,
+                        family1_treatment: 'allowed',
+                        family1_minlotacres: '0.1607',
+                        family1_frontsetbackft: '45/arterial; 35/collector; 25/local',
+                        family1_sidesetbackft: '5',
+                        family1_rearsetbackft: '25',
+                        family1_maxheightft: '27; 35/public hearing',
+                        family1_minparking: '2',
+                        family2_treatment: 'prohibited',
+                        accessory_treatment: 'allowed',
+                        updated: '2026-06-22'
+                    }
+                },
+                {
+                    lat: '39.98550',
+                    lng: '-105.09455',
+                    json: {
+                        jurisdiction: 'Lafayette, CO',
+                        abbrvname: 'C1',
+                        name: 'Regional Business',
+                        type: 'mixed',
+                        nonresidential_type: 'retail',
+                        overlay: false,
+                        family1_treatment: 'hearing',
+                        family1_minlotacres: '0.2296',
+                        family1_frontsetbackft: '20',
+                        family1_maxheightft: '35',
+                        family1_minparking: '2',
+                        family2_treatment: 'allowed',
+                        family3_treatment: 'allowed',
+                        accessory_treatment: 'allowed',
+                        updated: '2026-06-22'
+                    }
+                },
+                {
+                    lat: '39.98276',
+                    lng: '-105.06185',
+                    json: {
+                        jurisdiction: 'Lafayette, CO',
+                        abbrvname: 'M1',
+                        name: 'Industrial',
+                        type: 'nonresidential',
+                        nonresidential_type: 'industrial',
+                        overlay: false,
+                        family1_treatment: 'prohibited',
+                        family2_treatment: 'prohibited',
+                        family3_treatment: 'prohibited',
+                        family4_treatment: 'prohibited',
+                        accessory_treatment: 'hearing',
+                        affordable_treatment: 'nomention',
+                        updated: '2026-06-22'
+                    }
+                }
+            ];
+
+            function esc(t) {
+                return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+            function tailFor(ex) {
+                return ex.lat + '&lng=' + ex.lng;
+            }
+            function urlFor(ex) {
+                return PREFIX + tailFor(ex);
+            }
+            /* one <span> per line, so the response can be revealed a line at
+               a time without re-parsing the JSON each tick */
+            function linesFor(ex) {
+                var keys = Object.keys(ex.json);
+                var out = ['<span class="lul-term__line"><span class="lul-term__p">{</span></span>'];
+                keys.forEach(function (k, i) {
+                    var v = ex.json[k];
+                    var comma = i < keys.length - 1 ? '<span class="lul-term__p">,</span>' : '';
+                    var val =
+                        typeof v === 'string'
+                            ? '<span class="lul-term__s">"' + esc(v) + '"</span>'
+                            : '<span class="lul-term__n">' + esc(v) + '</span>';
+                    out.push(
+                        '<span class="lul-term__line">  <span class="lul-term__k">"' +
+                            esc(k) +
+                            '"</span><span class="lul-term__p">: </span>' +
+                            val +
+                            comma +
+                            '</span>'
+                    );
+                });
+                out.push('<span class="lul-term__line"><span class="lul-term__p">}</span></span>');
+                return out;
+            }
+
+            /* Hand CSS the tallest example's LINE COUNT and let it work out
+               the height from the font size, line height and padding it is
+               already using. Counting beats measuring here: an offsetHeight
+               read can land before the monospace font or the cqw-based font
+               size has settled, come out short, and leave the window growing
+               to fit the response and shrinking again on the next example. */
+            (function reserve() {
+                var tallest = 0;
+                EXAMPLES.forEach(function (ex) {
+                    tallest = Math.max(tallest, linesFor(ex).length);
+                });
+                root.style.setProperty('--lulterm-res-lines', tallest);
+            })();
+
+            var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduced) {
+                methodEl.textContent = METHOD;
+                urlEl.textContent = urlFor(EXAMPLES[0]);
+                outEl.innerHTML = linesFor(EXAMPLES[0]).join('');
+                return;
+            }
+
+            var i = 0;
+            var timers = [];
+            function after(ms, fn) {
+                timers.push(setTimeout(fn, ms));
+            }
+            function clearAll() {
+                timers.forEach(clearTimeout);
+                timers = [];
+            }
+
+            /* Types the method, then the URL. Used only for the very first
+               run; the method is its own element purely so it can be coloured
+               separately, and is typed like everything else. */
+            function typeAll(full, done) {
+                var m = 0;
+                (function method() {
+                    methodEl.textContent = METHOD.slice(0, ++m);
+                    if (m < METHOD.length) return after(TIMING.type, method);
+                    var c = 0;
+                    (function step() {
+                        urlEl.textContent = full.slice(0, ++c);
+                        if (c < full.length) return after(TIMING.type, step);
+                        done();
+                    })();
+                })();
+            }
+            /* backspaces just the coordinates, stopping at the base */
+            function eraseTail(done) {
+                (function step() {
+                    var cur = urlEl.textContent;
+                    if (cur.length <= PREFIX.length) return done();
+                    urlEl.textContent = cur.slice(0, -1);
+                    after(TIMING.erase, step);
+                })();
+            }
+            /* types the new coordinates back on after the base */
+            function typeTail(tail, done) {
+                var c = 0;
+                (function step() {
+                    urlEl.textContent = PREFIX + tail.slice(0, ++c);
+                    if (c < tail.length) return after(TIMING.type, step);
+                    done();
+                })();
+            }
+
+            function respond(lines) {
+                root.classList.add('is-blinking');
+                after(TIMING.beforeResponse, function printLine() {
+                    var n = outEl.childElementCount;
+                    if (n < lines.length) {
+                        outEl.insertAdjacentHTML('beforeend', lines[n]);
+                        return after(TIMING.line, printLine);
+                    }
+                    after(TIMING.hold, function () {
+                        i = (i + 1) % EXAMPLES.length;
+                        run();
+                    });
+                });
+            }
+
+            function run() {
+                clearAll();
+                var ex = EXAMPLES[i];
+                var lines = linesFor(ex);
+                outEl.innerHTML = '';
+                root.classList.remove('is-blinking');
+
+                /* Whether the base is already on screen decides which path we
+                   take. Checking the DOM rather than a "first run" flag means
+                   this self-corrects if the observer restarts us mid-type. */
+                if (urlEl.textContent.indexOf(PREFIX) !== 0) {
+                    methodEl.textContent = '';
+                    urlEl.textContent = '';
+                    typeAll(urlFor(ex), function () {
+                        respond(lines);
+                    });
+                } else {
+                    eraseTail(function () {
+                        after(TIMING.afterErase, function () {
+                            typeTail(tailFor(ex), function () {
+                                respond(lines);
+                            });
+                        });
+                    });
+                }
+            }
+
+            /* don't animate off-screen or in a background tab */
+            if ('IntersectionObserver' in window) {
+                new IntersectionObserver(
+                    function (entries) {
+                        entries.forEach(function (e) {
+                            if (e.isIntersecting) run();
+                            else clearAll();
+                        });
+                    },
+                    { threshold: 0.2 }
+                ).observe(root);
+            } else {
+                run();
+            }
+        })();
+    </script>
+</section>

@@ -8,12 +8,10 @@
   No section title/description here — the page's own heading sits above this
   block. Each row is self-contained.
 
-  ▶ LAYOUT: title + body + button on the LEFT, image on the RIGHT. Below the
+  ▶ LAYOUT: title + body on the LEFT, image on the RIGHT. Below the
     @container breakpoint the two columns stack (text first, image below).
   ▶ MEDIA SIDE: this is the un-flipped row. Districts carries --flip so the
     three rows alternate down the page.
-  ▶ BUTTON: our standard primary — filled purple, border matching the fill.
-    Same colours as the primary in BUTTONS/BUTTONS_PRIMARY_SECONDARY.html.
   ▶ COPY: verbatim from the published /data-difference page as of
     2026-09-03, MINUS its closing CTA paragraph. Note this no longer
     matches data_difference_tabs.html — that block was written from an
@@ -28,10 +26,6 @@
         .lul-bb {
             --lulbb-header: #393348;
             --lulbb-text: #333333;
-            --lulbb-primary: #594496; /* button fill + border */
-            --lulbb-primary-hover: #3f2e70;
-            --lulbb-btn-label: #ffffff;
-            --lulbb-btn-pad: 10px 26px;
 
             --lulbb-gap: 40px; /* space between the text and the image */
 
@@ -39,7 +33,7 @@
                It does NOT shrink — the text column absorbs every change in
                block width, so the image stays exactly this size until the row
                stacks. This is a width, not a cap. */
-            --lulbb-media-w: 550px;
+            --lulbb-media-w: 490px;
 
             /* ── Max-width knobs ──
                  --lulbb-max-w     the whole block, centered in its column.
@@ -63,9 +57,13 @@
                breakpoint would make the block stack everywhere.
                --lulbb-stacked-max-w can't do that — it applies after the
                decision to stack. */
-            --lulbb-max-w: 1500px;
+            --lulbb-max-w: 1250px;
+            /* Breathing room at the left and right edges. Only visible once the
+               browser is too narrow for --lulbb-max-w; above that it sits outside
+               the capped content. */
+            --lulbb-gutter: 40px;
             --lulbb-text-max: none;
-            --lulbb-media-max: 550px;
+            --lulbb-media-max: 490px;
             --lulbb-stacked-max-w: none;
             /* Every image in the block is forced to this width:height ratio and
                object-fit: cover'd into it, so the three building-block rows
@@ -98,11 +96,18 @@
             -moz-osx-font-smoothing: grayscale;
             color: var(--lulbb-text);
             width: 100%;
-            max-width: var(--lulbb-max-w);
+            /* The gutter is ADDED to the cap rather than eaten out of it, so
+               --lulbb-max-w stays the width of the CONTENT. Given room, the
+               block still measures --lulbb-max-w across and the gutter sits
+               outside it; once the browser is narrower than that, the gutter
+               is what keeps the content off the edges. Plain
+               `max-width: var(--lulbb-max-w)` plus padding would shrink the
+               block by 2x the gutter at every size. */
+            max-width: calc(var(--lulbb-max-w) + 2 * var(--lulbb-gutter));
             margin-left: auto;
             margin-right: auto;
             box-sizing: border-box;
-            padding: 32px 0;
+            padding: 32px var(--lulbb-gutter);
             container-type: inline-size;
             container-name: lulbb;
         }
@@ -173,49 +178,6 @@
         }
         .lul-bb__body:last-of-type {
             margin-bottom: 32px;
-        }
-
-        /* ── Primary button ──
-           Filled purple, border matching the fill so it reads as a solid
-           block. Same shell and colours as the primary in
-           BUTTONS/BUTTONS_PRIMARY_SECONDARY.html. */
-        .lul-bb__btn {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-            font-size: 1rem;
-            padding: var(--lulbb-btn-pad);
-            border: 1px solid var(--lulbb-primary);
-            border-radius: 0;
-            background: var(--lulbb-primary);
-            color: var(--lulbb-btn-label);
-            text-decoration: none;
-            letter-spacing: 0.02em;
-            cursor: pointer;
-            transition:
-                background 0.25s ease,
-                border-color 0.25s ease,
-                color 0.25s ease;
-        }
-        .lul-bb__btn:hover {
-            background: var(--lulbb-primary-hover);
-            border-color: var(--lulbb-primary-hover);
-        }
-        /* Squarespace link-color override safety. The label colour is pinned
-           here too: a theme rule like `a:hover { color: … }` is specificity
-           0,1,1 and would otherwise beat .lul-bb__btn's 0,1,0 and turn the
-           white label dark on hover. */
-        .lul-bb a,
-        .lul-bb a:visited,
-        .lul-bb a:hover {
-            text-decoration: none;
-        }
-        .lul-bb a.lul-bb__btn,
-        .lul-bb a.lul-bb__btn:visited,
-        .lul-bb a.lul-bb__btn:hover {
-            color: var(--lulbb-btn-label);
         }
 
         /* ── RESPONSIVE ──

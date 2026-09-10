@@ -1,0 +1,179 @@
+<!--
+  SLOP STATS — MEDIA ONLY (Squarespace Code Block).
+
+  The image pair lifted out of card 1 of slop_stats.html: the Zoneomics map,
+  a "vs", and the National Zoning Atlas map with the zoning key hung off its
+  bottom-left. No headline, no copy — drop it in wherever you want just the
+  visual, and put the text in Squarespace's own blocks beside or above it.
+
+  ▶ SIDE BY SIDE, THEN VERTICAL AT THE SAME SIZE. Above 600px of block width
+    the two sit side by side. Below that they'd have to keep shrinking to fit,
+    so instead the pair stacks and each image holds --lulvsm-stack-w — it goes
+    vertical rather than getting smaller. Below about 370px of column the
+    images finally do scale down, since there's no room left for them.
+  ▶ Both images are forced to --lulvsm-ratio and object-fit: cover'd into it,
+    so they line up exactly. Sources are 0.785 (ga_zoneomics) and 0.762
+    (ga_nza), so at 0.77 each loses a sliver off its left and right.
+  ▶ The key is positioned against the RIGHT image and is sized in percentages
+    of it, so it scales with the pair rather than staying a fixed size.
+  ▶ Classes are prefixed lul-vsm- / --lulvsm- so this can sit on the same page
+    as slop_stats.html and the building blocks without colliding.
+-->
+
+<section class="lul-vsm" aria-label="Zoneomics compared with the National Zoning Atlas">
+    <style>
+        .lul-vsm {
+            /* Width of the pair. The gutter is ADDED to the cap rather than
+               taken out of it, so given room the images still measure
+               --lulvsm-max-w across; the gutter only bites once the column is
+               narrower than that. */
+            --lulvsm-max-w: 600px;
+            --lulvsm-gutter: 0px;
+
+            /* Shape both images are cropped to, and the space between them.
+               The gap is a PERCENTAGE so it shrinks with everything else. */
+            --lulvsm-ratio: 0.77;
+            --lulvsm-gap: 3.4%;
+
+            /* The "vs" label. Sized in cqw so it tracks the block's width,
+               with a floor and ceiling. */
+            --lulvsm-label: rgba(224, 216, 240, 0.55);
+            --lulvsm-label-size: clamp(9px, 2.2cqw, 13px);
+
+            /* The key over the right-hand image — all three are shares of
+               that image's own box, so they scale with it. --lulvsm-key-y is
+               measured UP from the image's bottom edge; go negative to hang
+               the key below it. */
+            --lulvsm-key-w: 66.7%;
+            --lulvsm-key-x: -16.9%;
+            --lulvsm-key-y: 0%;
+
+            /* ── Stacking ──
+               Below the breakpoint the pair goes vertical INSTEAD of shrinking
+               further, and each image holds --lulvsm-stack-w, so it stays the
+               size it was side by side rather than getting smaller. The
+               breakpoint number itself lives on the @container line below and
+               nowhere else — a container query condition can't read var().
+               --lulvsm-key-room is padding either side of the stacked image so
+               the key's overhang always has somewhere to go; keep it above
+               |--lulvsm-key-x| x --lulvsm-stack-w (16.9% of 270px = 46px). */
+            --lulvsm-stack-w: 270px;
+            --lulvsm-stack-gap: 20px;
+            --lulvsm-key-room: 50px;
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            max-width: calc(var(--lulvsm-max-w) + 2 * var(--lulvsm-gutter));
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 var(--lulvsm-gutter);
+            box-sizing: border-box;
+            /* so --lulvsm-label-size's cqw units resolve against this block */
+            container-type: inline-size;
+            container-name: lulvsm;
+        }
+        .lul-vsm *,
+        .lul-vsm *::before,
+        .lul-vsm *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-vsm__row {
+            display: flex;
+            align-items: center;
+            gap: var(--lulvsm-gap);
+            width: 100%;
+        }
+        .lul-vsm__pane {
+            /* holds the key, and must NOT clip — the frame inside crops */
+            position: relative;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        .lul-vsm__frame {
+            aspect-ratio: var(--lulvsm-ratio);
+            overflow: hidden;
+        }
+        .lul-vsm__frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .lul-vsm__vs {
+            flex: 0 0 auto;
+            font-size: var(--lulvsm-label-size);
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--lulvsm-label);
+            white-space: nowrap;
+        }
+        .lul-vsm__key {
+            position: absolute;
+            width: var(--lulvsm-key-w);
+            left: var(--lulvsm-key-x);
+            bottom: var(--lulvsm-key-y);
+            z-index: 2;
+        }
+        .lul-vsm__key img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ── VERTICAL ──
+           Below 600px of block width the side-by-side panes would drop under
+           --lulvsm-stack-w, so the pair stacks instead and each image keeps
+           that width. Edit the number here; it isn't a var. */
+        @container lulvsm (max-width: 499px) {
+            .lul-vsm__row {
+                flex-direction: column;
+                gap: var(--lulvsm-stack-gap);
+                /* room for the key's overhang, both sides so it stays centred */
+                padding-left: var(--lulvsm-key-room);
+                padding-right: var(--lulvsm-key-room);
+            }
+            .lul-vsm__pane {
+                flex: 0 0 auto;
+                width: var(--lulvsm-stack-w);
+                max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+
+    <div class="lul-vsm__row">
+        <div class="lul-vsm__pane">
+            <div class="lul-vsm__frame">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/74ff1951-90d0-440d-89ca-68ba5c7b01d6/ga_zoneomics.png?content-type=image%2Fpng"
+                    alt="Georgia zoning as published by Zoneomics"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+
+        <span class="lul-vsm__vs">vs</span>
+
+        <div class="lul-vsm__pane">
+            <div class="lul-vsm__frame">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/a5bb28a4-a6ad-44a9-9534-d77edb08ccf2/ga_nza.png?content-type=image%2Fpng"
+                    alt="Georgia zoning as mapped by the National Zoning Atlas"
+                    loading="lazy"
+                />
+            </div>
+            <div class="lul-vsm__key">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9c50f3bf-63e1-4c24-8ee6-0e715baa963a/zoning_type.png?content-type=image%2Fpng"
+                    alt="Key: primarily residential, mixed with residential, nonresidential, unzoned"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+    </div>
+</section>

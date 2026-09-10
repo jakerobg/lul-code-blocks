@@ -1,0 +1,202 @@
+<!--
+  API USE-CASE CARDS — four icon cards, 2 x 2 (Squarespace Code Block).
+
+  The API-page counterpart to product_pages/USE_CASE_CARDS/. Same card system
+  as the product pages and api_specs_cards.html:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  Informational, not links — <article> elements, no hover lift.
+
+  ▶ 2 x 2, NOT 3 ACROSS. The product use-case blocks are built on thirds
+    because they carry three or five cards; four on a 3-wide grid leaves a
+    lone card stranded on the second row. Halves give two even rows, and at
+    a typical block width the cards come out wider than the 3-across ones,
+    which suits the longer copy here.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    2 across, stacked under 560px.
+  ▶ PREFIXED lul-apiuc- rather than reusing .lul-uc, which every product
+    use-case and spec block shares. Values are the same; the separate
+    namespace just means nothing here restyles a product card sitting on the
+    same page, and vice versa.
+  ▶ NO @supports FALLBACK — container queries have been Baseline since 2023.
+    The older use-case cards still carry the duplicated media-query copy.
+  ▶ ICONS are four distinct 24x24 outline glyphs, none reused anywhere else
+    on the site: a funnel, a plug, a checked clipboard and a chip.
+-->
+<section class="lul-apiuc" aria-label="API use cases">
+    <style>
+        .lul-apiuc {
+            --lulapiuc-ink: #393348;
+            --lulapiuc-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 30px 0;
+            container-type: inline-size;
+            container-name: lulapiuc;
+        }
+        .lul-apiuc *,
+        .lul-apiuc *::before,
+        .lul-apiuc *::after {
+            box-sizing: border-box;
+        }
+        .lul-apiuc__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lulapiuc-gap);
+        }
+        .lul-apiuc__card {
+            flex: 1 1 calc(50% - (var(--lulapiuc-gap) / 2));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        .lul-apiuc__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lulapiuc-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-apiuc__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-apiuc__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lulapiuc-ink);
+            margin: 0 0 12px;
+        }
+        .lul-apiuc__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 560px  →  2 across
+             ≤ 560px  →  stacked                                      */
+        @container lulapiuc (max-width: 560px) {
+            .lul-apiuc {
+                --lulapiuc-gap: 16px;
+            }
+            .lul-apiuc__card {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+    <div class="lul-apiuc__grid">
+        <!-- Site Selection at Scale — a funnel, for screening many down to few -->
+        <article class="lul-apiuc__card">
+            <span class="lul-apiuc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M3.5 4.5h17l-6.6 7.7v6.4l-3.8 2v-8.4L3.5 4.5Z" />
+                </svg>
+            </span>
+            <h4 class="lul-apiuc__title">Site Selection at Scale</h4>
+            <p class="lul-apiuc__body">
+                Screen thousands of candidate addresses against zoning constraints without leaving your pipeline.
+            </p>
+        </article>
+
+        <!-- Product Integration — a plug, for dropping into an existing system -->
+        <article class="lul-apiuc__card">
+            <span class="lul-apiuc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M9.5 2.5v5" />
+                    <path d="M14.5 2.5v5" />
+                    <path d="M6.5 7.5h11v3a5.5 5.5 0 0 1-11 0v-3Z" />
+                    <path d="M12 16v2.5a3 3 0 0 0 3 3h2.5" />
+                </svg>
+            </span>
+            <h4 class="lul-apiuc__title">Product Integration</h4>
+            <p class="lul-apiuc__body">Surface zoning rules inside your own internal platform or dashboard.</p>
+        </article>
+
+        <!-- Underwriting and Due Diligence — a clipboard, checked off -->
+        <article class="lul-apiuc__card">
+            <span class="lul-apiuc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M9 3.5h6v3H9z" />
+                    <path d="M15 5h2.5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1H9" />
+                    <path d="m9 13.5 2 2 4-4.5" />
+                </svg>
+            </span>
+            <h4 class="lul-apiuc__title">Underwriting and Due Diligence</h4>
+            <p class="lul-apiuc__body">
+                Assign governing zoning regulations to every property in your book, at the moment you need them.
+            </p>
+        </article>
+
+        <!-- Automated Feasibility — a chip, for rules feeding a model -->
+        <article class="lul-apiuc__card">
+            <span class="lul-apiuc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <rect x="6" y="6" width="12" height="12" rx="1.5" />
+                    <rect x="9.5" y="9.5" width="5" height="5" rx="0.5" />
+                    <path d="M9.5 2.5V6" />
+                    <path d="M14.5 2.5V6" />
+                    <path d="M9.5 18v3.5" />
+                    <path d="M14.5 18v3.5" />
+                    <path d="M2.5 9.5H6" />
+                    <path d="M2.5 14.5H6" />
+                    <path d="M18 9.5h3.5" />
+                    <path d="M18 14.5h3.5" />
+                </svg>
+            </span>
+            <h4 class="lul-apiuc__title">Automated Feasibility</h4>
+            <p class="lul-apiuc__body">
+                Feed permitted uses, height limits, and lot requirements straight into your development models.
+            </p>
+        </article>
+    </div>
+</section>

@@ -1,0 +1,152 @@
+<!--
+  SLOP STATS — MAP MEDIA ONLY (Squarespace Code Block).
+
+  The media lifted out of card 2 of slop_stats.html: the Los Angeles zoning
+  map with the zoning key hung off its bottom-left. No headline, no copy —
+  drop it in wherever you want just the visual and put the text in
+  Squarespace's own blocks around it.
+
+  The sibling of slop_stats_media.html (the Zoneomics-vs-NZA pair) and behaves
+  the same way, with one difference forced by the content:
+
+  ▶ HOLDS ITS SIZE, THEN SCALES. The map sits at --lulmap-w and stays there
+    while the column has room, rather than stretching to fill the block or
+    shrinking early.
+  ▶ KEY MOVES TO THE BOTTOM on narrow columns. Overlapping the map costs
+    2 x --lulmap-key-room of width, which is what dragged the map small; below
+    the breakpoint the key drops underneath instead and the map gets that
+    room back, so it keeps --lulmap-w down to a column of that width. That
+    switch is this block's equivalent of the pair going vertical in
+    slop_stats_media.html.
+  ▶ The key is positioned in PERCENTAGES of the map, so it scales with it
+    rather than staying a fixed size. --lulmap-key-room reserves space either
+    side for its overhang so it can never be clipped at the block's edge.
+  ▶ The block's max width is DERIVED from the map plus that room, so
+    --lulmap-w is the only size knob you normally touch.
+  ▶ Classes are prefixed lul-map- / --lulmap- so this can sit on the same page
+    as slop_stats.html, slop_stats_media.html and the building blocks.
+-->
+
+<section class="lul-map" aria-label="Los Angeles zoning districts by type">
+    <style>
+        .lul-map {
+            /* The map's own width — the one knob you normally touch. */
+            --lulmap-w: 350px;
+
+            /* Space kept either side of the map for the key's overhang, so it
+               is never clipped at the block's edge. Keep it above
+               |--lulmap-key-x| x --lulmap-w (16.9% of 350px = 60px). */
+            --lulmap-key-room: 64px;
+
+            /* Breathing room at the very edges. Like the building blocks, the
+               gutter is ADDED to the cap rather than taken out of it, so the
+               map still reaches --lulmap-w when there's room. */
+            --lulmap-gutter: 0px;
+
+            /* The key over the map. All three are shares of the map's own box,
+               so they scale with it. --lulmap-key-y is measured UP from the
+               map's bottom edge; go negative to hang the key below it. */
+            --lulmap-key-w: 66.7%;
+            --lulmap-key-x: -16.9%;
+            --lulmap-key-y: 5%;
+
+            /* ── Narrow columns ──
+               The key's overhang costs 2 x --lulmap-key-room of width, which
+               is what was making the map shrink so hard. Below the breakpoint
+               the key stops overlapping and drops UNDER the map instead; that
+               room is handed back, so the map keeps --lulmap-w all the way
+               down to a column of that width. The breakpoint number lives on
+               the @container line below and nowhere else — a container query
+               condition can't read var(). */
+            --lulmap-key-stack-w: 240px;
+            --lulmap-key-gap: 12px;
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            /* derived: map + its key room + the gutter */
+            max-width: calc(
+                var(--lulmap-w) + 2 * var(--lulmap-key-room) + 2 * var(--lulmap-gutter)
+            );
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 var(--lulmap-gutter);
+            box-sizing: border-box;
+            container-type: inline-size;
+            container-name: lulmap;
+        }
+        .lul-map *,
+        .lul-map *::before,
+        .lul-map *::after {
+            box-sizing: border-box;
+        }
+
+        /* holds the key's overhang on both sides, so the map stays centred */
+        .lul-map__wrap {
+            padding-left: var(--lulmap-key-room);
+            padding-right: var(--lulmap-key-room);
+        }
+        .lul-map__figure {
+            /* the key is offset against this */
+            position: relative;
+            width: var(--lulmap-w);
+            /* only gives way once the column can't fit --lulmap-w */
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .lul-map__figure > img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .lul-map__key {
+            position: absolute;
+            width: var(--lulmap-key-w);
+            left: var(--lulmap-key-x);
+            bottom: var(--lulmap-key-y);
+            z-index: 2;
+        }
+        .lul-map__key img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ── KEY UNDER THE MAP ──
+           Below 478px the map would have to start shrinking to leave room for
+           the key's overhang. Instead the key moves below it and the room is
+           returned to the map, so it holds --lulmap-w down to a column that
+           narrow. Edit the number here; it isn't a var. */
+        @container lulmap (max-width: 477px) {
+            .lul-map__wrap {
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .lul-map__key {
+                position: static;
+                width: var(--lulmap-key-stack-w);
+                max-width: 100%;
+                margin: var(--lulmap-key-gap) auto 0;
+            }
+        }
+    </style>
+
+    <div class="lul-map__wrap">
+        <div class="lul-map__figure">
+            <img
+                src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/b7b8a69f-a4b6-40e5-a0aa-8b8164c11cb2/Screenshot+2026-04-06+at+10.21.30.png?content-type=image%2Fpng"
+                alt="Map of Los Angeles zoning districts by type"
+                loading="lazy"
+            />
+            <div class="lul-map__key">
+                <img
+                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9c50f3bf-63e1-4c24-8ee6-0e715baa963a/zoning_type.png?content-type=image%2Fpng"
+                    alt="Key: primarily residential, mixed with residential, nonresidential, unzoned"
+                    loading="lazy"
+                />
+            </div>
+        </div>
+    </div>
+</section>

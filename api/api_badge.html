@@ -1,0 +1,41 @@
+<!--
+  API — "RESTful API" BADGE (Squarespace Code Block).
+
+  Same shell as the badges in product_pages/badges/ — 11px, 700, 0.12em
+  tracking, uppercase, pill-shaped, pale fill with a dark text of the same
+  hue, and a slightly deeper fill on hover.
+
+  ▶ COLOUR: dark orange. The four existing badges take lavender (Document),
+    blue (GIS Layer), tan (Raster Layer) and green (Data Summary). This is
+    warmer and considerably darker than the Raster tan, so the two read apart
+    even side by side.
+  ▶ The class is prefixed lul-apibadge- rather than reusing .lul-badge, so
+    dropping this on a page beside a product badge can't restyle it.
+-->
+
+<style>
+    .lul-apibadge-wrap {
+        margin-bottom: 20px;
+    }
+    .lul-apibadge {
+        display: inline-block;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        background: #f0d5bd;
+        color: #7c3a0e;
+        padding: 2px 18px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+    .lul-apibadge:hover {
+        background: #e6c5a6;
+    }
+</style>
+
+<div class="lul-apibadge-wrap">
+    <a href="#our-products" class="lul-apibadge">RESTful API</a>
+</div>

@@ -1,0 +1,208 @@
+<!--
+  API — CENTRED HERO (Squarespace Code Block).
+
+  A centred variant of api_hero.html for a section further down the page.
+  Type is lifted straight from that file so the two match exactly:
+    title     5rem / 600 / line-height 1.1 / letter-spacing -0.02em
+    subtitle  1.3rem / line-height 1.55 / 24px above / 46ch measure
+    ">"       house primary purple, mono, 700, 0.28em to its right
+  Only the alignment, the width cap and the copy differ.
+
+  ▶ NO PADDING — the block sits flush, and spacing is left to the Squarespace
+    section around it, same as api_hero.html.
+  ▶ CENTRED, capped at 1000px. The subtitle keeps the hero's 46ch measure and
+    is centred inside that with auto margins, so it doesn't run the full
+    width while the title does.
+  ▶ THE TITLE TYPES ITSELF, but not the way the top hero does. That one
+    appends characters to a left-aligned line, which grows rightward. A
+    CENTRED line re-centres on every keystroke and slides sideways as it
+    types, so here every character is laid out up front and only its
+    visibility flips. The line's width, wrapping and centring are settled
+    before the first character appears, and nothing moves.
+  ▶ THE SUBTITLE WAITS for the title to finish, then fades in. It's held at
+    opacity 0 rather than hidden, so it occupies its space from the start and
+    the block never changes height. Timing is --lulapihc-sub-fade.
+  ▶ It types ONCE, when scrolled into view, and there's no caret — a caret
+    would have to sit between the shown and hidden characters and would push
+    the line as it travelled, reintroducing the shift the reveal avoids.
+  ▶ ONE ">" ONLY, no closing one. It's a prompt, and prompts are one-sided;
+    "> text <" isn't valid syntax anywhere. The matched pairs are <tag> and
+    the {braces} the top hero already uses.
+  ▶ "Zoning API" is picked out in the house purple. The splitter walks the
+    heading's child NODES rather than its textContent, so that span survives
+    being broken into characters — reading textContent would flatten it and
+    the line would come out all one colour.
+  ▶ The ">" is decoration, so it's aria-hidden — and because the title is
+    split into per-character spans, the heading carries its text in an
+    aria-label instead, or a screen reader would read it letter by letter.
+  ▶ Classes are prefixed lul-apihc- so this can share a page with
+    api_hero.html without either restyling the other.
+-->
+
+<section class="lul-apihc">
+    <style>
+        .lul-apihc {
+            --lulapihc-header: #393348;
+            --lulapihc-muted: #5c5c5c;
+            --lulapihc-prompt: #594496; /* the ">", house primary purple */
+            --lulapihc-accent: #594496; /* "Zoning API" inside the headline */
+
+            --lulapihc-max-w: 1200px;
+
+            /* same values as api_hero.html */
+            --lulapihc-title-size: 3rem;
+            --lulapihc-sub-size: 1.2rem;
+            --lulapihc-sub-max: 70ch;
+            --lulapihc-sub-fade: 420ms; /* subtitle fade, after the title lands */
+
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: var(--lulapihc-header);
+            width: 100%;
+            max-width: var(--lulapihc-max-w);
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 30px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .lul-apihc *,
+        .lul-apihc *::before,
+        .lul-apihc *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-apihc__headline {
+            font-weight: 600;
+            font-size: var(--lulapihc-title-size);
+            line-height: 1;
+            letter-spacing: -0.02em;
+            margin: 0;
+            color: var(--lulapihc-header);
+        }
+        /* the ">" — a design device, sized and spaced off the title */
+        .lul-apihc__prompt {
+            color: var(--lulapihc-prompt);
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+            font-weight: 700;
+            margin-right: 0.28em;
+        }
+
+        /* One span per character of the title. They all exist from the
+           start — only their visibility flips — so the line's width, its
+           wrapping and its centring are final before a single character
+           shows. Typing into a centred line the usual way makes it slide
+           sideways on every keystroke as the line re-centres. */
+        .lul-apihc__char {
+            visibility: hidden;
+        }
+        .lul-apihc__char.is-on {
+            visibility: visible;
+        }
+        /* the product name, picked out in the house purple */
+        .lul-apihc__accent {
+            color: var(--lulapihc-accent);
+        }
+
+        .lul-apihc__subtitle {
+            font-size: var(--lulapihc-sub-size);
+            line-height: 1.5;
+            color: var(--lulapihc-muted);
+            /* auto margins centre the measure inside the 1000px */
+            margin: 12px auto 0;
+            max-width: var(--lulapihc-sub-max);
+            /* Held back until the title has finished typing. Opacity, not
+               display or visibility, so it still takes up its space from the
+               start — the block is its final height before anything appears
+               and nothing below it moves when it arrives. */
+            opacity: 0;
+            transition: opacity var(--lulapihc-sub-fade) ease;
+        }
+        .lul-apihc.is-done .lul-apihc__subtitle {
+            opacity: 1;
+        }
+    </style>
+
+    <h2 class="lul-apihc__headline" aria-label="Integrate our Zoning API into your tech stack.">
+        <span class="lul-apihc__prompt" aria-hidden="true">&gt;</span
+        ><span data-hc-title aria-hidden="true"
+            >Integrate our <span class="lul-apihc__accent">Zoning API</span> into your tech stack.</span
+        >
+    </h2>
+
+    <p class="lul-apihc__subtitle">
+        Contact us, and we’ll work with you to customize live responses for your own addresses.
+    </p>
+
+    <script>
+        (function () {
+            var root = document.currentScript.closest(".lul-apihc");
+            var el = root.querySelector("[data-hc-title]");
+
+            var SPEED = 14; // ms per character
+
+            /* Split into one span per character, all laid out immediately.
+               Revealing them in turn types the line without ever changing its
+               width, so a centred heading doesn't slide as it fills in. */
+            var chars = [];
+            var nodes = Array.prototype.slice.call(el.childNodes);
+            el.textContent = "";
+            nodes.forEach(function (node) {
+                /* Carry the accent onto each character it covers. Reading
+                   el.textContent instead would flatten the span away and the
+                   whole line would come out one colour. */
+                var accent = node.nodeType === 1 && node.className.indexOf("lul-apihc__accent") !== -1;
+                var t = node.textContent;
+                for (var n = 0; n < t.length; n++) {
+                    var span = document.createElement("span");
+                    span.className = "lul-apihc__char" + (accent ? " lul-apihc__accent" : "");
+                    span.textContent = t.charAt(n);
+                    el.appendChild(span);
+                    chars.push(span);
+                }
+            });
+
+            function reveal() {
+                root.classList.add("is-done");
+            }
+
+            function showAll() {
+                chars.forEach(function (c) {
+                    c.classList.add("is-on");
+                });
+                reveal();
+            }
+
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                return showAll();
+            }
+
+            /* only start once it's actually on screen */
+            function play() {
+                var i = 0;
+                (function step() {
+                    chars[i].classList.add("is-on");
+                    if (++i < chars.length) return setTimeout(step, SPEED);
+                    reveal(); // last character is down — bring in the subtitle
+                })();
+            }
+
+            if ("IntersectionObserver" in window) {
+                var io = new IntersectionObserver(
+                    function (entries) {
+                        entries.forEach(function (e) {
+                            if (!e.isIntersecting) return;
+                            io.disconnect(); // types once, not on every scroll past
+                            play();
+                        });
+                    },
+                    { threshold: 0.35 },
+                );
+                io.observe(root);
+            } else {
+                play();
+            }
+        })();
+    </script>
+</section>

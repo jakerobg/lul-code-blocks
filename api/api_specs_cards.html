@@ -1,0 +1,177 @@
+<!--
+  API SPECS CARDS — three icon cards, 3 across (Squarespace Code Block).
+
+  The API-page version of product_pages/PRODUCT_SPECS/product_specs_cards_*.
+  Identical card system, so it sits beside them unchanged:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  Informational, not links — <article> elements, no hover lift.
+
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, stacked under 640px.
+  ▶ PREFIXED lul-apispec- rather than reusing .lul-uc, which the product
+    specs and the use-case cards share. The values are identical, but the API
+    page already carries its own hero, terminal and badge blocks, and a
+    shared class means editing one block's --lul-gap silently moves the
+    other. Nothing here restyles a product card dropped on the same page.
+  ▶ NO @supports FALLBACK. Container queries have been Baseline since 2023;
+    the older spec cards still carry the duplicated media-query copy, this
+    one doesn't.
+  ▶ ICONS are three distinct 24x24 outline glyphs, none reused from the
+    existing spec or use-case cards: a crosshair over a point, a ruled
+    schedule with a measured bar, and literal curly braces. Swap the <path>
+    data for any 24x24 outline icon.
+-->
+<section class="lul-apispec" aria-label="API specifications">
+    <style>
+        .lul-apispec {
+            --lulspec-ink: #393348;
+            --lulspec-gap: 24px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 20px 0;
+            container-type: inline-size;
+            container-name: lulapispec;
+        }
+        .lul-apispec *,
+        .lul-apispec *::before,
+        .lul-apispec *::after {
+            box-sizing: border-box;
+        }
+        .lul-apispec__grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--lulspec-gap);
+        }
+        .lul-apispec__card {
+            flex: 1 1 calc(33.333% - (var(--lulspec-gap) * 2 / 3));
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid rgba(57, 51, 72, 0.3);
+            border-radius: 0;
+            padding: 26px 24px 28px;
+        }
+        .lul-apispec__icon {
+            width: 46px;
+            height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(57, 51, 72, 0.06);
+            color: var(--lulspec-ink);
+            margin-bottom: 22px;
+            flex: none;
+        }
+        .lul-apispec__icon svg {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+        .lul-apispec__title {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            color: var(--lulspec-ink);
+            margin: 0 0 12px;
+        }
+        .lul-apispec__body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.55;
+            color: rgba(57, 51, 72, 0.75);
+            margin: 0;
+        }
+        /* ── RESPONSIVE ───────────────────────────────────────────────
+             > 640px  →  3 across
+             ≤ 640px  →  stacked                                      */
+        @container lulapispec (max-width: 640px) {
+            .lul-apispec {
+                --lulspec-gap: 16px;
+            }
+            .lul-apispec__card {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+    <div class="lul-apispec__grid">
+        <!-- Point Query — crosshair sighted on a single point -->
+        <article class="lul-apispec__card">
+            <span class="lul-apispec__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="12" cy="12" r="7" />
+                    <path d="M12 2v3" />
+                    <path d="M12 19v3" />
+                    <path d="M2 12h3" />
+                    <path d="M19 12h3" />
+                    <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
+                </svg>
+            </span>
+            <h4 class="lul-apispec__title">Point Query</h4>
+            <p class="lul-apispec__body">One set of rules per address or coordinate pair.</p>
+        </article>
+
+        <!-- Full Regulatory Precision — a ruled schedule with a measured bar -->
+        <article class="lul-apispec__card">
+            <span class="lul-apispec__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <rect x="3" y="3" width="18" height="18" rx="1" />
+                    <path d="M3 8h18" />
+                    <path d="M7 12h10" />
+                    <path d="M7 16h6" />
+                    <path d="M7 10.6v2.8" />
+                    <path d="M17 10.6v2.8" />
+                </svg>
+            </span>
+            <h4 class="lul-apispec__title">Full Regulatory Precision</h4>
+            <p class="lul-apispec__body">
+                Returns our full corpus of zoning characteristics—including use treatments, parking requirements,
+                setbacks, building heights, and more.
+            </p>
+        </article>
+
+        <!-- JSON Object — literal curly braces around a value -->
+        <article class="lul-apispec__card">
+            <span class="lul-apispec__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M9 3H8a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1" />
+                    <path d="M15 3h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-1" />
+                    <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
+                </svg>
+            </span>
+            <h4 class="lul-apispec__title">JSON Object</h4>
+            <p class="lul-apispec__body">Structured data ready to incorporate into your workflow or schema.</p>
+        </article>
+    </div>
+</section>

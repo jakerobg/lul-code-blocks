@@ -1,5 +1,5 @@
 <!--
-  PRODUCT GRID — six cards, 2 rows x 3 columns (Squarespace Code Block).
+  PRODUCT GRID — seven cards, 3 columns (Squarespace Code Block).
 
   Splash-page counterpart to product_pages/product_table.html. Same card
   design (faint keyline, radius 0, category pill, subgrid row alignment),
@@ -11,8 +11,12 @@
       the two blocks stay in sync. Change it in both places.
     • No Unit / Format specs — just description, then pricing.
     • Secondary (outlined) buttons rather than the filled accent.
-    • A 6TH card at the end points at the product selector quiz instead
-      of a product page.
+    • A FINAL card points at the product selector quiz instead of a product
+      page. With six products it falls to the bottom-left on its own row, so
+      it's the THIN variant: it drops the subgrid and spans fewer rows, and
+      is only as tall as its content rather than stretching to a product
+      card's height. Nothing places it there — seven items in three columns
+      put it there by flow, and it stays leftmost at every breakpoint.
 
   ▶ REFLOW: measured against the BLOCK's width, not the browser window —
     3 across, 2 across under 1016px, 1 under 668px.
@@ -142,6 +146,11 @@
             background: #e0e5c2;
             color: #4a5620;
         }
+        /* matches api/api_badge.html */
+        .lul-pgrid__pill--api {
+            background: #f0d5bd;
+            color: #7c3a0e;
+        }
 
         .lul-pgrid__title {
             font-size: 21px;
@@ -239,10 +248,21 @@
             height: 15px;
             flex: none;
         }
-        /* Empty spacer that occupies the price row on the selector card, so
-           its button still lands on the row's shared baseline. */
-        .lul-pgrid__pricewrap--empty {
-            margin-bottom: 13px;
+        /* ── THIN CARD ──
+           The selector card sits alone on the last row, so it has nothing to
+           line its internals up WITH — the subgrid that keeps the product
+           cards' price rows level is doing no work here. Dropping to flex and
+           spanning fewer rows lets it be only as tall as its content, instead
+           of stretching to a product card's height with a gap where the price
+           block would be. */
+        .lul-pgrid__card--thin {
+            grid-row: span 3;
+            display: flex;
+            flex-direction: column;
+        }
+        .lul-pgrid__card--thin .lul-pgrid__desc {
+            flex-grow: 0;
+            margin-bottom: 20px;
         }
 
         /* ── RESPONSIVE ──
@@ -349,8 +369,22 @@
             <a class="lul-pgrid__btn" href="https://www.landuselabs.com/tables">Explore Tables</a>
         </article>
 
+        <!-- ══ ZONING API ══ -->
+        <article class="lul-pgrid__card" data-product="api">
+            <span class="lul-pgrid__pill lul-pgrid__pill--api">RESTful API</span>
+            <h4 class="lul-pgrid__title">Zoning API</h4>
+            <p class="lul-pgrid__desc">
+                A REST endpoint returning the full set of zoning regulations governing any address we cover.
+            </p>
+            <div class="lul-pgrid__pricewrap">
+                <p class="lul-pgrid__priceLabel">Pricing model</p>
+                <p class="lul-pgrid__price">Custom</p>
+            </div>
+            <a class="lul-pgrid__btn" href="https://www.landuselabs.com/api">Explore API</a>
+        </article>
+
         <!-- ══ PRODUCT SELECTOR (not a product — points at the quiz) ══ -->
-        <article class="lul-pgrid__card lul-pgrid__card--selector" data-product="selector">
+        <article class="lul-pgrid__card lul-pgrid__card--selector lul-pgrid__card--thin" data-product="selector">
             <span class="lul-pgrid__selectorLabel">
                 <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6" />
@@ -368,7 +402,6 @@
             <p class="lul-pgrid__desc">
                 With just a few questions, we can point you to the product we think best meets your needs.
             </p>
-            <div class="lul-pgrid__pricewrap lul-pgrid__pricewrap--empty" aria-hidden="true"></div>
             <a class="lul-pgrid__btn" href="https://www.landuselabs.com/product-selection">Take the Quiz</a>
         </article>
     </div>
