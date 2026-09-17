@@ -8,7 +8,7 @@
         --lul-border: rgba(57, 51, 72, 0.08);
         /* card outline — border from the coverage stat cards, shadow from
            the audience cards */
-        --lul-card-border: rgba(57, 51, 72, 0.3);
+        --lul-card-border: rgba(57, 51, 72, 0.15);
         --lul-card-border-hover: rgba(57, 51, 72, 0.4);
         --lul-card-shadow: none;
         --lul-card-shadow-hover: 0 6px 28px rgba(57, 51, 72, 0.1);
@@ -74,6 +74,14 @@
         transform: translateY(-2px);
         border-color: var(--lul-card-border-hover);
         box-shadow: var(--lul-card-shadow-hover);
+    }
+    /* The card is an <a>, so the title and copy inside it would otherwise
+       take the theme's link colour and underline. */
+    .lul-card,
+    .lul-card:visited,
+    .lul-card:hover {
+        color: inherit;
+        text-decoration: none;
     }
     /* image is inset from the card edges; body padding below matches the
        horizontal value so the graphic and the text share one left edge */
@@ -151,7 +159,10 @@
             gap 0.25s ease,
             color 0.25s ease;
     }
-    .lul-card__btn:hover {
+    /* Driven by the CARD's hover, not the button's — the whole card is the
+       link now, so the arrow has to extend wherever the pointer is on it.
+       Same behaviour as the sector grid. */
+    .lul-card:hover .lul-card__btn {
         background: none;
         color: #3f2e70;
         gap: 12px;
@@ -161,7 +172,7 @@
         height: 16px;
         transition: transform 0.25s ease;
     }
-    .lul-card__btn:hover svg {
+    .lul-card:hover .lul-card__btn svg {
         transform: translateX(2px);
     }
     .lul-nav {
@@ -255,7 +266,7 @@
 
         <div class="lul-track" id="lul-products-track">
             <!-- ===== CARD 1: Parcel Reports ===== -->
-            <article class="lul-card">
+            <a class="lul-card" href="https://www.landuselabs.com/reports">
                 <div class="lul-card__media">
                     <img
                         src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/592c4834-4b25-421d-a74b-270a03218671/reports_screenshot.png?content-type=image%2Fpng"
@@ -266,10 +277,10 @@
                 <div class="lul-card__body">
                     <h3 class="lul-card__title">Parcel Reports</h3>
                     <p class="lul-card__desc">
-                        On-demand reports summarizing zoning rules for 90+ million individual parcels across the
+                        On-demand reports summarizing zoning rules for 96+ million individual parcels across the
                         country.
                     </p>
-                    <a class="lul-card__btn" href="https://www.landuselabs.com/reports">
+                    <span class="lul-card__btn">
                         Learn more
                         <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path
@@ -280,12 +291,41 @@
                                 stroke-linejoin="round"
                             />
                         </svg>
-                    </a>
+                    </span>
                 </div>
-            </article>
+            </a>
 
-            <!-- ===== CARD 2: Zoning Districts ===== -->
-            <article class="lul-card">
+            <!-- ===== CARD 2: Zoning API ===== -->
+            <a class="lul-card" href="https://www.landuselabs.com/api">
+                <div class="lul-card__media lul-card__media--fit">
+                    <img
+                        src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/ba8768df-9c70-49eb-acb6-58bb5d803654/zoning_api_graphic.png?content-type=image%2Fpng"
+                        alt="Zoning API"
+                        loading="lazy"
+                    />
+                </div>
+                <div class="lul-card__body">
+                    <h3 class="lul-card__title">Zoning API</h3>
+                    <p class="lul-card__desc">
+                        A REST endpoint returning the full set of zoning regulations governing any address we cover.
+                    </p>
+                    <span class="lul-card__btn">
+                        Learn more
+                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </span>
+                </div>
+            </a>
+
+            <!-- ===== CARD 3: Zoning Districts ===== -->
+            <a class="lul-card" href="https://www.landuselabs.com/districts">
                 <div class="lul-card__media">
                     <img
                         src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/dc78b34e-1408-4cef-b574-84fd38b0dd2b/districts_screenshot.png?content-type=image%2Fpng"
@@ -298,7 +338,7 @@
                     <p class="lul-card__desc">
                         GIS layers showing regulatory particulars for each zoning district in a selected geography.
                     </p>
-                    <a class="lul-card__btn" href="https://www.landuselabs.com/districts">
+                    <span class="lul-card__btn">
                         Learn more
                         <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path
@@ -309,12 +349,12 @@
                                 stroke-linejoin="round"
                             />
                         </svg>
-                    </a>
+                    </span>
                 </div>
-            </article>
+            </a>
 
-            <!-- ===== CARD 3: Zoning Rasters ===== -->
-            <article class="lul-card">
+            <!-- ===== CARD 4: Zoning Rasters ===== -->
+            <a class="lul-card" href="https://www.landuselabs.com/rasters">
                 <div class="lul-card__media">
                     <img
                         src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9671bbad-dba6-4203-8886-1fa2147caaa1/rasters_screenshot.png?content-type=image%2Fpng"
@@ -328,7 +368,7 @@
                         30x30 meter grid cells that standardize residential and nonresidential uses for high-level
                         analysis.
                     </p>
-                    <a class="lul-card__btn" href="https://www.landuselabs.com/rasters">
+                    <span class="lul-card__btn">
                         Learn more
                         <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path
@@ -339,12 +379,12 @@
                                 stroke-linejoin="round"
                             />
                         </svg>
-                    </a>
+                    </span>
                 </div>
-            </article>
+            </a>
 
-            <!-- ===== CARD 4: Zoning Slices ===== -->
-            <article class="lul-card">
+            <!-- ===== CARD 5: Zoning Slices ===== -->
+            <a class="lul-card" href="https://www.landuselabs.com/slices">
                 <div class="lul-card__media">
                     <img
                         src="https://images.squarespace-cdn.com/content/v1/6961cb51f8abb243882b5e71/a436ac22-eaa1-4407-9e3e-921aca0de969/slices-final-frame.png?format=750w"
@@ -357,7 +397,7 @@
                     <p class="lul-card__desc">
                         GIS layers showing regulatory outcomes computed after combining base and overlay districts.
                     </p>
-                    <a class="lul-card__btn" href="https://www.landuselabs.com/slices">
+                    <span class="lul-card__btn">
                         Learn more
                         <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path
@@ -368,12 +408,12 @@
                                 stroke-linejoin="round"
                             />
                         </svg>
-                    </a>
+                    </span>
                 </div>
-            </article>
+            </a>
 
-            <!-- ===== CARD 5: Zoning Tables (uncropped image) ===== -->
-            <article class="lul-card">
+            <!-- ===== CARD 6: Zoning Tables (uncropped image) ===== -->
+            <a class="lul-card" href="https://www.landuselabs.com/tables">
                 <div class="lul-card__media lul-card__media--fit">
                     <img
                         src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/0d6778fe-9005-4aa7-98e9-a57cca1022c9/tables_screenshot.png?content-type=image%2Fpng"
@@ -386,7 +426,7 @@
                     <p class="lul-card__desc">
                         Statistics summarizing zoning, housing, and demographic conditions at various geographic levels.
                     </p>
-                    <a class="lul-card__btn" href="https://www.landuselabs.com/tables">
+                    <span class="lul-card__btn">
                         Learn more
                         <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path
@@ -397,9 +437,9 @@
                                 stroke-linejoin="round"
                             />
                         </svg>
-                    </a>
+                    </span>
                 </div>
-            </article>
+            </a>
         </div>
 
         <button class="lul-nav lul-nav--next" type="button" aria-label="Next">

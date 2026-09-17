@@ -2,7 +2,7 @@
   API — HERO / PAGE TITLE (Squarespace Code Block).
 
   Left aligned. The ">" prompt sits on the title itself, and "Zoning API"
-  types out once on load with a blinking caret. The subtitle sets GET and the
+  types out once on load, leaving a blinking caret. The subtitle sets GET and the
   {variable} as inline code in the house primary purple.
 
   ▶ THE {variable} CYCLES through regulation types taken from the Parcel
@@ -17,12 +17,16 @@
     changes is where line one ends.
 
   ▶ TYPES ONCE, not on a loop — it's a page title, not an animation. The
-    caret is shown only while it types and is removed on the last character,
-    so nothing blinks after it lands. Under prefers-reduced-motion the title
-    is written out complete and still.
+    caret is solid while it types and blinks from the last character onward,
+    at --lulapi-blink. Under prefers-reduced-motion the title is written out
+    complete and still, with no caret at all.
   ▶ ACCESSIBILITY: the ">" and the caret are decoration, so they're
     aria-hidden, and the <h1> carries an aria-label with the real title —
     otherwise a screen reader would announce a half-typed heading.
+  ▶ TITLE SIZE is clamped against the WINDOW's width (vw), so it keeps its
+    5rem on a desktop window and eases down as the browser narrows. Note this
+    tracks the window, not the code block — a narrow Squarespace column at a
+    wide window keeps the full 5rem.
   ▶ NO LAYOUT SHIFT: the heading holds its height from line-height whether or
     not any characters have been typed yet, and the caret is inline, so
     nothing below it moves as the title fills in.
@@ -42,10 +46,15 @@
 
             --lulapi-max-w: 1100px; /* width of the CONTENT */
             --lulapi-gutter: 24px; /* added to the cap, not taken out of it */
-            --lulapi-pad-y: 30px;
 
-            --lulapi-title-size: 5rem;
-            --lulapi-sub-size: 1.3rem;
+            /* 5rem is the intended size and it holds on any normal desktop
+               window. vw is a share of the WINDOW, so it eases down as the
+               browser narrows. Two numbers fall out of the middle value: the
+               title holds 5rem above 8000/N px of window and bottoms out
+               below 4rem*16*100/N px. At 6.5 that's 1231px and 985px. */
+            --lulapi-title-size: clamp(4rem, 6.5vw, 5rem);
+            --lulapi-sub-size: 1.1rem;
+            --lulapi-blink: 1.05s; /* caret blink period */
 
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -68,7 +77,13 @@
         .lul-apihero__headline {
             font-weight: 600;
             font-size: var(--lulapi-title-size);
+            /* At 1.1 the line box is shorter than the font's own ascent plus
+               descent, so the tail of the "g" in Zoning hangs below it and any
+               ancestor with overflow:hidden — which Squarespace sections often
+               have — shears it off. The padding gives the descender somewhere
+               to sit without changing the line spacing or the type size. */
             line-height: 1.1;
+            padding-bottom: 0.12em;
             letter-spacing: -0.02em;
             margin: 0;
             color: var(--lulapi-header);
@@ -80,8 +95,7 @@
             font-weight: 700;
             margin-right: 0.28em;
         }
-        /* Only present while the title is typing — it is removed on the last
-           character rather than left blinking. */
+        /* Solid while the title types, blinking once it lands. */
         .lul-apihero__caret {
             display: inline-block;
             width: 0.055em;
@@ -91,14 +105,21 @@
             vertical-align: -0.06em;
         }
         .lul-apihero.is-typed .lul-apihero__caret {
-            display: none;
+            /* steps(1) so it snaps on and off like a terminal cursor rather
+               than fading through half-opacity */
+            animation: lul-apihero-blink var(--lulapi-blink) steps(1) infinite;
+        }
+        @keyframes lul-apihero-blink {
+            50% {
+                opacity: 0;
+            }
         }
 
         .lul-apihero__subtitle {
             font-size: var(--lulapi-sub-size);
             line-height: 1.55;
             color: var(--lulapi-muted);
-            margin: 24px 0 0;
+            margin: 20px 0 0;
             max-width: 46ch;
         }
         /* The cycling regulation type. No reserved width — the braces hug
@@ -130,6 +151,9 @@
             .lul-apihero__caret {
                 display: none;
             }
+            .lul-apihero.is-typed .lul-apihero__caret {
+                animation: none;
+            }
         }
     </style>
 
@@ -141,8 +165,8 @@
     <p class="lul-apihero__subtitle">
         <code class="lul-apihero__code">GET</code> comprehensive information for
         <code class="lul-apihero__code">{<span class="lul-apihero__slot" data-hero-var></span>}</code><br />
-        across <span class="lul-apihero__num">96+ million</span> parcels with our API endpoint or platform. Just input
-        an address or coordinates and receive a JSON object.
+        across <span class="lul-apihero__num">96+ million</span> parcels with our API endpoint. Just input an address or
+        coordinates and receive a JSON object.
     </p>
 
     <script>

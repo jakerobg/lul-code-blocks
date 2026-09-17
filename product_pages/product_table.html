@@ -1,17 +1,17 @@
 <!--
-  PRODUCT COMPARISON CARDS — five products, one row (Squarespace Code Block).
+  PRODUCT COMPARISON CARDS — six products, one row (Squarespace Code Block).
 
   The SAME block goes on every product page. Set CURRENT (one line at the top
   of the <script> below) to whichever product that page is, and the script
   outlines that card and swaps its button for a disabled "Currently viewing".
 
-      CURRENT = "reports" | "districts" | "rasters" | "slices" | "tables"
+      CURRENT = "reports" | "api" | "districts" | "rasters" | "slices" | "tables"
 
-  Everything else is static HTML, so all five cards render in the Squarespace
+  Everything else is static HTML, so all six cards render in the Squarespace
   editor. With JS off, every card simply shows its "View product" link.
 
   ▶ REFLOW: measured against the BLOCK's width, not the browser window —
-    5 across, 3 across under 1000px, 2 under 680px, 1 under 380px.
+    6 across, 3 across under 1000px, 2 under 680px, 1 under 380px.
   ▶ CARD STYLE: matches the audience cards and carousel — 1px
     rgba(57,51,72,.3) border, radius 0, soft shadow + lift on hover.
 -->
@@ -48,11 +48,11 @@
            but each card's internal sections still stacked independently, so the
            rule above "Unit / Format" landed at a different height per card
            (the specs and price blocks below it differ in line count). With
-           subgrid, all five cards share one set of row tracks, so every
+           subgrid, all six cards share one set of row tracks, so every
            internal boundary lines up across the row. */
         .lul-prod__grid {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: var(--lul-gap);
         }
 
@@ -124,6 +124,11 @@
         .lul-prod__pill--summary {
             background: #e0e5c2;
             color: #4a5620;
+        }
+        /* matches api/api_badge.html */
+        .lul-prod__pill--api {
+            background: #f0d5bd;
+            color: #7c3a0e;
         }
 
         .lul-prod__title {
@@ -226,7 +231,7 @@
            Column count changes on the GRID now, not flex-basis on the card.
            Each wrapped band gets its own row tracks, so cards stay aligned
            with the others on their row at every breakpoint. */
-        @container lulprod (max-width: 1000px) {
+        @container lulprod (max-width: 1200px) {
             .lul-prod__grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
@@ -296,6 +301,22 @@
             <a class="lul-prod__btn" href="https://www.landuselabs.com/reports">View product</a>
         </article>
 
+        <!-- ══ ZONING API ══ -->
+        <article class="lul-prod__card" data-product="api">
+            <span class="lul-prod__pill lul-prod__pill--api">RESTful API</span>
+            <h4 class="lul-prod__title">Zoning API</h4>
+            <p class="lul-prod__bestfor">Best for:</p>
+            <p class="lul-prod__use">
+                Site selection at scale, product integration, underwriting and due diligence, automated feasibility
+            </p>
+            <div class="lul-prod__specs">
+                <p><b>Unit:</b> Address or coordinate pair</p>
+                <p><b>Format:</b> JSON</p>
+            </div>
+            <p class="lul-prod__price">Custom</p>
+            <a class="lul-prod__btn" href="https://www.landuselabs.com/api">View product</a>
+        </article>
+
         <!-- ══ ZONING DISTRICTS ══ -->
         <article class="lul-prod__card" data-product="districts">
             <span class="lul-prod__pill lul-prod__pill--vector">GIS vector layer</span>
@@ -359,8 +380,9 @@
         (function () {
             /* ════════════════════════════════════════════════════════════
                SET THIS PER PAGE. Options:
-                 "reports" | "districts" | "rasters" | "slices" | "tables"
-               Use "" (empty) on a page that isn't one of the five.
+                 "reports" | "api" | "districts" | "rasters" | "slices"
+                 | "tables"
+               Use "" (empty) on a page that isn't one of the six.
                ════════════════════════════════════════════════════════════ */
             var CURRENT = "slices";
 

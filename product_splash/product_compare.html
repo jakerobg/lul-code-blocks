@@ -1,5 +1,5 @@
 <!--
-  PRODUCT COMPARISON TABLE — five products, six columns (Squarespace Code Block).
+  PRODUCT COMPARISON TABLE — six products, six columns (Squarespace Code Block).
 
   Splash-page companion to product_grid.html. Uppercase eyebrow headers on a
   grey band, alternating white / grey row stripes, product name and pricing
@@ -9,6 +9,8 @@
     880px each row becomes a STACKED CARD — every cell keeps its column name
     as a label, so nothing depends on a header row that's scrolled off. Above
     that it's a real table.
+  ▶ ROW ORDER is alphabetical by product name, matching product_grid.html,
+    explore_products_NEW.html and product_pages/product_table.html.
   ▶ TO EDIT A ROW: each <tr> is one product; cells are in column order. The
     data-label on each <td> is what shows as the field name in stacked mode —
     keep it matching the <th> above it.
@@ -303,20 +305,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- ══ ZONING DISTRICTS ══ -->
-                <tr>
-                    <td class="lul-ptab__name" data-label="Product">Zoning Districts</td>
-                    <td data-label="What you get">
-                        GIS layers summarizing how each base and overlay district regulates, rule by rule.
-                    </td>
-                    <td data-label="Best for">
-                        Regulatory comparisons, map display. For when you need regulatory layers.
-                    </td>
-                    <td data-label="Unit of analysis">Zoning district</td>
-                    <td data-label="Format">GeoJSON, Geodatabase, GeoPackage</td>
-                    <td class="lul-ptab__price" data-label="Pricing">Per-district, per-variable pricing</td>
-                </tr>
-
                 <!-- ══ PARCEL REPORTS ══ -->
                 <tr>
                     <td class="lul-ptab__name" data-label="Product">Parcel Reports</td>
@@ -332,7 +320,33 @@
                     <td data-label="Format">PDF</td>
                     <td class="lul-ptab__price" data-label="Pricing">$250 per report</td>
                 </tr>
-
+                <!-- ══ ZONING API ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Zoning API</td>
+                    <td data-label="What you get">
+                        A REST endpoint returning the full set of zoning regulations governing any address we cover.
+                    </td>
+                    <td data-label="Best for">
+                        Site selection at scale, product integration, underwriting and due diligence, automated
+                        feasibility.
+                    </td>
+                    <td data-label="Unit of analysis">Address or coordinate pair</td>
+                    <td data-label="Format">JSON</td>
+                    <td class="lul-ptab__price" data-label="Pricing">Custom</td>
+                </tr>
+                <!-- ══ ZONING DISTRICTS ══ -->
+                <tr>
+                    <td class="lul-ptab__name" data-label="Product">Zoning Districts</td>
+                    <td data-label="What you get">
+                        GIS layers summarizing how each base and overlay district regulates, rule by rule.
+                    </td>
+                    <td data-label="Best for">
+                        Regulatory comparisons, map display. For when you need regulatory layers.
+                    </td>
+                    <td data-label="Unit of analysis">Zoning district</td>
+                    <td data-label="Format">GeoJSON, Geodatabase, GeoPackage</td>
+                    <td class="lul-ptab__price" data-label="Pricing">Per-district, per-variable pricing</td>
+                </tr>
                 <!-- ══ ZONING RASTERS ══ -->
                 <tr>
                     <td class="lul-ptab__name" data-label="Product">Zoning Rasters</td>
@@ -347,7 +361,6 @@
                     <td data-label="Format">GeoTIFF</td>
                     <td class="lul-ptab__price" data-label="Pricing">Per-acreage, per-category pricing</td>
                 </tr>
-
                 <!-- ══ ZONING SLICES ══ -->
                 <tr>
                     <td class="lul-ptab__name" data-label="Product">Zoning Slices</td>
@@ -363,7 +376,6 @@
                     <td data-label="Format">GeoJSON, Geodatabase, GeoPackage</td>
                     <td class="lul-ptab__price" data-label="Pricing">Per-slice, per-variable pricing</td>
                 </tr>
-
                 <!-- ══ ZONING TABLES ══ -->
                 <tr>
                     <td class="lul-ptab__name" data-label="Product">Zoning Tables</td>
@@ -379,6 +391,7 @@
                     <td data-label="Format">CSV, GeoJSON (optional), GeoPackage (optional)</td>
                     <td class="lul-ptab__price" data-label="Pricing">Per-geographic unit pricing</td>
                 </tr>
+
             </tbody>
         </table>
     </div>

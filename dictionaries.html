@@ -3,11 +3,24 @@
         --lul-header: #393348;
         --lul-text: #333333;
         --lul-card: #ffffff;
-        --lul-border: rgba(57, 51, 72, 0.08);
+        /* card outline + inner padding, matching explore_products_NEW.html */
+        --lul-card-border: rgba(57, 51, 72, 0.15);
+        --lul-card-border-hover: rgba(57, 51, 72, 0.4);
+        --lul-card-shadow: none;
+        --lul-card-shadow-hover: 0 6px 28px rgba(57, 51, 72, 0.1);
+        --lul-card-pad: 40px;
+        /* secondary (outlined) button, same as .lul-pgrid__btn in
+           product_splash/product_grid.html */
+        /* space between the card title and its button */
+        /* Fixed card width. Five across need 5 x 300 + 4 x 24 gap + the
+           grid's 30px of side padding = 1626, which is what sets the grid's
+           1640px cap below. Under that they wrap a card at a time rather than
+           stretching. */
+        --lul-card-w: 300px;
+        --lul-title-gap: 28px;
+        --lul-btn-ink: #393348;
+        --lul-btn-hover: #f9f9f9;
         --lul-bg: rgb(239, 237, 236);
-        /* vertical padding for the dropdown button — bump this up if the
-           dropdown still looks thinner than the plain buttons */
-        --lul-dx-btn-py: 14px;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         color: var(--lul-text);
         -webkit-font-smoothing: antialiased;
@@ -17,6 +30,10 @@
         margin: 0;
         padding: 8px 0;
         box-sizing: border-box;
+        /* so the one-column breakpoint below measures this block, not the
+           window — the column count is decided by the block's width */
+        container-type: inline-size;
+        container-name: luldicts;
     }
     .lul-dicts *,
     .lul-dicts *::before,
@@ -24,34 +41,50 @@
         box-sizing: border-box;
     }
 
-    /* Cards reflow to fewer columns before they ever get narrow enough to
-     clip the button text — each card never drops below ~240px wide. */
+    /* Fixed-width tracks, not 1fr. With 1fr the cards — and so the graphics
+       inside them — grew and shrank continuously with the window. Capping the
+       track at --lul-card-w keeps every card, and every graphic, the same size
+       at any width; the row simply drops a card to the next line when it runs
+       out of room. minmax(0, …) is what stops them overflowing once the block
+       is narrower than a single card. */
     .lul-dicts__grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(0, var(--lul-card-w)));
         justify-content: center;
         gap: 24px;
-        max-width: 1620px;
+        max-width: 1640px; /* 5 x 300 + 4 x 24 gap + 30 padding = 1626 */
         margin: 0 auto;
         padding: 12px 15px 16px;
     }
 
     .lul-card {
         background: var(--lul-card);
-        border: 1px solid var(--lul-border);
+        border: 1px solid var(--lul-card-border);
         border-radius: 0;
+        /* visible, not hidden — the dropdown menus on two of these cards have
+           to escape the card box */
         overflow: visible;
         display: flex;
         flex-direction: column;
         position: relative;
         transition:
-            transform 0.1s ease,
-            box-shadow 0.2s ease;
-        box-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
+            transform 0.25s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease;
+        box-shadow: var(--lul-card-shadow);
     }
     .lul-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(57, 51, 72, 0.08);
+        border-color: var(--lul-card-border-hover);
+        box-shadow: var(--lul-card-shadow-hover);
+    }
+    /* three of the cards are themselves links — stop the theme colouring and
+       underlining the title inside them */
+    a.lul-card,
+    a.lul-card:visited,
+    a.lul-card:hover {
+        color: inherit;
+        text-decoration: none;
     }
     .lul-card:has(.lul-dx__dropdown.lul-dx-open) {
         z-index: 100;
@@ -59,33 +92,39 @@
 
     .lul-card__media {
         width: 100%;
-        aspect-ratio: 5 / 4;
+        aspect-ratio: 4 / 3;
         overflow: hidden;
         position: relative;
         background: #ffffff;
-        padding: 16px;
+        padding: var(--lul-card-pad) var(--lul-card-pad) 0;
     }
     .lul-card__img {
         width: 100%;
         height: 100%;
+        /* contain = show the whole graphic, never crop it */
         object-fit: contain;
+        /* sits the graphic on the bottom edge of the frame */
+        object-position: center bottom;
         display: block;
     }
 
     .lul-card__body {
-        padding: 28px 25px 32px;
+        padding: 28px var(--lul-card-pad) 30px;
         display: flex;
         flex-direction: column;
         flex: 1;
     }
     .lul-card__title {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 1.55rem;
+        font-size: 25px;
         font-weight: 500;
         color: var(--lul-header);
-        margin: 0 0 60px;
-        letter-spacing: -0.015em;
-        line-height: 1.2;
+        /* No description on these cards, so this gap is the only thing between
+           the title and the button. flex: 1 below means it's a MINIMUM — on a
+           row of equal-height cards a short title gets more. */
+        margin: 0 0 var(--lul-title-gap);
+        letter-spacing: -0.01em;
+        line-height: 1.25;
         /* allow the title to wrap to a second line instead of truncating */
         white-space: normal;
         overflow-wrap: break-word;
@@ -95,41 +134,29 @@
         align-self: stretch;
     }
 
-    /* plain button (button.html style) */
+    /* Secondary (outlined) button. On the three cards that are themselves
+       links this is a <span> — the card carries the href — so its hover state
+       is driven by the card, not by the button. */
     .lul-card__btn {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        width: 100%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        background: #393347;
-        color: #ffffff;
-        text-decoration: none;
+        display: block;
+        text-align: center;
+        font-size: 14px;
         font-weight: 500;
-        font-size: 1rem;
-        padding: 14px 26px;
+        letter-spacing: 0.02em;
+        padding: 8px 14px;
+        border: 1px solid var(--lul-btn-ink);
         border-radius: 0;
-        border: 1px solid #393347;
+        background: transparent;
+        color: var(--lul-btn-ink);
+        text-decoration: none;
+        cursor: pointer;
         transition:
             background 0.25s ease,
-            gap 0.25s ease;
-        cursor: pointer;
-        letter-spacing: 0.02em;
-        white-space: nowrap;
+            border-color 0.25s ease;
     }
-    .lul-card__btn:hover {
-        background: #4c4460;
-        gap: 12px;
-    }
-    .lul-card__btn svg {
-        width: 14px;
-        height: 14px;
-        flex: none;
-        transition: transform 0.25s ease;
-    }
-    .lul-card__btn:hover svg {
-        transform: translateX(2px);
+    .lul-card:hover .lul-card__btn {
+        background: var(--lul-btn-hover);
     }
 
     /* dropdown buttons (data_sample / raster dropdown style), full width inside cards */
@@ -143,45 +170,37 @@
         display: block !important;
         width: 100% !important;
     }
+    /* The same secondary button, used as a menu toggle on the two cards that
+       point at several sheets. It keeps a chevron — that one is meaningful,
+       not decoration: it says this opens rather than navigates. */
     .lul-dicts .lul-dx-actions .lul-dx__btn {
-        -webkit-appearance: none;
-        appearance: none;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        width: 100% !important;
-        display: flex !important;
+        display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
+        font-size: 14px;
         font-weight: 500;
-        font-size: 1rem;
-        /* match the plain button's line-height (inherited) so heights line up,
-           then fine-tune thickness with --lul-dx-btn-py above */
-        padding: var(--lul-dx-btn-py) 26px;
-        border-radius: 0;
-        text-decoration: none;
         letter-spacing: 0.02em;
-        border: 1px solid #393347;
+        padding: 8px 14px;
+        border: 1px solid var(--lul-btn-ink);
+        border-radius: 0;
+        background: transparent;
+        color: var(--lul-btn-ink);
+        text-decoration: none;
         cursor: pointer;
-        white-space: nowrap;
         transition:
             background 0.25s ease,
-            color 0.25s ease,
-            gap 0.25s ease;
+            border-color 0.25s ease;
     }
-    .lul-dicts .lul-dx-actions .lul-dx__btn--primary {
-        background: #393347;
-        color: #ffffff;
-    }
-    .lul-dicts .lul-dx-actions .lul-dx__btn--primary:hover {
-        background: #4c4460;
-        border-color: #4c4460;
-        gap: 12px;
+    .lul-dicts .lul-dx-actions .lul-dx__btn:hover,
+    .lul-card:hover .lul-dx-actions .lul-dx__btn {
+        background: var(--lul-btn-hover);
     }
     .lul-dicts .lul-dx-actions .lul-dx__btn svg {
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         flex: none;
-        transition: transform 0.25s ease;
     }
     .lul-dicts .lul-dx-actions .lul-dx__dropdown.lul-dx-open .lul-dx__btn svg {
         transform: rotate(180deg);
@@ -221,97 +240,58 @@
         color: #ffffff;
     }
 
-    @media (max-width: 620px) {
-        .lul-dicts__grid {
-            gap: 16px;
-            padding: 8px 16px 12px;
-        }
-        .lul-card__body {
-            padding: 22px 22px 26px;
-        }
+    /* ── ONE COLUMN ──
+       Two cards need 2 x 300 + 24 gap + 30 padding = 654px, so below that the
+       grid is already down to a single card per row and the title has the
+       full card width to itself. Nothing about the padding or the gap changes
+       here — those were stepping at a different width from the column count,
+       which read as a jump. */
+    @container luldicts (max-width: 653px) {
         .lul-card__title {
             font-size: 1.4rem;
-            margin-bottom: 40px;
         }
     }
 </style>
 
 <section class="lul-dicts" aria-label="Dictionaries">
     <div class="lul-dicts__grid">
-        <article class="lul-card">
+        <!-- ══ PARCEL REPORTS ══ -->
+        <a class="lul-card" href="/glossary" target="_blank" rel="noopener">
             <div class="lul-card__media">
-                <img
-                    class="lul-card__img"
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/592c4834-4b25-421d-a74b-270a03218671/reports_screenshot.png?content-type=image%2Fpng"
-                    alt="Parcel Reports"
-                    loading="lazy"
-                />
-            </div>
+            <img class="lul-card__img" src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/592c4834-4b25-421d-a74b-270a03218671/reports_screenshot.png?content-type=image%2Fpng" alt="Parcel Reports" loading="lazy" />
+        </div>
             <div class="lul-card__body">
                 <h3 class="lul-card__title">Parcel Reports</h3>
                 <div class="lul-card__action">
-                    <a class="lul-card__btn" href="/glossary" target="_blank" rel="noopener"
-                        >Glossary
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </a>
+                    <span class="lul-card__btn">Data Dictionary</span>
                 </div>
             </div>
-        </article>
-        <article class="lul-card">
+        </a>
+
+        <!-- ══ ZONING DISTRICTS ══ -->
+        <a class="lul-card" href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1394472999#gid=1394472999" target="_blank" rel="noopener">
             <div class="lul-card__media">
-                <img
-                    class="lul-card__img"
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/dc78b34e-1408-4cef-b574-84fd38b0dd2b/districts_screenshot.png?content-type=image%2Fpng"
-                    alt="Zoning Districts"
-                    loading="lazy"
-                />
-            </div>
+            <img class="lul-card__img" src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/dc78b34e-1408-4cef-b574-84fd38b0dd2b/districts_screenshot.png?content-type=image%2Fpng" alt="Zoning Districts" loading="lazy" />
+        </div>
             <div class="lul-card__body">
                 <h3 class="lul-card__title">Zoning Districts</h3>
                 <div class="lul-card__action">
-                    <a
-                        class="lul-card__btn"
-                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1394472999#gid=1394472999"
-                        target="_blank"
-                        rel="noopener"
-                        >Data Dictionary
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </a>
+                    <span class="lul-card__btn">Data Dictionary</span>
                 </div>
             </div>
-        </article>
+        </a>
 
+        <!-- ══ ZONING RASTERS — several sheets, so the label opens a menu ══ -->
         <article class="lul-card">
             <div class="lul-card__media">
-                <img
-                    class="lul-card__img"
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9671bbad-dba6-4203-8886-1fa2147caaa1/rasters_screenshot.png?content-type=image%2Fpng"
-                    alt="Zoning Rasters"
-                    loading="lazy"
-                />
-            </div>
+            <img class="lul-card__img" src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/9671bbad-dba6-4203-8886-1fa2147caaa1/rasters_screenshot.png?content-type=image%2Fpng" alt="Zoning Rasters" loading="lazy" />
+        </div>
             <div class="lul-card__body">
                 <h3 class="lul-card__title">Zoning Rasters</h3>
                 <div class="lul-card__action">
                     <div class="lul-dx-actions">
                         <div class="lul-dx__dropdown">
-                            <a href="#" role="button" class="lul-dx__btn lul-dx__btn--primary lul-dx__toggle"
+                            <a href="#" role="button" class="lul-dx__btn lul-dx__toggle"
                                 >Data Dictionary
                                 <svg
                                     viewBox="0 0 20 20"
@@ -357,53 +337,30 @@
             </div>
         </article>
 
-        <article class="lul-card">
+        <!-- ══ ZONING SLICES ══ -->
+        <a class="lul-card" href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1642345933#gid=1642345933" target="_blank" rel="noopener">
             <div class="lul-card__media">
-                <img
-                    class="lul-card__img"
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/21a4bf6a-93bf-4f9f-b178-69c8684259d7/slices_screenshot.png?content-type=image%2Fpng"
-                    alt="Zoning Slices"
-                    loading="lazy"
-                />
-            </div>
+            <img class="lul-card__img" src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/21a4bf6a-93bf-4f9f-b178-69c8684259d7/slices_screenshot.png?content-type=image%2Fpng" alt="Zoning Slices" loading="lazy" />
+        </div>
             <div class="lul-card__body">
                 <h3 class="lul-card__title">Zoning Slices</h3>
                 <div class="lul-card__action">
-                    <a
-                        class="lul-card__btn"
-                        href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=1642345933#gid=1642345933"
-                        target="_blank"
-                        rel="noopener"
-                        >Data Dictionary
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </a>
+                    <span class="lul-card__btn">Data Dictionary</span>
                 </div>
             </div>
-        </article>
+        </a>
 
+        <!-- ══ ZONING TABLES — several sheets, so the label opens a menu ══ -->
         <article class="lul-card">
             <div class="lul-card__media">
-                <img
-                    class="lul-card__img"
-                    src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/0d6778fe-9005-4aa7-98e9-a57cca1022c9/tables_screenshot.png?content-type=image%2Fpng"
-                    alt="Zoning Tables"
-                    loading="lazy"
-                />
-            </div>
+            <img class="lul-card__img" src="https://images.squarespace-cdn.com/content/6961cb51f8abb243882b5e71/0d6778fe-9005-4aa7-98e9-a57cca1022c9/tables_screenshot.png?content-type=image%2Fpng" alt="Zoning Tables" loading="lazy" />
+        </div>
             <div class="lul-card__body">
                 <h3 class="lul-card__title">Zoning Tables</h3>
                 <div class="lul-card__action">
                     <div class="lul-dx-actions">
                         <div class="lul-dx__dropdown">
-                            <a href="#" role="button" class="lul-dx__btn lul-dx__btn--primary lul-dx__toggle"
+                            <a href="#" role="button" class="lul-dx__btn lul-dx__toggle"
                                 >Data Dictionary
                                 <svg
                                     viewBox="0 0 20 20"
