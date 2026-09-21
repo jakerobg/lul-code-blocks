@@ -17,10 +17,48 @@
   h2.sec { font: 600 13px/1.2 Inter, sans-serif; letter-spacing: 0.12em;
            text-transform: uppercase; color: #6b6580; margin: 56px 0 8px; }
   h2.sec:first-of-type { margin-top: 24px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+  .sw { font: 400 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6b6580; }
+  .sw i { display: block; height: 52px; border-radius: 3px; border: 1px solid rgba(57,51,71,0.15); margin-bottom: 6px; }
+  .sw b { display: block; font-weight: 600; color: #393347; }
+  .sw em { display: block; font-style: normal; color: #8a8699; }
 </style>
 </head>
 <body>
 <div class="wrap lul">
+
+  <h2 class="sec">Colour</h2>
+
+  <div class="row"><div class="spec"><b>Raw palette</b>Swatch · token · hex</div>
+    <div class="swatches">
+      <div class="sw"><i style="background:var(--lul-ink)"></i><b>--lul-ink</b>#393347<em>Headings, body, secondary border</em></div>
+      <div class="sw"><i style="background:var(--lul-primary)"></i><b>--lul-primary</b>#594496<em>Primary button fill</em></div>
+      <div class="sw"><i style="background:var(--lul-primary-hover)"></i><b>--lul-primary-hover</b>#3f2e70<em>Primary button hover</em></div>
+      <div class="sw"><i style="background:var(--lul-grey-dark)"></i><b>--lul-grey-dark</b>#5c5c5c<em>Secondary text</em></div>
+      <div class="sw"><i style="background:var(--lul-grey-medium)"></i><b>--lul-grey-medium</b>#efedec<em>Card fills, banding</em></div>
+      <div class="sw"><i style="background:var(--lul-grey-light)"></i><b>--lul-grey-light</b>#f9f9f9<em>Section backgrounds</em></div>
+      <div class="sw"><i style="background:var(--lul-accent)"></i><b>--lul-accent</b>#e0e5c2<em>Sage fill — pills, bands</em></div>
+      <div class="sw"><i style="background:var(--lul-accent-ink)"></i><b>--lul-accent-ink</b>#4a5620<em>Text on sage</em></div>
+    </div></div>
+
+  <div class="row"><div class="spec"><b>Helpers</b>Compose with any type class</div>
+    <div>
+      <div class="lul-h3">Default — inherits <code>--lul-ink</code></div>
+      <div class="lul-body lul-muted">.lul-muted — secondary text at #5c5c5c</div>
+      <div class="lul-body lul-primary">.lul-primary — the primary purple</div>
+      <div style="margin-top:10px">
+        <span class="lul-bg-accent lul-card-eyebrow" style="padding:4px 10px;border-radius:3px">Summary</span>
+        <span class="lul-caption lul-muted">&nbsp; .lul-bg-accent — sage pill, carries its own text colour</span>
+      </div>
+      <div class="lul-bg-subtle lul-hairline" style="padding:12px;margin-top:10px">
+        <div class="lul-card-eyebrow lul-muted">Dataset</div>
+        <div class="lul-card-title-m">Zoning Slices</div>
+        <div class="lul-card-body lul-muted">.lul-bg-subtle + .lul-hairline on the card.</div>
+      </div>
+      <div class="lul-bg-fill" style="padding:12px;margin-top:10px">
+        <div class="lul-card-body">.lul-bg-fill — #efedec band</div>
+      </div>
+    </div></div>
 
   <h2 class="sec">Headings and body</h2>
 
@@ -46,6 +84,8 @@
       predominantly allows residential uses.</div></div>
   <div class="row"><div class="spec"><b>.lul-caption</b>Inter 400 · 13 / 1.45</div>
     <div class="lul-caption">Permitting pathways for different housing types on residentially zoned land.</div></div>
+  <div class="row"><div class="spec"><b>.lul-ui-label</b>Inter 600 · 15 / 1.35</div>
+    <div class="lul-ui-label">Select variables</div></div>
   <div class="row"><div class="spec"><b>.lul-eyebrow</b>Inter 600 · 12 / 1.2 · 0.12em</div>
     <div class="lul-eyebrow">Brand foundations</div></div>
 

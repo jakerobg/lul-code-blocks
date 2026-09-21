@@ -2,8 +2,10 @@
 
 /* ==========================================================================
    LUL shared code-block styles
-   Source of truth: DESIGN DOC/LUL-TypographyScale.pdf — WEB scale only
-   (pp. 4-7). The print scale on pp. 2-3 is deliberately not represented here.
+
+   Type: DESIGN DOC/LUL-TypographyScale.pdf — WEB scale only (pp. 4-7). The
+   print scale on pp. 2-3 is deliberately not represented here.
+   Colour: no doc yet; values taken from the live site and from BUTTONS/.
 
    ONE file, TWO consumers:
 
@@ -37,6 +39,47 @@
    ========================================================================== */
 
 :root {
+  /* ======================================================================
+     COLOUR
+     Not in the typography PDF — these come from the live site and from
+     BUTTONS/, which already used --lul-primary / --lul-primary-hover under
+     these exact names. Raw palette only — see the note below the tints for
+     why there is no semantic alias layer on top.
+     ====================================================================== */
+
+  /* ---- raw palette ---- */
+  --lul-ink:           #393347;  /* brand near-black: headings, body, secondary button border */
+  --lul-primary:       #594496;  /* primary button fill + border */
+  --lul-primary-hover: #3f2e70;  /* primary button, pressed/hover */
+  --lul-grey-dark:     #5c5c5c;  /* secondary text, captions, labels */
+  --lul-grey-medium:   #efedec;  /* card fills, table banding, rules */
+  --lul-grey-light:    #f9f9f9;  /* page and section backgrounds */
+  --lul-white:         #ffffff;
+
+  /* Sage accent. Already spelled --lul-accent in product_selector.html,
+     HOME/explore_products_NEW.html and others, so the name is kept. It is a
+     FILL, never type — as text on white it lands near 1.3:1. Anything sitting
+     ON the sage takes --lul-accent-ink, the pairing already used by the
+     summary pills in product_table.html and product_grid.html; measured
+     6.11:1, so it passes AA at any size. */
+  --lul-accent:     #e0e5c2;
+  --lul-accent-ink: #4a5620;
+
+  /* Ink at low opacity, written out in full. Squarespace's Custom CSS
+     compiler evaluates colour functions at build time and rejects anything
+     computed from a variable, so `rgba(var(--ink-rgb), .15)` fails with
+     "Function rgba requires at least 4 args". A literal rgba() with four
+     plain arguments always compiles. Same ink as --lul-ink; change together. */
+  --lul-ink-15: rgba(57, 51, 71, 0.15);  /* hairline borders */
+  --lul-ink-05: rgba(57, 51, 71, 0.05);  /* card shadow tint */
+
+  /* No semantic alias layer (--lul-text: var(--lul-ink) and friends). With
+     eight colours and one brand it is a second name for every value, and the
+     existing blocks already speak the raw vocabulary — BUTTONS/ uses
+     --lul-primary, four files use --lul-accent, the header uses --lul-ink.
+     Add the layer if a dark mode or a second brand ever makes the palette and
+     the roles genuinely diverge; until then the raw names ARE the roles. */
+
   /* ---- faces ----------------------------------------------------------
      Space Grotesk sets display and data and NEVER running text.
      Inter carries H4 and below, plus all body and interface copy. */
@@ -106,6 +149,25 @@
   font-size: var(--lul-size-body);
   font-weight: var(--lul-weight-regular);
   line-height: var(--lul-leading-body);
+  color: var(--lul-ink);
+}
+
+/* Colour helpers. Type classes deliberately set no colour of their own, so a
+   heading inherits the block's colour and these compose with any of them:
+   <h2 class="lul-h2 lul-muted">. */
+.lul-muted   { color: var(--lul-grey-dark); }
+.lul-invert  { color: var(--lul-white); }
+.lul-primary { color: var(--lul-primary); }
+
+.lul-bg-subtle { background-color: var(--lul-grey-light); }
+.lul-bg-fill   { background-color: var(--lul-grey-medium); }
+.lul-hairline  { border: 1px solid var(--lul-ink-15); }
+
+/* The sage fill carries its own text colour, since ink on sage is too low a
+   contrast to read. Use it on pills, tags and callout bands. */
+.lul-bg-accent {
+  background-color: var(--lul-accent);
+  color: var(--lul-accent-ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -175,6 +237,17 @@
   font-weight: var(--lul-weight-regular);
   font-size: var(--lul-size-caption);
   line-height: var(--lul-leading-caption);
+}
+
+/* UI label / button, from the web scale table. Identical values to
+   .lul-cta-tertiary — the doc lists this step in both the web scale (p. 5)
+   and the CTA table (p. 7). Use this one for non-button interface labels
+   (field labels, tab labels, table controls). */
+.lul-ui-label {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-ui);
+  line-height: var(--lul-leading-ui);
 }
 
 /* The eyebrow is the ONLY uppercase element in the system. */
