@@ -1,0 +1,350 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap");
+
+/* ==========================================================================
+   LUL shared code-block styles
+   Source of truth: DESIGN DOC/LUL-TypographyScale.pdf — WEB scale only
+   (pp. 4-7). The print scale on pp. 2-3 is deliberately not represented here.
+
+   ONE file, TWO consumers:
+
+   1. Squarespace — paste the whole file into Design > Custom CSS.
+      The @import must stay the first line; Squarespace's compiler passes
+      `@import url(...)` through untouched, but only at the top. If you would
+      rather load the fonts from Code Injection (faster, no render-blocking
+      import), drop the first line here and put this in the header instead:
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+
+   2. Local previews — each code block links it:
+        <link rel="stylesheet" href="../styles/lul.css">
+      The link is stripped (or simply ignored) when the block is pasted into
+      Squarespace, because Custom CSS already carries the same rules.
+
+   TWO RULES FOR EDITING THIS FILE
+
+   a. Every value in the token block is a LITERAL. Squarespace's Custom CSS
+      compiler evaluates calc() and colour functions at build time and rejects
+      anything computed from a variable:
+        calc(var(--lul-size-body) * 1.5)  -> "Operation * cannot be applied to
+                                              FUNCTION_CALL and DIMENSION"
+        rgba(var(--ink-rgb), .15)         -> "Function rgba requires 4 args"
+      `var(--x)` as a whole property value is fine. Arithmetic on one is not.
+
+   b. Nothing here styles a bare element (h1, h2, p, a). Squarespace owns those
+      and its site styles should be configured to match this same doc. These
+      classes are the opt-in copy for code blocks, so a block never fights the
+      theme and never depends on which page it landed on.
+   ========================================================================== */
+
+:root {
+  /* ---- faces ----------------------------------------------------------
+     Space Grotesk sets display and data and NEVER running text.
+     Inter carries H4 and below, plus all body and interface copy. */
+  --lul-font-display: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --lul-font-body:    Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ---- weights --------------------------------------------------------
+     700 is the ceiling for both faces. Space Grotesk's variable axis stops
+     at 700, so there is no Black or Extra Bold to reach for. Anything that
+     wants more presence gets more size, not more weight. */
+  --lul-weight-display:     700;  /* Space Grotesk, standard */
+  --lul-weight-display-alt: 500;  /* Space Grotesk, oversized treatments only */
+  --lul-weight-regular:     400;
+  --lul-weight-medium:      500;
+  --lul-weight-semibold:    600;
+
+  /* ---- web type scale (doc p. 4-5) ----------------------------------- */
+  --lul-size-display:  56px;  --lul-leading-display:  1;     /* 56px */
+  --lul-size-h1:       42px;  --lul-leading-h1:       1.1;   /* 46px */
+  --lul-size-h2:       30px;  --lul-leading-h2:       1.2;   /* 36px */
+  --lul-size-h3:       21px;  --lul-leading-h3:       1.25;  /* 26px */
+  --lul-size-h4:       18px;  --lul-leading-h4:       1.45;  /* 26px */
+  --lul-size-body-l:   18px;  --lul-leading-body-l:   1.6;   /* 29px */
+  --lul-size-body:     16px;  --lul-leading-body:     1.6;   /* 26px */
+  --lul-size-small:    14px;  --lul-leading-small:    1.5;   /* 21px */
+  --lul-size-caption:  13px;  --lul-leading-caption:  1.45;  /* 19px */
+  --lul-size-ui:       15px;  --lul-leading-ui:       1.35;  /* 20px */
+  --lul-size-eyebrow:  12px;  --lul-leading-eyebrow:  1.2;   /* 14px */
+  --lul-size-stat:     40px;  --lul-leading-stat:     1;     /* 40px */
+
+  /* ---- tracking ------------------------------------------------------- */
+  --lul-track-display: -0.02em;
+  --lul-track-h1:      -0.01em;
+  --lul-track-stat:    -0.01em;
+  --lul-track-eyebrow:  0.12em;
+
+  /* ---- card titles (doc p. 5) ----------------------------------------
+     Cards are scanned in parallel, not read in sequence, so their titles
+     are a separate concern from headings. The card's ROLE picks the face:
+     content cards take Space Grotesk, control cards take Inter, because a
+     control card sits in a flow where everything else is already Inter. */
+  --lul-size-card-title-l:  21px;  --lul-leading-card-title-l:  1.25;
+  --lul-size-card-title-m:  18px;  --lul-leading-card-title-m:  1.3;
+  --lul-size-card-title-s:  16px;  --lul-leading-card-title-s:  1.35;
+  --lul-size-card-eyebrow:  12px;  --lul-leading-card-eyebrow:  1.2;
+  --lul-size-card-body:     14px;  --lul-leading-card-body:     1.5;
+  --lul-size-card-link:     15px;  --lul-leading-card-link:     1.35;
+
+  /* ---- CTA type (doc p. 6-7) ------------------------------------------
+     Primary and secondary share ONE type spec and are told apart by fill,
+     not by size. Making the secondary smaller would imply the optional
+     action is also harder to read. */
+  --lul-size-cta:          16px;  --lul-leading-cta:          1.2;   /* 19px */
+  --lul-size-cta-tertiary: 15px;  --lul-leading-cta-tertiary: 1.35;  /* 20px */
+  --lul-size-cta-compact:  14px;  --lul-leading-cta-compact:  1.3;   /* 18px */
+  --lul-size-nav-link:     15px;  --lul-leading-nav-link:     1.35;  /* 20px */
+}
+
+/* --------------------------------------------------------------------------
+   Block root
+   Put .lul on the outermost element of a code block. It sets the body face
+   and default size once, so everything inside inherits and only the pieces
+   that differ need a class of their own.
+   -------------------------------------------------------------------------- */
+.lul {
+  font-family: var(--lul-font-body);
+  font-size: var(--lul-size-body);
+  font-weight: var(--lul-weight-regular);
+  line-height: var(--lul-leading-body);
+}
+
+/* --------------------------------------------------------------------------
+   1. Headings and body — web scale
+   -------------------------------------------------------------------------- */
+.lul-display {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-display);
+  line-height: var(--lul-leading-display);
+  letter-spacing: var(--lul-track-display);
+}
+
+.lul-h1 {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-h1);
+  line-height: var(--lul-leading-h1);
+  letter-spacing: var(--lul-track-h1);
+}
+
+.lul-h2 {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-h2);
+  line-height: var(--lul-leading-h2);
+}
+
+.lul-h3 {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-h3);
+  line-height: var(--lul-leading-h3);
+}
+
+/* H4 is the split point on web: Inter takes over here and below. */
+.lul-h4 {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-h4);
+  line-height: var(--lul-leading-h4);
+}
+
+.lul-body-l {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-body-l);
+  line-height: var(--lul-leading-body-l);
+}
+
+.lul-body {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-body);
+  line-height: var(--lul-leading-body);
+}
+
+.lul-small {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-small);
+  line-height: var(--lul-leading-small);
+}
+
+.lul-caption {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-caption);
+  line-height: var(--lul-leading-caption);
+}
+
+/* The eyebrow is the ONLY uppercase element in the system. */
+.lul-eyebrow {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-eyebrow);
+  line-height: var(--lul-leading-eyebrow);
+  letter-spacing: var(--lul-track-eyebrow);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   2. Data — stats and figures
+   Space Grotesk is a data face as much as a display one. Tabular figures are
+   on by default here; see section 5 for tables.
+   -------------------------------------------------------------------------- */
+.lul-stat {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-stat);
+  line-height: var(--lul-leading-stat);
+  letter-spacing: var(--lul-track-stat);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* --------------------------------------------------------------------------
+   3. Cards
+   Card title L is deliberately the same size as H3, so a card reads as a peer
+   of a sub-section rather than a rival to the page title. Card titles never
+   take the display step — a grid of six cards at 56px would compete with the
+   headline above it.
+   -------------------------------------------------------------------------- */
+
+/* Product grid, resource grid. */
+.lul-card-title-l {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-card-title-l);
+  line-height: var(--lul-leading-card-title-l);
+}
+
+/* Comparison grid, content cards. */
+.lul-card-title-m {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-card-title-m);
+  line-height: var(--lul-leading-card-title-m);
+}
+
+/* Scope cards, in-flow controls — Inter, because these sit inside an Inter flow. */
+.lul-card-title-s {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-title-s);
+  line-height: var(--lul-leading-card-title-s);
+}
+
+/* Format tag, category label. */
+.lul-card-eyebrow {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-eyebrow);
+  line-height: var(--lul-leading-card-eyebrow);
+  letter-spacing: var(--lul-track-eyebrow);
+  text-transform: uppercase;
+}
+
+/* All tiers. 14px, not 16px: card text is a summary the reader scans before
+   deciding to click, not a paragraph they settle into. */
+.lul-card-body {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-card-body);
+  line-height: var(--lul-leading-card-body);
+}
+
+/* "Learn more", "Access resource". */
+.lul-card-link {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-link);
+  line-height: var(--lul-leading-card-link);
+}
+
+/* --------------------------------------------------------------------------
+   4. CTAs and links
+   Labels are sentence case with proper nouns intact: "Order Slices" and
+   "Download Data Dictionary" keep their capitals because Slices and Data
+   Dictionary are named things; "Download sample", "Get instant pricing" and
+   "Learn more" do not. No Title Case, no ALL CAPS, and no trailing arrow,
+   chevron or caret on any label — the label is words only.
+
+   These set TYPE only. Fill, outline, radius and padding are a components
+   question, not a type one; see BUTTONS/ for those.
+   -------------------------------------------------------------------------- */
+
+/* Primary and secondary — one spec, distinguished by fill. */
+.lul-cta {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-cta);
+  line-height: var(--lul-leading-cta);
+}
+
+/* Tertiary and text buttons — card links, low-commitment actions. */
+.lul-cta-tertiary {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-cta-tertiary);
+  line-height: var(--lul-leading-cta-tertiary);
+}
+
+/* Presets, filters, in-flow controls — "Clear all", "Residential basics". */
+.lul-cta-compact {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-cta-compact);
+  line-height: var(--lul-leading-cta-compact);
+}
+
+.lul-nav-link {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-medium);
+  font-size: var(--lul-size-nav-link);
+  line-height: var(--lul-leading-nav-link);
+}
+
+/* Inside running text only — inherits the body size at 500 weight. */
+.lul-link {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-medium);
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   5. Numerals
+   Tabular in tables, stat bands, chart labels and folios — figures have to
+   line up in a column. Proportional figures only in running prose. The
+   slashed zero stays OFF throughout: it reads as technical rather than
+   editorial.
+   -------------------------------------------------------------------------- */
+.lul-tnum,
+.lul table,
+.lul .lul-chart-label {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Opt back out for a figure sitting inside a sentence. */
+.lul-pnum {
+  font-variant-numeric: proportional-nums;
+  font-feature-settings: "pnum" 1;
+}
+
+/* --------------------------------------------------------------------------
+   6. Mobile step-down
+   NOT IN THE DOC — the typography spec gives one web scale and is silent on
+   breakpoints. 56px display and 42px H1 overflow a 375px viewport, so the
+   four largest steps are stepped down here. Literal values, no calc(), so
+   Squarespace's compiler accepts them. Revisit if the doc gains a mobile
+   scale; everything H3 and below is unchanged.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  :root {
+    --lul-size-display: 36px;
+    --lul-size-h1:      30px;
+    --lul-size-h2:      24px;
+    --lul-size-stat:    32px;
+  }
+}

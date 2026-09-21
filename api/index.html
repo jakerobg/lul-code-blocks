@@ -1,3 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoning API sandbox — local preview</title>
+<!--
+  DEV ONLY. Not for Squarespace. Run:  python3 tools/dev-proxy.py
+  Sets the API base to the local proxy so the call works from a localhost origin;
+  in production the variable is never set and the block calls the endpoint directly.
+-->
+<script>window.LUL_SANDBOX_API_BASE = "/mock";</script>
+<style>
+  body { margin:0; background:#fff; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+  .wrap { padding:24px; }
+  .devnote { max-width:1280px; margin:0 auto 14px; font-size:12px; color:#8a8594; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="devnote">local preview — API calls go through tools/dev-proxy.py, which holds the key</p>
 <!--
   ZONING API SANDBOX — live request against the mock endpoint (Squarespace Code Block).
 
@@ -1104,3 +1125,4 @@
         })();
     </script>
 </section>
+</div></body></html>

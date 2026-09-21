@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUL shared styles — specimen</title>
+<link rel="stylesheet" href="lul.css">
+<style>
+  /* Specimen chrome only. None of this ships; it is the graph paper, not the type. */
+  body { margin: 0; background: #fff; color: #393347; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  .row { display: grid; grid-template-columns: 148px 1fr; gap: 24px;
+         padding: 18px 0; border-top: 1px solid rgba(57, 51, 71, 0.15); align-items: baseline; }
+  .spec { font: 400 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+          color: #6b6580; padding-top: 6px; }
+  .spec b { display: block; font-weight: 600; color: #393347; }
+  h2.sec { font: 600 13px/1.2 Inter, sans-serif; letter-spacing: 0.12em;
+           text-transform: uppercase; color: #6b6580; margin: 56px 0 8px; }
+  h2.sec:first-of-type { margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap lul">
+
+  <h2 class="sec">Headings and body</h2>
+
+  <div class="row"><div class="spec"><b>.lul-display</b>SG 700 · 56 / 1.0 · -0.02em</div>
+    <div class="lul-display">Zoning data, ready to use</div></div>
+  <div class="row"><div class="spec"><b>.lul-h1</b>SG 700 · 42 / 1.1 · -0.01em</div>
+    <div class="lul-h1">National coverage for Zoning Slices</div></div>
+  <div class="row"><div class="spec"><b>.lul-h2</b>SG 700 · 30 / 1.2</div>
+    <div class="lul-h2">Select variables to include</div></div>
+  <div class="row"><div class="spec"><b>.lul-h3</b>SG 700 · 21 / 1.25</div>
+    <div class="lul-h3">Minimum lot size requirements</div></div>
+  <div class="row"><div class="spec"><b>.lul-h4</b>Inter 600 · 18 / 1.45</div>
+    <div class="lul-h4">Permitting pathways by housing type</div></div>
+  <div class="row"><div class="spec"><b>.lul-body-l</b>Inter 400 · 18 / 1.6</div>
+    <div class="lul-body-l">GIS layers that merge base and overlay districts into unique geometric
+      combinations to compute prevailing regulations, so you don't have to.</div></div>
+  <div class="row"><div class="spec"><b>.lul-body</b>Inter 400 · 16 / 1.6</div>
+    <div class="lul-body">Each order includes all base variables listed in our
+      <a class="lul-link" href="#">Data Dictionary</a> at no extra charge. The options below are
+      additional, optional variables.</div></div>
+  <div class="row"><div class="spec"><b>.lul-small</b>Inter 400 · 14 / 1.5</div>
+    <div class="lul-small">Like most other CBSAs in the database, zoned land in the Kansas City metro
+      predominantly allows residential uses.</div></div>
+  <div class="row"><div class="spec"><b>.lul-caption</b>Inter 400 · 13 / 1.45</div>
+    <div class="lul-caption">Permitting pathways for different housing types on residentially zoned land.</div></div>
+  <div class="row"><div class="spec"><b>.lul-eyebrow</b>Inter 600 · 12 / 1.2 · 0.12em</div>
+    <div class="lul-eyebrow">Brand foundations</div></div>
+
+  <h2 class="sec">Data</h2>
+
+  <div class="row"><div class="spec"><b>.lul-stat</b>SG 700 · 40 / 1.0 · tnum</div>
+    <div class="lul-stat">175K+ &nbsp; 10.8K+ &nbsp; 1.4B+ &nbsp; 186</div></div>
+
+  <h2 class="sec">Cards</h2>
+
+  <div class="row"><div class="spec"><b>.lul-card-title-l</b>SG 700 · 21 / 1.25<br>Product, resource grid</div>
+    <div class="lul-card-title-l">Zoning Slices</div></div>
+  <div class="row"><div class="spec"><b>.lul-card-title-m</b>SG 700 · 18 / 1.3<br>Comparison, content</div>
+    <div class="lul-card-title-m">Parcel Reports</div></div>
+  <div class="row"><div class="spec"><b>.lul-card-title-s</b>Inter 600 · 16 / 1.35<br>Scope, in-flow controls</div>
+    <div class="lul-card-title-s">Residential basics</div></div>
+  <div class="row"><div class="spec"><b>.lul-card-eyebrow</b>Inter 600 · 12 / 1.2</div>
+    <div class="lul-card-eyebrow">Dataset</div></div>
+  <div class="row"><div class="spec"><b>.lul-card-body</b>Inter 400 · 14 / 1.5</div>
+    <div class="lul-card-body">Merged base and overlay districts with prevailing regulations computed
+      for every unique combination.</div></div>
+  <div class="row"><div class="spec"><b>.lul-card-link</b>Inter 600 · 15 / 1.35</div>
+    <div class="lul-card-link">Learn more</div></div>
+
+  <h2 class="sec">CTA type</h2>
+
+  <div class="row"><div class="spec"><b>.lul-cta</b>Inter 600 · 16 / 1.2<br>Primary + secondary</div>
+    <div><span class="lul-cta">Get instant pricing</span> &nbsp;&nbsp;
+         <span class="lul-cta">Order Slices</span> &nbsp;&nbsp;
+         <span class="lul-cta">Download Data Dictionary</span></div></div>
+  <div class="row"><div class="spec"><b>.lul-cta-tertiary</b>Inter 600 · 15 / 1.35</div>
+    <div><span class="lul-cta-tertiary">Learn more</span> &nbsp;&nbsp;
+         <span class="lul-cta-tertiary">Access resource</span> &nbsp;&nbsp;
+         <span class="lul-cta-tertiary">Contact us for a quote</span></div></div>
+  <div class="row"><div class="spec"><b>.lul-cta-compact</b>Inter 600 · 14 / 1.3</div>
+    <div><span class="lul-cta-compact">Residential basics</span> &nbsp;&nbsp;
+         <span class="lul-cta-compact">Full regulatory package</span> &nbsp;&nbsp;
+         <span class="lul-cta-compact">Clear all</span></div></div>
+  <div class="row"><div class="spec"><b>.lul-nav-link</b>Inter 500 · 15 / 1.35</div>
+    <div><span class="lul-nav-link">Products</span> &nbsp;&nbsp;
+         <span class="lul-nav-link">Sectors</span> &nbsp;&nbsp;
+         <span class="lul-nav-link">Services</span> &nbsp;&nbsp;
+         <span class="lul-nav-link">About</span></div></div>
+  <div class="row"><div class="spec"><b>.lul-link</b>Inter 500 · inherits size</div>
+    <div class="lul-body">Every order includes all base variables listed in our
+      <a class="lul-link" href="#">Data Dictionary</a> at no extra charge.</div></div>
+
+  <h2 class="sec">Numerals</h2>
+
+  <div class="row"><div class="spec"><b>table (auto tnum)</b>Columns must line up</div>
+    <table class="lul-small" cellpadding="0" cellspacing="0">
+      <tr><td style="padding-right:32px">Kansas City, MO-KS</td><td style="text-align:right">1,480</td><td style="text-align:right;padding-left:24px">96%</td></tr>
+      <tr><td style="padding-right:32px">Topeka, KS</td><td style="text-align:right">1,110</td><td style="text-align:right;padding-left:24px">13%</td></tr>
+      <tr><td style="padding-right:32px">St. Joseph, MO-KS</td><td style="text-align:right">888</td><td style="text-align:right;padding-left:24px">0.375</td></tr>
+    </table></div>
+  <div class="row"><div class="spec"><b>.lul-pnum</b>Figures in prose</div>
+    <div class="lul-body lul-pnum">44% of renter households in the metro are cost burdened, up from 38% in 2000.</div></div>
+
+</div>
+</body>
+</html>

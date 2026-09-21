@@ -1,0 +1,150 @@
+<!--
+  RESOURCE CARDS — four helper links, 4 across (Squarespace Code Block).
+
+  Deliberately SECONDARY to the product cards. Same family, quieter voice:
+
+                        product cards          these
+    surface             white, raised          flat tint, no lift
+    border              rgba(57,51,72,.3)      rgba(57,51,72,.12)
+    title               22px                   17px
+    body                15px                   14px, lighter ink
+    link                15px #594496           13px, uppercase, appears
+                                               fully only on hover
+
+  Read as a utility strip under the real content — nothing here competes
+  with a product card for attention.
+
+  ▶ WIDTH: runs the full width of its Squarespace section. Control the inset
+    from the section's content-width setting.
+  ▶ TO EDIT: change the text inside each <a class="lul-res-card"> and set its
+    href. Add or remove cards freely; the grid reflows.
+-->
+
+<style>
+    /* ── LUL Resource Cards (secondary) ─────────────────────────────── */
+    .lul-res {
+        padding: 30px 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .lul-res-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .lul-res-card {
+        display: flex;
+        flex-direction: column;
+        /* flat tint instead of a raised white surface */
+        background: rgba(57, 51, 72, 0.035);
+        border: 1px solid rgba(57, 51, 72, 0.12);
+        border-radius: 0;
+        padding: 18px 20px 16px;
+        text-decoration: none;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease;
+    }
+    .lul-res-card:hover {
+        background: rgba(57, 51, 72, 0.06);
+        border-color: rgba(57, 51, 72, 0.24);
+        /* no shadow, no lift — those belong to the product cards */
+    }
+
+    .lul-res-title {
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        line-height: 1.3;
+        color: #393348;
+        margin: 0 0 6px;
+    }
+    .lul-res-body {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+        color: rgba(57, 51, 72, 0.6);
+        margin: 0 0 18px;
+        flex-grow: 1;
+    }
+    .lul-res-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: rgba(89, 68, 150, 0.75);
+        align-self: flex-start;
+        transition:
+            gap 0.25s ease,
+            color 0.25s ease;
+    }
+    .lul-res-card:hover .lul-res-link {
+        gap: 10px;
+        color: #594496;
+    }
+
+    /* Squarespace link-color override safety */
+    .lul-res a,
+    .lul-res a:visited,
+    .lul-res a:hover {
+        text-decoration: none;
+    }
+
+    @media (max-width: 1024px) {
+        .lul-res-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 640px) {
+        .lul-res-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+        }
+        .lul-res-card {
+            padding: 16px 18px 14px;
+        }
+        .lul-res-body {
+            font-size: 15px;
+            margin-bottom: 14px;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lul-res-card,
+        .lul-res-link {
+            transition: none !important;
+        }
+    }
+</style>
+
+<div class="lul-res">
+    <div class="lul-res-grid">
+        <a class="lul-res-card" href="https://www.landuselabs.com/data-difference">
+            <h4 class="lul-res-title">Methodology</h4>
+            <p class="lul-res-body">How our zoning data is sourced, standardized, and verified.</p>
+            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a class="lul-res-card" href="/dictionaries" target="_blank" rel="noopener">
+            <h4 class="lul-res-title">Data Dictionaries</h4>
+            <p class="lul-res-body">Field definitions and schema documentation for all products.</p>
+            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a class="lul-res-card" href="https://www.landuselabs.com/glossary">
+            <h4 class="lul-res-title">Glossary</h4>
+            <p class="lul-res-body">Key zoning and land use terms explained.</p>
+            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+        </a>
+
+        <a class="lul-res-card" href="https://www.landuselabs.com/abbreviations">
+            <h4 class="lul-res-title">Abbreviations Guide</h4>
+            <p class="lul-res-body">Common abbreviations used in zoning data and reports.</p>
+            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+        </a>
+    </div>
+</div>

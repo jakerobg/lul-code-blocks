@@ -115,11 +115,18 @@
   font-weight: var(--lul-nav-weight);
 }
 
-/* items inside the open menu sit a little lighter than the bar */
+/* items inside the open menu sit a little lighter than the bar.
+   The overlay half must exclude [data-folder="root"]: Squarespace wraps the
+   overlay's TOP level in a .header-menu-nav-folder too, so a plain
+   `.header-menu-nav-folder .header-menu-nav-item a` still matches every
+   top-level row. That mattered because only a FOLDER label is wrapped in
+   .header-nav-folder-title-text (which carries the bar weight) — a plain
+   top-level link like Services has no such span, so it alone dropped to the
+   light weight while Products and About stayed bold. */
 #header .header-nav-folder-item a,
 #header .header-nav-folder-item a .header-nav-folder-item-content,
-#header .header-menu-nav-item a,
-#header .header-menu-nav-item a .header-menu-nav-item-content {
+#header .header-menu-nav-folder:not([data-folder="root"]) .header-menu-nav-item a,
+#header .header-menu-nav-folder:not([data-folder="root"]) .header-menu-nav-item a .header-menu-nav-item-content {
   font-weight: var(--lul-menu-weight);
 }
 
