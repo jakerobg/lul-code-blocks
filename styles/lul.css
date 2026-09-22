@@ -627,6 +627,7 @@ html.squarespace-damask .sqs-blockStatus {
      .lul-uc              the block; declares the query container
        --tight            20px vertical padding instead of 30px
        --four             four across instead of three
+       --five             five across; cards stretch to the full width
        --center           centre the row; cards keep their width when a row
                           is short instead of stretching to fill
        --wrap2            step 3 -> 2 -> 1 instead of 3 -> 1
@@ -677,6 +678,9 @@ html.squarespace-damask .sqs-blockStatus {
 }
 .lul-uc--four .lul-uc__card {
   flex-basis: calc(25% - 18px);     /* 18px = the 24px gap * 3/4 */
+}
+.lul-uc--five .lul-uc__card {
+  flex-basis: calc(20% - 19.2px);   /* 19.2px = the 24px gap * 4/5 */
 }
 .lul-uc--center .lul-uc__card {
   flex-grow: 0;
@@ -771,7 +775,13 @@ html.squarespace-damask .sqs-blockStatus {
   .lul-uc {
     --lul-uc-gap: 16px;
   }
-  .lul-uc__card {
+  /* The modifiers are listed here on purpose. `.lul-uc__card` alone is (0,1,0) and
+     `.lul-uc--four .lul-uc__card` is (0,2,0); a media query contributes nothing to
+     specificity, so without these a --four or --five block kept its desktop basis
+     all the way down and never stacked. */
+  .lul-uc__card,
+  .lul-uc--four .lul-uc__card,
+  .lul-uc--five .lul-uc__card {
     flex-basis: 100%;
   }
   .lul-uc--wrap2 .lul-uc__card {

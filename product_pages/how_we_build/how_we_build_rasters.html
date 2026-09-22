@@ -1,0 +1,103 @@
+<!--
+  HOW WE BUILD THE DATA — three icon cards, 3 across (Squarespace Code Block).
+  Same card system as use_case_cards.html / use_case_cards_reports.html:
+    border  1px rgba(57,51,72,.3)
+    radius  0 (sitewide)
+    title   22px / 500 / #393348
+    body    15px Arial / rgba(57,51,72,.75)
+    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  Informational, not links — <article> elements, no hover lift.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, stacked under 640px.
+  ▶ ICONS: inline SVG, swap the <path> data for any 24x24 outline icon.
+
+  Note: the source SVG drew a lighter card border (#393347 @ 10%) and a 48px
+  icon well. This uses the shared card system's values instead, so it sits
+  consistently beside the use-case cards.
+-->
+<!-- Styling comes entirely from styles/lul.css (Squarespace → Design → Custom CSS),
+     which carries the shared .lul-uc card component: grid, card, icon, title, body,
+     list, link colours and the responsive reflow. This block used to ship its own
+     copy of all of it — lul.css's own header records why that was consolidated
+     ("All nine blocks shipped the same CSS under SIX different namespaces ... One
+     stylesheet, one namespace").
+
+     So there is no <style> here on purpose. Do not reintroduce one: a local copy
+     silently shadows the shared component and the two drift apart. Modifiers live
+     on the root element — --tight, --four, --center, --wrap2.
+
+     The <link> below is for local preview only; Squarespace already has the CSS. -->
+<link rel="stylesheet" href="../../styles/lul.css">
+
+<section class="lul lul-uc" aria-label="How we build the data">
+    <div class="lul-uc__grid">
+        <!-- Derived From Verified District Data -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m12 2 9 5-9 5-9-5 9-5Z" />
+                    <path d="m3 12 9 5 9-5" />
+                    <path d="m3 17 9 5 9-5" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Derived From Verified District Data</h4>
+            <p class="lul-uc__body">Each Raster is generated from accurate jurisdiction-level data.</p>
+        </article>
+        <!-- Human Verification -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M2 21v-2a5 5 0 0 1 5-5h4" />
+                    <path d="m15 18 2 2 4-4" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Human Verification</h4>
+            <p class="lul-uc__body">
+                Our dataset is created, verified, and updated by human experts, not AI. Every entry undergoes a
+                multi-step review process by team members with expertise spanning law, geography, planning, and data
+                science.
+            </p>
+        </article>
+        <!-- Regular Update Cycles -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-7.6-4.2" />
+                    <path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 7.6 4.2" />
+                    <path d="M20 3v4.5h-4.5" />
+                    <path d="M4 21v-4.5h4.5" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Regular Update Cycles</h4>
+            <p class="lul-uc__body">
+                Recognizing the value of refreshed zoning data, we continuously monitor, track, and input updates, and
+                we regularly conduct full-state and full-metro area reviews.
+            </p>
+        </article>
+    </div>
+</section>
