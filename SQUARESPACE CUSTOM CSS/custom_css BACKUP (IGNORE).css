@@ -1,0 +1,1292 @@
+.sqs-block .sqs-blockStatus, 
+.sqs-block .removed-script, 
+html.squarespace-damask .sqs-blockStatus {    
+    display: none !important;  
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Land Use Labs storefront — site-wide custom CSS
+   ─────────────────────────────────────────────────────────────────────────
+   Paste into Squarespace → Website → Custom CSS. Source of truth is
+   `squarespace/custom-css.css` in the lul_data_extracts repo. The
+   parcel-report form (landuselabs-zoning-report repo) shares the same
+     rules — both forms drop their inline <style>blocks once this lands
+   in Squarespace.
+
+   Design notes:
+   - Rules are scoped to a container id so nothing leaks site-wide. Two
+     ids are in play: `#lul-order` (storefront order forms) and
+     `#lul-thankyou` (Tables post-checkout page). Rules used by both
+     embed under the comma-list selector; form-only rules stay under
+     `#lul-order`.
+   - `font-family` and the body text color are intentionally *not* set,
+     so the form inherits whatever Squarespace's Site Styles panel
+     provides — change the site font there, the form follows.
+   - Brand color lives in `--lul-accent` etc. at :root. One edit in the
+     Custom CSS panel propagates across all storefront embeds. If/when
+     Squarespace 7.1 site-palette tokens are confirmed available, these
+     can be swapped to `var(--site-accent-color, var(--lul-accent))`.
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Squarespace 7.1 inheritance:
+   - `--paragraphLink-color` is the "Site link color" set in Color &
+     Style → Colors. Most sites set this to brand color, so binding our
+     accent to it makes the form track Site Styles automatically.
+   - The `#393348` after the comma is the fallback when the site has no
+     link-color override (or when previewing the form outside Squarespace).
+   To opt back out of inheritance, change the `--lul-accent` value below
+   to a literal hex. */
+:root {
+  --lul-accent:        var(--paragraphLink-color, #393348);
+  /* Derived from --lul-accent so hover darkens correctly when the
+     accent is inherited from Site Styles (e.g., a brand teal would
+     hover to a darker teal, not stay at LUL purple). */
+  --lul-accent-hover:  color-mix(in srgb, var(--lul-accent) 80%, #000);
+  --lul-accent-soft:   #4D4759;  /* lighter purple — section labels, price */
+  --lul-rule:          #9BADA9;  /* hover/focus border, warn-message accent */
+  --lul-text-muted:    #393348;
+  --lul-bg-soft:       #f0f5f4;  /* selected tile / focused result row background */
+  --lul-bg-warn:       #f5f3f0;
+  --lul-bg-error:      #fdf2f2;
+  --lul-error:         #b94040;
+}
+
+/* Container — note absence of font-family + color, see header comment.
+   560px reads as a column of tiles + typeahead + price (Tables and
+   parcel-report shape). The Districts form opts out via `.lul-wide`
+   because its matrix is a 2D grid that needs horizontal room. */
+#lul-order,
+#lul-thankyou {
+  max-width: 560px;
+}
+#lul-order.lul-wide {
+  /* Let the section's content width win. The matrix has
+     `table-layout: fixed` so cells distribute evenly across whatever
+     width the section gives us, even on ultrawide displays; the
+     terms/buy block below the matrix is centered and reads fine at
+     any width. */
+  max-width: none;
+}
+
+/* Section header above each step. */
+#lul-order .lul-label {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--lul-accent-soft);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Inputs / selects */
+#lul-order .lul-input {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 17px;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-family: inherit;
+  background: #fff;
+}
+#lul-order .lul-input:focus {
+  outline: none;
+  border-color: var(--lul-rule);
+}
+#lul-order select.lul-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234D4759' fill='none' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+#lul-order .lul-hint {
+  font-size: 15px;
+  color: var(--lul-text-muted);
+  margin: 5px 0 10px;
+}
+
+#lul-order .lul-fineprint,
+#lul-thankyou .lul-fineprint {
+  font-size: 12.5px;
+  color: #666;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+#lul-order .lul-fineprint a,
+#lul-thankyou .lul-fineprint a {
+  color: var(--lul-accent-soft);
+  text-decoration: underline;
+}
+
+/* Buttons */
+#lul-order .lul-btn {
+  display: inline-block;
+  padding: 12px 26px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+  background: var(--lul-accent);
+  color: #fff;
+}
+#lul-order .lul-btn:hover  { background: var(--lul-accent-hover); }
+#lul-order .lul-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Checkboxes (terms, optional add-ons) */
+#lul-order .lul-checkbox-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  color: var(--lul-text-muted);
+  line-height: 1.5;
+}
+#lul-order .lul-checkbox-wrap input[type="checkbox"] {
+  margin-top: 4px;
+  flex-shrink: 0;
+  accent-color: var(--lul-accent);
+}
+#lul-order .lul-checkbox-wrap a {
+  color: var(--lul-accent-soft);
+  text-decoration: underline;
+}
+
+/* Messages (info, warn, error, ok). Shared by the storefront forms and
+   the thank-you page — both embed points get the same look. */
+#lul-order .lul-msg,
+#lul-thankyou .lul-msg {
+  padding: 15px 18px;
+  border-radius: 4px;
+  margin: 6px 0 14px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+#lul-order .lul-msg p,
+#lul-thankyou .lul-msg p { margin: 0 0 10px; }
+#lul-order .lul-msg p:last-child,
+#lul-thankyou .lul-msg p:last-child { margin-bottom: 0; }
+#lul-order .lul-warn,
+#lul-thankyou .lul-warn { background: var(--lul-bg-warn);  border-left: 4px solid var(--lul-rule); }
+#lul-order .lul-ok,
+#lul-thankyou .lul-ok   { background: var(--lul-bg-soft);  border-left: 4px solid var(--lul-accent-soft); }
+#lul-order .lul-error,
+#lul-thankyou .lul-error {
+  background: var(--lul-bg-error);
+  border-left: 4px solid var(--lul-error);
+  color: var(--lul-error);
+}
+
+/* Spinner (used by both forms during async ops, and by the thank-you
+   page while it verifies the Stripe session). */
+#lul-order .lul-spinner-wrap,
+#lul-thankyou .lul-spinner-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  font-size: 15px;
+  color: #555;
+}
+#lul-order .lul-spinner,
+#lul-thankyou .lul-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-top-color: var(--lul-accent-soft);
+  border-radius: 50%;
+  animation: lul-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes lul-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ─── Tables form: tile-radio groups (unit-of-analysis + scope) ─────────── */
+
+#lul-order .lul-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+#lul-order .lul-tile input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+#lul-order .lul-tile label {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+#lul-order .lul-tile label .lul-tile-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+#lul-order .lul-tile label .lul-tile-desc {
+  font-size: 14px;
+  color: var(--lul-text-muted);
+  margin-top: 4px;
+}
+#lul-order .lul-tile input[type="radio"]:checked + label {
+  border-color: var(--lul-accent);
+  background: var(--lul-bg-soft);
+}
+#lul-order .lul-tile label:hover { border-color: var(--lul-rule); }
+#lul-order .lul-tile-hidden     { display: none; }
+
+/* Non-interactive scope tile — flags an unsupported scope (e.g. state/
+   country) and points buyers to the contact form instead of a purchase
+   flow. Dashed border distinguishes it from the clickable radio tiles. */
+#lul-order .lul-tile-info {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px;
+  border: 1.5px dashed #ccc;
+  border-radius: 4px;
+}
+#lul-order .lul-tile-info .lul-tile-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--lul-text-muted);
+}
+#lul-order .lul-tile-info .lul-tile-desc {
+  font-size: 14px;
+  color: var(--lul-text-muted);
+  margin-top: 4px;
+}
+#lul-order .lul-tile-info .lul-tile-desc a {
+  color: var(--lul-accent);
+}
+#lul-order .lul-tile-info .lul-tile-desc a:hover {
+  color: var(--lul-accent-hover);
+}
+
+
+/* ─── Tables form: geography search results list ────────────────────────── */
+
+#lul-order .lul-results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+#lul-order .lul-result button {
+  display: block;
+  width: 100%;
+  padding: 10px 13px;
+  text-align: left;
+  font: inherit;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+#lul-order .lul-result:last-child button { border-bottom: none; }
+#lul-order .lul-result button:hover,
+#lul-order .lul-result button:focus {
+  background: var(--lul-bg-soft);
+  outline: none;
+}
+#lul-order .lul-result button.lul-result-selected {
+  background: var(--lul-bg-soft);
+  font-weight: 600;
+}
+
+
+/* ─── Tables form: price + step visibility ──────────────────────────────── */
+
+#lul-order .lul-price {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--lul-accent-soft);
+  margin: 0 0 16px;
+}
+#lul-order .lul-step          { margin-bottom: 24px; }
+#lul-order .lul-step-hidden   { display: none; }
+
+
+/* ─── Parcel-report form: lead-capture sub-form ────────────────────────── */
+
+#lul-order .lul-lead   { margin-top: 4px; }
+#lul-order .lul-field  { margin-bottom: 10px; }
+#lul-order .lul-row {
+  display: flex;
+  gap: 10px;
+}
+#lul-order .lul-row .lul-field            { flex: 1; }
+#lul-order .lul-row .lul-field.lul-flex-2 { flex: 2; }
+
+
+/* ─── Districts form: variable-set matrix ───────────────────────────────── */
+
+#lul-matrix-wrap {
+  overflow-x: auto;
+  margin-top: 12px;
+  padding-bottom: 24px;
+}
+#lul-matrix-summary,
+#lul-step-buy {
+  margin-top: 16px;
+}
+#lul-matrix {
+  border-collapse: collapse;
+  font-size: 13px;
+  /* table-layout: auto (default) — fixed-layout ignores per-cell min-widths,
+     which is what makes columns squash to unreadable widths on narrow
+     viewports. Auto-layout + per-cell min-width below + the wrap's
+     overflow-x:auto = readable columns that scroll horizontally instead. */
+}
+#lul-matrix th,
+#lul-matrix td {
+  border: 1px solid var(--lul-border, #d6d3df);
+  padding: 4px 6px;
+  text-align: center;
+  vertical-align: middle;
+  min-width: 90px;  /* readable column floor; wrap scrolls past viewport */
+}
+#lul-matrix th {
+  background: var(--lul-bg-soft, #f4f2f7);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+#lul-matrix th.lul-row-label {
+  text-align: left;
+  background: var(--lul-bg-soft, #f4f2f7);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 120px;
+  max-width: 140px;
+  line-height: 1.05;  /* single-spaced when the label wraps ("District-Wide Characteristics") */
+}
+#lul-matrix th.lul-corner   { z-index: 3; cursor: pointer; }  /* top-left corner above both sticky rows */
+#lul-matrix td.lul-cell-empty   { background: #faf9fc; cursor: default; }
+#lul-matrix td.lul-cell-active  { cursor: pointer; }
+#lul-matrix td.lul-cell-active:hover { background: #ecebf0; }
+/* Multi-set cells: the labels are the click targets, not the surrounding
+   whitespace, so the cursor pointer would lie. Reset to default and let
+   each label's own cursor: pointer (set on the <label>) surface where
+   clicks actually toggle. */
+#lul-matrix td.lul-cell-multi-host { cursor: default; }
+#lul-matrix td.lul-cell-multi-host:hover { background: transparent; }
+#lul-matrix th.lul-col-toggle,
+#lul-matrix th.lul-row-toggle  { cursor: pointer; }
+#lul-matrix .lul-cell-multi {
+  display: inline-flex;
+    /* shrink-to-content + td's text-align:center centers the block */
+    flex-direction: column;
+    gap: 6px;
+    /* between distinct labels (overrides intra-label line-height) */
+  font-size: 11px;
+  text-align: left;
+}
+#lul-matrix .lul-cell-multi label {
+  display: flex;
+    align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  line-height: 1.1;  /* tight inside one label that wraps across lines */
+}
+#lul-matrix-summary {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--lul-bg-soft, #f4f2f7);
+  border-radius: 4px;
+}
+#lul-order,
+#lul-order *,
+#lul-order *::before,
+#lul-order *::after {
+  box-sizing: border-box;
+}
+
+#lul-order {
+  --lul-navy: #393348;
+  --lul-sage: #E0E5C2;
+  --lul-sage-light: #E0E5C2;
+  --lul-sage-dark: #c8ceac;
+  --lul-bg: #EFEDEC;
+  --lul-white: #fff;
+  --lul-muted: rgba(57, 51, 72, 0.6);
+  --lul-border: rgba(57, 51, 72, 0.15);
+  --lul-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --lul-radius: 5px;
+  font-family: var(--lul-font);
+  color: var(--lul-navy);
+  -webkit-font-smoothing: antialiased;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* ── Card shell ── */
+.lul-order-card {
+  background: var(--lul-white);
+  padding: 36px;
+  border-radius: 8px;
+  box-shadow: 0 10px 36px rgba(57, 51, 72, .12);
+  border-top: 4px solid var(--lul-sage);
+}
+
+.lul-card-head {
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--lul-border);
+}
+
+.lul-card-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: var(--lul-sage);
+  color: var(--lul-navy);
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.lul-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.2;
+  margin: 0 0 6px;
+}
+
+.lul-card-sub {
+  font-size: .92rem;
+  color: var(--lul-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Steps ── */
+.lul-step {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--lul-border);
+}
+
+.lul-step:first-of-type {
+  padding-top: 0;
+}
+
+.lul-step:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.lul-step-hidden {
+  display: none !important;
+}
+
+.lul-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--lul-muted);
+  margin-bottom: 14px;
+}
+
+.lul-hint {
+  font-size: .85rem;
+  line-height: 1.65;
+  color: var(--lul-muted);
+    margin-bottom: 14px;
+}
+
+/* ── Step 1: scope tiles ── */
+.lul-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.lul-tile {
+  position: relative;
+}
+
+.lul-tile input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.lul-tile label {
+  display: block;
+  padding: 18px 20px;
+  border: 1.5px solid var(--lul-border);
+  border-radius: var(--lul-radius);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+
+.lul-tile input:checked+label {
+  border-color: var(--lul-navy);
+  background: var(--lul-sage-light);
+}
+
+.lul-tile input:focus-visible+label {
+  outline: 2px solid var(--lul-navy);
+  outline-offset: 2px;
+}
+
+.lul-tile-name {
+  display: block;
+  font-size: .95rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.lul-tile-desc {
+  display: block;
+  font-size: .82rem;
+  color: var(--lul-muted);
+  line-height: 1.5;
+}
+
+/* ── Step 2: geography pick ── */
+#lul-geo-typeahead {
+  position: relative;
+}
+
+.lul-input {
+  font-family: var(--lul-font);
+  font-size: .9rem;
+  padding: 11px 15px;
+  border: 1.5px solid var(--lul-border);
+  border-radius: var(--lul-radius);
+  background: var(--lul-white);
+  color: var(--lul-navy);
+  outline: none;
+  width: 100%;
+  transition: border-color .15s;
+}
+
+.lul-input:focus {
+  border-color: var(--lul-navy);
+}
+
+#lul-geo-status {
+  margin-top: 8px;
+}
+
+.lul-results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  border: 1.5px solid var(--lul-border);
+  border-radius: var(--lul-radius);
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--lul-white);
+}
+
+.lul-result {
+  border-bottom: 1px solid var(--lul-border);
+}
+
+.lul-result:last-child {
+  border-bottom: none;
+}
+
+.lul-result button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 15px;
+  border: none;
+  background: none;
+  font-family: var(--lul-font);
+  font-size: .88rem;
+  color: var(--lul-navy);
+  cursor: pointer;
+  transition: background .12s;
+}
+
+.lul-result button:hover {
+  background: var(--lul-bg);
+}
+
+/* ── Spinners & messages ── */
+.lul-spinner-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .85rem;
+  color: var(--lul-muted);
+  padding: 4px 0;
+}
+
+.lul-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--lul-border);
+  border-top-color: var(--lul-navy);
+  border-radius: 50%;
+  animation: lul-spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes lul-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lul-msg {
+  padding: 14px 18px;
+  border-radius: var(--lul-radius);
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+.lul-msg p {
+  margin: 0;
+}
+
+.lul-warn {
+  background: var(--lul-sage);
+  color: var(--lul-navy);
+}
+
+.lul-error {
+  background: rgba(178, 58, 58, .08);
+  color: #a13a3a;
+}
+
+/* ── Step 3: variable-set matrix ── */
+#lul-matrix-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--lul-border);
+  border-radius: var(--lul-radius);
+}
+
+#lul-matrix {
+  /* min-width:100% (not width:100%) — fills available room when columns
+     naturally fit, but allows the table to grow past viewport when there
+     are too many columns to be readable inside parent width. Combined
+     with the wrap's overflow-x:auto, narrow viewports get horizontal
+     scroll instead of squashed columns. */
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+}
+
+#lul-matrix th,
+#lul-matrix td {
+  border: 1px solid var(--lul-border);
+  padding: 10px 12px;
+  min-width: 90px;  /* readable column floor */
+}
+
+#lul-matrix thead th {
+  background: var(--lul-bg);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--lul-navy);
+  text-align: center;
+  /* Wrap at whitespace only; rely on the wrap's overflow-x:auto for
+     narrow viewports rather than breaking words like "Affordability"
+     mid-syllable. `hyphens: auto` is a polite fallback for the rare
+     single-word overflow case (renders with a visible hyphen). */
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: auto;
+  line-height: 1.3;
+  vertical-align: bottom;
+}
+
+#lul-matrix .lul-col-toggle div {
+  margin-bottom: 6px;
+}
+
+#lul-matrix .lul-corner {
+  background: var(--lul-bg);
+  text-align: center;
+}
+
+#lul-matrix .lul-col-toggle input[type="checkbox"] {
+  margin-top: 6px;
+}
+
+#lul-matrix .lul-row-label {
+  background: var(--lul-sage-light);
+  font-weight: 600;
+  font-size: .85rem;
+  white-space: normal;
+  width: 140px;
+  /* Same word-break policy as the column headers — break at whitespace,
+     hyphenate only as a last resort for single-word overflow. */
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: auto;
+}
+
+#lul-matrix .lul-cell-empty {
+  background: repeating-linear-gradient(45deg, rgba(57, 51, 72, .03), rgba(57, 51, 72, .03) 6px, transparent 6px, transparent 12px);
+}
+
+#lul-matrix .lul-cell-active {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#lul-matrix .lul-cell-single {
+  cursor: pointer;
+  transition: background .12s;
+}
+
+#lul-matrix .lul-cell-single:hover {
+  background: rgba(224, 229, 194, .45);
+}
+
+#lul-matrix .lul-cell-multi-host {
+  text-align: left;
+}
+
+#lul-matrix .lul-cell-multi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#lul-matrix .lul-cell-multi label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .8rem;
+  cursor: pointer;
+  margin: 0;
+}
+
+#lul-matrix input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--lul-navy);
+  cursor: pointer;
+}
+
+.lul-matrix-summary {
+  margin-top: 14px;
+  padding: 12px 16px;
+  background: var(--lul-sage-light);
+  border-radius: var(--lul-radius);
+  font-size: .85rem;
+  color: var(--lul-muted);
+  line-height: 1.6;
+}
+
+.lul-matrix-summary strong {
+  color: var(--lul-navy);
+}
+/* ── Step 4: price / terms / buy ── */
+.lul-price {
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--lul-navy);
+  background: var(--lul-sage);
+  padding: 10px 22px;
+  border-radius: 24px;
+  margin-bottom: 18px;
+}
+
+.lul-checkbox-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.lul-checkbox-wrap input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--lul-navy);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.lul-checkbox-wrap label {
+  font-size: .88rem;
+  line-height: 1.55;
+  cursor: pointer;
+}
+
+.lul-checkbox-wrap a {
+  color: var(--lul-navy);
+  text-decoration: underline;
+}
+
+.lul-btn {
+  width: 100%;
+  background: var(--lul-navy);
+  color: var(--lul-white);
+  font-family: var(--lul-font);
+  font-size: .95rem;
+  font-weight: 600;
+  padding: 14px;
+  border: none;
+  border-radius: var(--lul-radius);
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.lul-btn:hover:not(:disabled) {
+  opacity: .85;
+}
+
+.lul-btn:disabled {
+  background: var(--lul-border);
+  color: var(--lul-muted);
+  cursor: not-allowed;
+}
+
+/* ── Responsive ── */
+@media (max-width:640px) {
+  .lul-order-card {
+    padding: 24px 20px;
+  }
+
+  .lul-tiles {
+    grid-template-columns: 1fr;
+  }
+
+  #lul-matrix {
+    font-size: .78rem;
+  }
+
+  #lul-matrix th,
+  #lul-matrix td {
+    padding: 8px;
+  }
+}
+
+.header-nav-item a,
+.header-nav-folder-title,
+.header-nav-folder-item a {
+  white-space: nowrap;
+}
+.header-nav-list {
+  flex-wrap: nowrap;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   Custom header overrides.
+
+   Loaded after header.css locally; in Squarespace this is what you paste into
+   Design -> Custom CSS, which also loads last.
+
+   VERIFIED behaviour (tested against the real header, not assumed):
+
+     #header { --navigationLinkColor: red; }                    WORKS  <- use this
+     [data-section-theme="white-bold"] { --navigationLinkColor } WORKS
+     :root { --navigationLinkColor: red; }                      DOES NOTHING
+
+   :root fails because the <header> carries data-section-theme="white-bold" and
+   redefines these variables on itself. Custom properties resolve from the nearest
+   element, so a definition on the header always beats one on :root regardless of
+   source order. Set the variable ON #header.
+
+   For plain (non-variable) rules, mind specificity. Squarespace's nav colour comes
+   from `:not(.header--menu-open) .header-nav-wrapper a` = (0,2,1):
+
+     .header-nav-wrapper a { color: red }          LOSES  (0,1,1)
+     #header .header-nav-wrapper a { color: red }  WINS   (1,1,1)
+
+   Prefixing with #header is the reliable habit — it beats almost everything
+   Squarespace ships, without needing !important.
+   ========================================================================== */
+
+/* Retheme via variables (preferred — one change flows through the whole header)
+#header {
+  --navigationLinkColor: hsla(257, 17%, 24%, 1);
+  --headerBorderColor:   hsla(257, 17%, 24%, 0.15);
+  --siteBackgroundColor: hsla(0, 0%, 100%, 1);
+}
+*/
+
+/* Direct rules when a variable doesn't exist for what you want
+#header .header-nav-wrapper a {
+  letter-spacing: 0.04em;
+}
+*/
+
+
+/* ==========================================================================
+   LUL HEADER RESTYLE
+   Everything is prefixed with #header to beat Squarespace's own selectors.
+   Tertiary colours carry a literal fallback so this works in the local preview
+   too (the extraction only ships variables its own rules reference).
+   ========================================================================== */
+
+:root,
+#header {
+  /* ---- design-system ink (buttons/BUTTONS_SECONDARY_TERTIARY.html) ----
+     Single source for every dark fill in the header: the CTA, the menu hover
+     state and the card border/shadow tints all derive from it. */
+  --lul-ink:       #393347;
+  --lul-ink-hover: #4c4460;
+  --lul-btn-pad:   10px 26px;
+
+  /* Ink at low opacity, written out in full.
+     Squarespace's Custom CSS compiler evaluates colour functions and calc() at
+     build time, so it rejects anything computed from a variable:
+       rgba(var(--ink-rgb), .15)      -> "Function rgba requires at least 4 args"
+       calc(var(--w) * .6)            -> "Operation * cannot be applied to
+                                          FUNCTION_CALL and DIMENSION"
+     A literal rgba() with four plain arguments always compiles.
+     Same ink as --lul-ink; change them together. */
+  --lul-ink-15:    rgba(57, 51, 71, 0.15);
+  --lul-ink-05:    rgba(57, 51, 71, 0.05);
+
+  /* menu hover = grey fill; the label keeps its own colour.
+     The panel background is adaptive, so this needs to stay clearly darker
+     than the page's own light grey or the hover state disappears. */
+  --lul-nav-hover-bg:   #d8d6dc;
+
+  /* product-card treatment */
+  --lul-card-border: 1px solid var(--lul-ink-15);
+  --lul-card-shadow: 0 1px 3px var(--lul-ink-05);
+
+  /* ---- tuning knobs: change these, not the rules below ---- */
+  --lul-nav-size:          1em;    /* top-level bar */
+  --lul-menu-size:         0.92em; /* items inside the open menu */
+  --lul-nav-weight:        550;    /* top-level bar */
+  --lul-menu-weight:       450;    /* items inside the open menu */
+  --lul-nav-weight-active: 700;    /* the page you're on */
+  --lul-chevron-w:         0.46em; /* dropdown triangle width */
+  --lul-chevron-gap:       0.32em; /* space between label and triangle */
+  --lul-chevron-h:         0.28em; /* triangle height (~0.6 x width) */
+  --lul-logo-height:       62px;   /* Squarespace renders it at 70px */
+}
+
+/* --------------------------------------------------------------------------
+   1. Size and weight
+   -------------------------------------------------------------------------- */
+/* font-size goes on the interactive element only. Putting it on the inner
+   .header-nav-folder-title-text span too would compound (0.94em x 0.94em) and make
+   the folder labels smaller than the plain links. */
+#header .header-nav-item > a,
+#header .header-nav-item > button {
+  font-size: var(--lul-nav-size);
+}
+
+/* items inside the open menu — dropdown and overlay */
+#header .header-nav-folder-item > a,
+#header .header-menu-nav-item > a,
+#header .header-menu-nav-item > button,
+#header .header-menu-nav-folder .header-menu-nav-item > a {
+  font-size: var(--lul-menu-size);
+}
+
+#header .header-nav-item a,
+#header .header-nav-item button,
+#header .header-nav-folder-title-text,
+#header .header-menu-nav-item a,
+#header .header-menu-nav-item button {
+  font-weight: var(--lul-nav-weight);
+}
+
+/* items inside the open menu sit a little lighter than the bar.
+   The overlay half must exclude [data-folder="root"]: Squarespace wraps the
+   overlay's TOP level in a .header-menu-nav-folder too, so a plain
+   `.header-menu-nav-folder .header-menu-nav-item a` still matches every
+   top-level row. That mattered because only a FOLDER label is wrapped in
+   .header-nav-folder-title-text (which carries the bar weight) — a plain
+   top-level link like Services has no such span, so it alone dropped to the
+   light weight while Products and About stayed bold. */
+#header .header-nav-folder-item a,
+#header .header-nav-folder-item a .header-nav-folder-item-content,
+#header .header-menu-nav-folder:not([data-folder="root"]) .header-menu-nav-item a,
+#header .header-menu-nav-folder:not([data-folder="root"]) .header-menu-nav-item a .header-menu-nav-item-content {
+  font-weight: var(--lul-menu-weight);
+}
+
+/* Selected page — verified against live Squarespace output:
+     top-level page      -> .header-nav-item--active            (on the <div>)
+     folder parent       -> .header-nav-item--active + button[aria-current="true"]
+     submenu page        -> .header-nav-folder-item--active + a[aria-current="page"]
+     overlay menu        -> .header-menu-nav-item--active
+   Direct children only: `.header-nav-item--active a` would also match every link
+   inside that folder's dropdown, and Squarespace marks the parent folder active
+   whenever you are on one of its subpages — that would bold the whole submenu. */
+#header .header-nav-item--active > a,
+#header .header-nav-item--active > button,
+#header .header-nav-item--active > button .header-nav-folder-title-text,
+
+#header .header-nav-folder-item--active > a,
+#header .header-nav-folder-item--active > a .header-nav-folder-item-content,
+
+#header .header-menu-nav-item--active > a,
+#header .header-menu-nav-item--active > a .header-menu-nav-item-content,
+#header .header-menu-nav-item--active > a .header-nav-folder-title-text,
+
+#header [aria-current="page"],
+#header [aria-current="page"] .header-nav-folder-title-text,
+#header [aria-current="page"] .header-nav-folder-item-content,
+#header [aria-current="page"] .header-menu-nav-item-content,
+#header [aria-current="true"],
+#header [aria-current="true"] .header-nav-folder-title-text,
+#header [aria-current="true"] .header-menu-nav-item-content {
+  font-weight: var(--lul-nav-weight-active);
+}
+
+/* Squarespace marks the current page with a 1px underline, drawn as a
+   background-image gradient (not a border or text-decoration):
+     background-image: linear-gradient(#393348, #393348)
+     background-size: 1px 1px; background-repeat: repeat-x;
+   The weight change already signals the active page, so turn it off. */
+#header .header-nav-item--active > a,
+#header .header-nav-item--active > button,
+#header .header-nav-folder-item--active > a,
+#header .header-menu-nav-item--active > a,
+#header [aria-current="page"],
+#header [aria-current="true"],
+/* On a folder subpage the underline is painted on the inner label span, not on
+   the button — covering only the button leaves "Products" still underlined. */
+#header .header-nav-item--active .header-nav-folder-title-text,
+#header .header-nav-item--active .header-nav-folder-item-content,
+#header .header-menu-nav-item--active .header-menu-nav-item-content,
+#header .header-menu-nav-item--active .header-nav-folder-title-text,
+#header [aria-current="page"] .header-nav-folder-item-content,
+#header [aria-current="true"] .header-nav-folder-title-text {
+  background-image: none;
+}
+
+/* --------------------------------------------------------------------------
+   2. Top-level bar — padding only, no hover fill
+   -------------------------------------------------------------------------- */
+#header .header-nav-item > a,
+#header .header-nav-item > button.header-nav-folder-title {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. Dropdown panel — product-card border + shadow
+   -------------------------------------------------------------------------- */
+#header .header-nav-folder-content {
+  padding: 0.3rem;
+  min-width: 12rem;
+  border: var(--lul-card-border);
+  border-radius: 0;
+  box-shadow: var(--lul-card-shadow);
+  background-color: var(--siteBackgroundColor, #fff);
+}
+
+#header .header-nav-folder-item a {
+  display: block;
+  padding: 0.45rem 0.7rem;
+  border-radius: 0;
+}
+
+#header .header-nav-folder-item a:hover,
+#header .header-nav-folder-item a:focus-visible {
+  background-color: var(--lul-nav-hover-bg);
+}
+
+/* --------------------------------------------------------------------------
+   4. Mobile / overlay menu — same treatment
+   -------------------------------------------------------------------------- */
+#header .header-menu-nav-item a,
+#header .header-menu-nav-item button {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0;
+}
+
+#header .header-menu-nav-item a:hover,
+#header .header-menu-nav-item a:focus-visible,
+#header .header-menu-nav-item button:hover {
+  background-color: var(--lul-nav-hover-bg);
+}
+
+#header .header-menu-nav-folder-content {
+  border: var(--lul-card-border);
+  box-shadow: var(--lul-card-shadow);
+  background-color: var(--siteBackgroundColor, #fff);
+}
+
+/* --------------------------------------------------------------------------
+   5. Dropdown markers — small filled triangles
+   Drawn with ::after + clip-path rather than markup, so this works on the LIVE
+   site. Squarespace injects its own stroked chevron (a <use> of #openArrowHead)
+   with JavaScript; you cannot restyle that path's shape from CSS, so it is
+   hidden and replaced. background-color: currentColor means the marker follows
+   the link colour.
+   -------------------------------------------------------------------------- */
+
+/* Hide Squarespace's injected chevron.
+   It sits inside a <span class="header-dropdown-icon header-dropdown-flip"> which is
+   ~18px wide with its own margin — hiding only the <svg> leaves that wrapper holding
+   the space, which shows up as a large gap before our triangle. Hide the wrapper. */
+#header .header-dropdown-icon,
+#header .header-nav-folder-title svg,
+#header .header-menu-nav-item-content-folder svg {
+  display: none;
+}
+
+/* draw ours */
+#header .header-nav-folder-title::after,
+#header .header-menu-nav-item-content-folder::after {
+  content: "";
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--lul-chevron-w);
+  height: var(--lul-chevron-h);
+  margin-left: var(--lul-chevron-gap);
+  background-color: currentColor;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: 50% 50%;
+  transition: transform 0.15s ease;
+}
+
+/* keep the label and marker on one line */
+#header .header-nav-folder-title,
+#header .header-menu-nav-item-content-folder {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* flip to point up while the menu is open */
+#header .header-nav-item--folder:hover .header-nav-folder-title::after,
+#header .header-nav-folder-title[aria-expanded="true"]::after,
+#header .header-menu-nav-item-content-folder[aria-expanded="true"]::after,
+#header .header-menu-nav-item--active .header-menu-nav-item-content-folder::after {
+  transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   6. "Contact Us" CTA — the tertiary button from the design system
+   Source of truth: buttons/BUTTONS_SECONDARY_TERTIARY.html (.lul-actions__btn
+   + --tertiary). NOT Squarespace's tertiary, which is a different button
+   (outline, 0.6rem 2.2rem padding, 0.9rem type).
+   The markup still carries .sqs-button-element--secondary, so Squarespace styles
+   it as a secondary button; everything here overrides that.
+   -------------------------------------------------------------------------- */
+#header .header-actions-action--cta a,
+#header .header-actions-action--cta .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--lul-ink);
+  border: 1px solid var(--lul-ink);
+  color: #ffffff;
+  border-radius: 0;
+
+  padding: var(--lul-btn-pad);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  line-height: normal;
+  text-decoration: none;
+
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* hover lifts to the lighter ink, exactly as the component does */
+#header .header-actions-action--cta a:hover,
+#header .header-actions-action--cta a:focus-visible,
+#header .header-actions-action--cta .btn:hover {
+  background: var(--lul-ink-hover);
+  border-color: var(--lul-ink-hover);
+  color: #ffffff;
+  /* the CTA still carries .sqs-button-element--secondary, so Squarespace's
+     `.secondary-button-style-solid ...:hover { opacity: .8 }` would dim it */
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   7. Logo — a touch smaller
+   Squarespace renders it at max-height 70px; this trims it without touching the
+   header's own height.
+   -------------------------------------------------------------------------- */
+#header .header-title-logo img,
+#header .header-menu-logo img {
+  max-height: var(--lul-logo-height);
+  height: auto;
+  width: auto;
+}
+
+
+
+
+
+
+
+/* CUSTOM CSS FOR DATA DIFFERENCE */
+
+#collection-6aa0321526969a76a7ca3b83 h2{
+  margin: 0 0 12px;
+}
+
+section[data-section-id="6aa0321526969a76a7ca3b8b"] p
+{
+  max-width: 1100px;
+}
+
+section[data-section-id="6aa0321526969a76a7ca3b8f"] h3 {
+   margin: 0 0 16px;
+}
+
+#block-536bb80f6cc57294eaed * {
+  margin-inline: auto;
+  max-width: 1200px;
+}
+
+
+

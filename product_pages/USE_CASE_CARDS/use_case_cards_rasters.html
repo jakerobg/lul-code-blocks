@@ -2,11 +2,8 @@
   ZONING RASTERS USE-CASE CARDS — four icon cards, 4 across (Squarespace Code
   Block). Same card system and reflow behaviour as
   use_case_cards_reports.html:
-    border  1px rgba(57,51,72,.3)
-    radius  0 (sitewide)
-    title   22px / 500 / #393348
-    body    15px Arial / rgba(57,51,72,.75)
-    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  TYPE, COLOUR AND LAYOUT ALL COME FROM styles/lul.css (section 6, .lul-uc).
+  This file is markup only.
   Informational, not links — <article> elements, no hover lift.
 
   Content is the Zoning Rasters "Built for" list: each chip's label becomes a
@@ -18,104 +15,21 @@
   ▶ ICONS: "Data Integration" reuses the glyph from the slices card of the
     same name; the other three are new. Swap the <path> data for any 24x24
     outline icon.
-  ▶ NAMESPACE: prefixed lul-ras- / --lulras-, container lulras — deliberately
-    NOT the lul-uc- / lul-ucr- / lul-uct- namespaces used by the slices,
-    reports and tables cards, so any of them can share a page.
+  ▶ NAMESPACE: this block used its own prefix so two card blocks on one
+    page could not clobber each other. That risk came from each shipping
+    its own <style>; with one shared stylesheet it is gone, so it uses
+    the common .lul-uc classes now.
 -->
-<section class="lul-ras" aria-label="Zoning Rasters use cases">
-    <style>
-        .lul-ras {
-            --lulras-ink: #393348;
-            --lulras-gap: 24px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 20px 0;
-            container-type: inline-size;
-            container-name: lulras;
-        }
-        .lul-ras *,
-        .lul-ras *::before,
-        .lul-ras *::after {
-            box-sizing: border-box;
-        }
-        .lul-ras__grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--lulras-gap);
-        }
-        .lul-ras__card {
-            flex: 1 1 calc(25% - (var(--lulras-gap) * 3 / 4));
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            border: 1px solid rgba(57, 51, 72, 0.3);
-            border-radius: 0;
-            padding: 26px 24px 28px;
-        }
-        /* uncomment if you turn these into links
-        .lul-ras__card:hover {
-            border-color: rgba(57, 51, 72, 0.4);
-            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
-            transform: translateY(-2px);
-        } */
-        .lul-ras__icon {
-            width: 46px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(57, 51, 72, 0.06);
-            color: var(--lulras-ink);
-            margin-bottom: 22px;
-            flex: none;
-        }
-        .lul-ras__icon svg {
-            width: 24px;
-            height: 24px;
-            display: block;
-        }
-        .lul-ras__title {
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.01em;
-            line-height: 1.25;
-            color: var(--lulras-ink);
-            margin: 0 0 12px;
-        }
-        .lul-ras__body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 15px;
-            font-weight: 400;
-            line-height: 1.55;
-            color: rgba(57, 51, 72, 0.75);
-            margin: 0;
-        }
-        /* ── RESPONSIVE ───────────────────────────────────────────────
-             > 640px  →  4 across
-             ≤ 640px  →  stacked                                      */
-        @container lulras (max-width: 640px) {
-            .lul-ras {
-                --lulras-gap: 16px;
-            }
-            .lul-ras__card {
-                flex-basis: 100%;
-            }
-        }
-        /* fallback for browsers without container queries */
-        @supports not (container-type: inline-size) {
-            @media (max-width: 760px) {
-                .lul-ras__card {
-                    flex-basis: 100%;
-                }
-            }
-        }
-    </style>
-    <div class="lul-ras__grid">
+
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../../styles/lul.css">
+
+<section class="lul lul-uc lul-uc--tight lul-uc--four" aria-label="Zoning Rasters use cases">
+    <div class="lul-uc__grid">
         <!-- Data Integration — same glyph as the slices card of the same name -->
-        <article class="lul-ras__card">
-            <span class="lul-ras__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -130,14 +44,14 @@
                     <path d="M3 12a9 3 0 0 0 18 0" />
                 </svg>
             </span>
-            <h4 class="lul-ras__title">Data Integration</h4>
-            <p class="lul-ras__body">
+            <h4 class="lul-uc__title">Data Integration</h4>
+            <p class="lul-uc__body">
                 Quickly overlay which residential and nonresidential uses are allowed against your own data.
             </p>
         </article>
         <!-- City and Regional Planning — a three-building skyline on a ground line -->
-        <article class="lul-ras__card">
-            <span class="lul-ras__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -155,15 +69,15 @@
                     <path d="M11.6 9h.9" />
                 </svg>
             </span>
-            <h4 class="lul-ras__title">City and Regional Planning</h4>
-            <p class="lul-ras__body">
+            <h4 class="lul-uc__title">City and Regional Planning</h4>
+            <p class="lul-uc__body">
                 Inform high-level planning decisions about siting, growth, infrastructure investments, and more, with
                 standardized data.
             </p>
         </article>
         <!-- Environmental Analysis — a leaf -->
-        <article class="lul-ras__card">
-            <span class="lul-ras__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -177,15 +91,15 @@
                     <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
                 </svg>
             </span>
-            <h4 class="lul-ras__title">Environmental Analysis</h4>
-            <p class="lul-ras__body">
+            <h4 class="lul-uc__title">Environmental Analysis</h4>
+            <p class="lul-uc__body">
                 Examine how allowed uses overlay with flood zones, fire hazard severity zones, areas with heat
                 exposure, tree canopy coverage, topography, and more.
             </p>
         </article>
         <!-- Land Use Research — a magnifier over a parcelled land grid -->
-        <article class="lul-ras__card">
-            <span class="lul-ras__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -202,8 +116,8 @@
                     <path d="m21.5 20.5-2.2-2.2" />
                 </svg>
             </span>
-            <h4 class="lul-ras__title">Land Use Research</h4>
-            <p class="lul-ras__body">
+            <h4 class="lul-uc__title">Land Use Research</h4>
+            <p class="lul-uc__body">
                 Explore how zoning rules shape development patterns, land conservation, and environmental quality in
                 different places.
             </p>

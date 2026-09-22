@@ -1,58 +1,20 @@
 <!--
-  ZONING API SANDBOX — live request against the mock endpoint (Squarespace Code Block).
+  ZONING API SANDBOX — live request against the mock endpoint
 
   Left column: endpoint picker, what it returns, the query inputs, and the call button.
   Right column: one flat terminal that prints the real response, coloured to match
   api_terminal.html.
 
-  ▶ THIS CALLS A REAL ENDPOINT. GET https://api.zoningatlas.org/rpc/zoning_point_mock
+  calls https://api.zoningatlas.org/rpc/zoning_point_mock
     ?lat=&lon=, a PostgREST mock of /v1/zoning/point. It is TEMPORARY — the zoning-api
     docs say it is dropped when the real endpoint ships. When that happens, change the
     `url` in ENDPOINTS below and nothing else: the response shape is identical by design
     (the mock is byte-equal to the reference harness on all ten fixtures).
 
-  ▶ ADDING A QUERY TYPE is one entry in ENDPOINTS — id, the label shown in the picker,
-    the path the terminal prints, the URL actually called, and the blurb under the
-    picker. The picker renders whether there is one entry or five.
 
-  ▶ THE KEY IS NOT SECRET, AND CANNOT BE. It is in this file, so it is in the page, so
-    any visitor can read it — View Source, or DevTools → Network → Request Headers.
-    It is assembled at runtime from base64 fragments so it does not sit in the source as
-    a greppable string. THAT IS OBFUSCATION, NOT SECURITY. Treat the key as published:
-      · use a sandbox-only key, never the one the Phase 2 GUI builds against, so it can
-        be rotated without breaking anything else;
-      · put a rate limit in front of /rpc/ (Cloudflare rule);
-      · the real protection is already in the SQL — the four demo jurisdictions are
-        hardcoded in the function body, never a parameter, so a leaked key reaches
-        nothing else.
-    To make it genuinely secret, move it behind a gateway (Azure API Management, or a
-    Cloudflare Worker meanwhile): point the endpoint at the gateway, delete KEY_PARTS and
-    the X-API-Key header here, and let the gateway add it server-side.
-
-  ▶ THE KEY TRAVELS AS A HEADER, never a query parameter — a query string is written into
-    CDN and server access logs, browser history and Referer headers; a header is not.
-
-  ▶ ADDRESS → COORDINATES uses Photon (photon.komoot.io), keyless and CORS-enabled, the
-    provider the zoning-api evaluation tested. It is NOT lul-geo-search — that helper is
-    a typeahead over LUL's own backend resolving a jurisdiction NAME to a geoId, and
-    never returns coordinates. Photon is OSM-derived and weak in rural areas (measured:
-    0 of 21 rural-NM addresses landed inside the right parcel), so the resolved
-    coordinate is always shown and stays on screen after the call.
-
-  ▶ THE GEOGRAPHIC LOCK IS A FEATURE, NOT AN ERROR. A point outside the four demo
-    jurisdictions returns coverage.status = "outside_demo" — "real data exists here, this
-    key does not reach it", never "we have no data".
-
-  ▶ THE TERMINAL IS FLAT: square corners, no title bar. The status the bar used to carry
-    is printed as a dim comment at the top of the output instead.
-
-  ▶ HIDDEN TABS: requestAnimationFrame gets zero frames in a background tab, so the print
-    renders complete and still if the page is hidden, and finishes immediately if it goes
-    hidden mid-print. Same for prefers-reduced-motion.
-
-  ▶ EDIT THESE: ENDPOINTS, JURISDICTIONS, DICTIONARY_URL, EXAMPLE.
-    Root id #lul-sandbox, class prefix lul-sb__ — safe alongside the order forms
-    (lul-di__ / lul-sl__) and the hero.
+  Key is currently no a secret, but travels as a header, not a pereamter. 
+  
+  ADDRESS to COORDINATES uses Photon (photon.komoot.io),
 -->
 
 <section id="lul-sandbox" class="lul-sb" aria-label="Zoning API sandbox">
@@ -441,8 +403,7 @@
             border-radius: 0;
             box-shadow: var(--lul-shadow);
             overflow: hidden;
-            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas,
-                "Liberation Mono", monospace;
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
         }
         .lul-sb__body {
             padding: var(--lulterm-pad-y) var(--lulterm-pad-x);
@@ -451,8 +412,7 @@
             color: var(--lulterm-text);
             white-space: pre;
             height: calc(
-                var(--lulterm-lines) * var(--lulterm-font-size) * var(--lulterm-line-h) + 2 *
-                    var(--lulterm-pad-y)
+                var(--lulterm-lines) * var(--lulterm-font-size) * var(--lulterm-line-h) + 2 * var(--lulterm-pad-y)
             );
             overflow: auto;
             /* Visible, unlike api_terminal.html, which hides them: this pane is
@@ -676,15 +636,15 @@
                         "Zoning endpoint returns all zoning districts and their regulations " +
                         'based on our <a href="' +
                         DICTIONARY_URL +
-                        '" target="_blank" rel="noopener">parcel reports data dictionary</a>.'
-                }
+                        '" target="_blank" rel="noopener">parcel reports data dictionary</a>.',
+                },
             ];
 
             var JURISDICTIONS = [
                 "West Boylston, Massachusetts",
                 "Saugerties, New York",
                 "Hyde Park, Vermont",
-                "Moriarty, New Mexico"
+                "Moriarty, New Mexico",
             ];
 
             var GEOCODER = "https://photon.komoot.io/api/";
@@ -712,11 +672,10 @@
                 addr: root.querySelector("[data-sb-addr]"),
                 status: root.querySelector("[data-sb-status]"),
                 out: root.querySelector("[data-sb-out]"),
-                termlabel: root.querySelector("[data-sb-termlabel]")
+                termlabel: root.querySelector("[data-sb-termlabel]"),
             };
 
-            var reduced =
-                window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
             var raf = null;
             var current = ENDPOINTS[0];
 
@@ -757,7 +716,7 @@
                 for (var i = 0; i < items.length; i++) {
                     items[i].setAttribute(
                         "aria-current",
-                        items[i].getAttribute("data-ep") === current.id ? "true" : "false"
+                        items[i].getAttribute("data-ep") === current.id ? "true" : "false",
                     );
                 }
             }
@@ -832,14 +791,12 @@
             function resetTerm() {
                 clearTerm();
                 els.termlabel.textContent = "zoning-api";
-                addLine(
-                    '<span class="lul-sb__note"># enter a coordinate or an address, then Call API</span>'
-                );
+                addLine('<span class="lul-sb__note"># enter a coordinate or an address, then Call API</span>');
                 addLine("");
                 addLine(
                     '<span class="lul-sb__method">GET </span><span class="lul-sb__url">' +
                         esc(current.path + "?lat=" + EXAMPLE.lat + "&lon=" + EXAMPLE.lon) +
-                        '</span><span class="lul-sb__caret"></span>'
+                        '</span><span class="lul-sb__caret"></span>',
                 );
             }
 
@@ -912,9 +869,7 @@
                 var prefix =
                     pad +
                     (keyName !== null
-                        ? '<span class="lul-sb__k">"' +
-                          esc(keyName) +
-                          '"</span><span class="lul-sb__p">: </span>'
+                        ? '<span class="lul-sb__k">"' + esc(keyName) + '"</span><span class="lul-sb__p">: </span>'
                         : "");
                 var tail = isLast ? "" : '<span class="lul-sb__p">,</span>';
 
@@ -975,7 +930,7 @@
                         return {
                             lon: f.geometry.coordinates[0],
                             lat: f.geometry.coordinates[1],
-                            label: [p.name, p.city, p.state].filter(Boolean).join(", ")
+                            label: [p.name, p.city, p.state].filter(Boolean).join(", "),
                         };
                     });
             }
@@ -1014,7 +969,7 @@
                                   ", " +
                                   g.lon.toFixed(6) +
                                   (g.label ? " — " + g.label : "") +
-                                  ". Check it before trusting the answer."
+                                  ". Check it before trusting the answer.",
                           );
                           return g;
                       }));
@@ -1025,7 +980,7 @@
                         addLine(
                             '<span class="lul-sb__method">GET </span><span class="lul-sb__url">' +
                                 esc(current.path + qs) +
-                                "</span>"
+                                "</span>",
                         );
                         /* Local development: api.zoningatlas.org does not answer
                            browser calls from a localhost origin, so tools/dev-proxy.py
@@ -1060,7 +1015,7 @@
 
                         if (cov === "outside_demo") {
                             say(
-                                "outside_demo — real data exists here, but this demo key only reaches the four jurisdictions above."
+                                "outside_demo — real data exists here, but this demo key only reaches the four jurisdictions above.",
                             );
                         } else if (res.status >= 400) {
                             say((body && body.message) || "Request failed.", true);

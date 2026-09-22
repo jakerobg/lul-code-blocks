@@ -3,11 +3,8 @@
   (Squarespace Code Block).
 
   Same card system as product_specs_cards_slices.html:
-    border  1px rgba(57,51,72,.3)
-    radius  0 (sitewide)
-    title   22px / 500 / #393348
-    body    15px Arial / rgba(57,51,72,.75)
-    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+  TYPE, COLOUR AND LAYOUT ALL COME FROM styles/lul.css (section 6, .lul-uc).
+  This file is markup only.
   Informational, not links — <article> elements, no hover lift.
 
   Content is the Zoning Rasters spec copy (Unit of Analysis / What's Included /
@@ -22,145 +19,21 @@
     Swap the <path> data for any 24x24 outline icon.
   ▶ Card 3 states the format as a sentence, like the slices and tables cards —
     no chips, so all three cards are icon + title + body throughout.
-  ▶ NAMESPACE: prefixed lul-rsp- / --lulrsp-, container lulrsp — deliberately
-    NOT the shared lul-uc- namespace, so this block can share a page with the
-    use-case cards or the slices specs without either overriding the other.
+  ▶ NAMESPACE: this block used its own prefix so two card blocks on one
+    page could not clobber each other. That risk came from each shipping
+    its own <style>; with one shared stylesheet it is gone, so it uses
+    the common .lul-uc classes now.
 -->
-<section class="lul-rsp" aria-label="Product specifications">
-    <style>
-        .lul-rsp {
-            --lulrsp-ink: #393348;
-            --lulrsp-gap: 24px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 20px 0;
-            container-type: inline-size;
-            container-name: lulrsp;
-        }
-        .lul-rsp *,
-        .lul-rsp *::before,
-        .lul-rsp *::after {
-            box-sizing: border-box;
-        }
-        .lul-rsp__grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--lulrsp-gap);
-        }
-        .lul-rsp__card {
-            flex: 1 1 calc(33.333% - (var(--lulrsp-gap) * 2 / 3));
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            border: 1px solid rgba(57, 51, 72, 0.3);
-            border-radius: 0;
-            padding: 26px 24px 28px;
-        }
-        /* uncomment if you turn these into links
-        .lul-rsp__card:hover {
-            border-color: rgba(57, 51, 72, 0.4);
-            box-shadow: 0 6px 28px rgba(57, 51, 72, 0.1);
-            transform: translateY(-2px);
-        } */
-        .lul-rsp__icon {
-            width: 46px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(57, 51, 72, 0.06);
-            color: var(--lulrsp-ink);
-            margin-bottom: 22px;
-            flex: none;
-        }
-        .lul-rsp__icon svg {
-            width: 24px;
-            height: 24px;
-            display: block;
-        }
-        .lul-rsp__title {
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.01em;
-            line-height: 1.25;
-            color: var(--lulrsp-ink);
-            margin: 0 0 12px;
-        }
-        .lul-rsp__body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 15px;
-            font-weight: 400;
-            line-height: 1.55;
-            color: rgba(57, 51, 72, 0.75);
-            margin: 0;
-        }
-        .lul-rsp__body + .lul-rsp__body {
-            margin-top: 14px;
-        }
-        /* Three-item raster list. Same type as the body copy; each item links
-           to its own data-dictionary tab. */
-        .lul-rsp__list {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 15px;
-            line-height: 1.55;
-            color: rgba(57, 51, 72, 0.75);
-            margin: 8px 0 0;
-            padding-left: 20px;
-        }
-        .lul-rsp__list li {
-            margin-bottom: 6px;
-        }
-        .lul-rsp__list li:last-child {
-            margin-bottom: 0;
-        }
-        .lul-rsp__list + .lul-rsp__body {
-            margin-top: 14px;
-        }
-        /* Links inside the body: underline only, never a colour change, in
-           every state (incl. :visited). !important because Squarespace's theme
-           sets link colours with selectors that would otherwise win. */
-        .lul-rsp__body a,
-        .lul-rsp__body a:link,
-        .lul-rsp__body a:visited,
-        .lul-rsp__body a:hover,
-        .lul-rsp__body a:active,
-        .lul-rsp__body a:focus,
-        .lul-rsp__list a,
-        .lul-rsp__list a:link,
-        .lul-rsp__list a:visited,
-        .lul-rsp__list a:hover,
-        .lul-rsp__list a:active,
-        .lul-rsp__list a:focus {
-            color: inherit !important;
-            text-decoration: underline !important;
-            text-underline-offset: 2px;
-        }
-        /* ── RESPONSIVE ───────────────────────────────────────────────
-             > 640px  →  3 across
-             ≤ 640px  →  stacked                                      */
-        @container lulrsp (max-width: 640px) {
-            .lul-rsp {
-                --lulrsp-gap: 16px;
-            }
-            .lul-rsp__card {
-                flex-basis: 100%;
-            }
-        }
-        /* fallback for browsers without container queries */
-        @supports not (container-type: inline-size) {
-            @media (max-width: 760px) {
-                .lul-rsp__card {
-                    flex-basis: 100%;
-                }
-            }
-        }
-    </style>
-    <div class="lul-rsp__grid">
+
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../../styles/lul.css">
+
+<section class="lul lul-uc lul-uc--tight" aria-label="Product specifications">
+    <div class="lul-uc__grid">
         <!-- 30x30 meter raster cells — a grid of cells with one highlighted -->
-        <article class="lul-rsp__card">
-            <span class="lul-rsp__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -178,8 +51,8 @@
                     <rect x="9" y="9" width="6" height="6" fill="currentColor" stroke="none" opacity="0.35" />
                 </svg>
             </span>
-            <h4 class="lul-rsp__title">30x30 meter raster cells</h4>
-            <p class="lul-rsp__body">
+            <h4 class="lul-uc__title">30x30 meter raster cells</h4>
+            <p class="lul-uc__body">
                 Rasters classifying general uses (7 classes), residential uses (15 classes), and nonresidential uses (32
                 classes) are available through this website;
                 <a href="https://www.landuselabs.com/contact">contact us</a> for Zoning Rasters with a different
@@ -187,8 +60,8 @@
             </p>
         </article>
         <!-- A map of allowable land uses — a map sheet with distinct use zones -->
-        <article class="lul-rsp__card">
-            <span class="lul-rsp__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -205,9 +78,9 @@
                     <path d="M15 13h6" />
                 </svg>
             </span>
-            <h4 class="lul-rsp__title">A map of allowable land uses</h4>
-            <p class="lul-rsp__body">Your choice of one of three zoning rasters:</p>
-            <ul class="lul-rsp__list">
+            <h4 class="lul-uc__title">A map of allowable land uses</h4>
+            <p class="lul-uc__body">Your choice of one of three zoning rasters:</p>
+            <ul class="lul-uc__list">
                 <li>
                     <a
                         href="https://docs.google.com/spreadsheets/d/17nrhEbS1OuwdRotXZwyiKmVuKccYH1A3/edit?gid=112307427#gid=112307427"
@@ -230,15 +103,15 @@
                     (32 classes)
                 </li>
             </ul>
-            <p class="lul-rsp__body">Click each to view their data dictionary.</p>
-            <p class="lul-rsp__body">
+            <p class="lul-uc__body">Click each to view their data dictionary.</p>
+            <p class="lul-uc__body">
                 A license to use delivered information internally; for external or display purposes,
                 <a href="https://www.landuselabs.com/contact">contact us</a> for a custom license.
             </p>
         </article>
         <!-- Analysis-ready files — a raster/image file -->
-        <article class="lul-rsp__card">
-            <span class="lul-rsp__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -254,8 +127,8 @@
                     <path d="m12 16 3.5-3.5 5 5" />
                 </svg>
             </span>
-            <h4 class="lul-rsp__title">Analysis-ready files</h4>
-            <p class="lul-rsp__body">GeoTIFF format.</p>
+            <h4 class="lul-uc__title">Analysis-ready files</h4>
+            <p class="lul-uc__body">GeoTIFF format.</p>
         </article>
     </div>
 </section>

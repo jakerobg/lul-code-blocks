@@ -8,7 +8,7 @@ Extracted styling for the Squarespace header so it can be restyled outside Squar
 |---|---|
 | `lul_header.html` | Header markup copied from the live site (source of truth for classes) |
 | `header.css` | **Generated.** Squarespace's styling, filtered to rules that match the header |
-| `header.custom.css` | **Yours.** Overrides; loaded after `header.css` |
+| `../styles/lul.css` | **Yours.** Palette, type scale and the header restyle, one file. Loaded after `header.css`. (Was `styles/lul.css`, merged in on 2026-09-21.) |
 | `header_preview.html` | **Generated.** Standalone preview wiring the three together |
 | `tools/extract-header-css.mjs` | The extractor |
 | `tools/refresh.sh` | Re-download the live CSS and regenerate `header.css` |
@@ -37,7 +37,7 @@ without it. Keep it in any page where you use this CSS.
 
 ## Restyling
 
-Put everything in `header.custom.css`. To apply it on the real site, paste the same
+Put everything in `styles/lul.css` (header rules live in its header section). To apply it on the real site, paste the same
 text into Squarespace: **Design -> Custom CSS**. That loads after Squarespace's own
 stylesheets, so ordering is on your side — but two things still bite.
 
@@ -87,7 +87,7 @@ prefixing for you:
 
 Get the id by opening the page and running `document.body.id` in the browser console.
 Paste the output into **Design → Custom CSS**, check the page, then delete it and paste
-the unscoped `header.custom.css` when you're happy. Verified live: the scoped CSS applied
+the unscoped `styles/lul.css` when you're happy. Verified live: the scoped CSS applied
 on `/services` and did nothing on `/reports`.
 
 Known ids at time of writing:
@@ -103,7 +103,7 @@ Known ids at time of writing:
 ### Page Header Code Injection (Business plan and above)
 
 Pages → the page → ⚙ Settings → Advanced → **Page Header Code Injection**, and paste
-`header.custom.css` wrapped in `<style>…</style>`. No scoping needed — it only loads on
+`styles/lul.css` wrapped in `<style>…</style>`. No scoping needed — it only loads on
 that page. Simpler, but the menu is not available on Personal plans.
 
 Note the header is shared across the whole site, so either way you are testing the *same*
@@ -119,13 +119,17 @@ component — `buttons/BUTTONS_SECONDARY_TERTIARY.html`, the `--tertiary` varian
 |---|---|---|
 | padding | `10px 26px` | `0.6rem 2.2rem` (9.6 × 35.2px) |
 | font-size | `1rem` | `0.9rem` |
-| ink | `#393347` | `#393348` |
+| ink | `#393348` | `#393348` |
 | style | filled, hover lifts to `#4c4460` | outline, fills on hover |
+
+The two inks were unified on 2026-09-21. The design system previously used `#393347`
+and Squarespace's tertiary `#393348`; they are now both `#393348`, which is what 166 of
+the repo's 183 `rgba()` ink tints already spelled out as `57, 51, 72`.
 
 `--lul-ink` is the single source for every dark surface in the header — the CTA fill, the
 menu hover state, and the card border/shadow tints (via `--lul-ink-rgb`, the same colour in
 `r, g, b` form for `rgba()`). If the component changes, update the ink variables at the top
-of `header.custom.css` and everything follows.
+of `styles/lul.css` and everything follows.
 
 ## Squarespace Custom CSS constraints
 
@@ -143,7 +147,7 @@ Rejected:
 
 Safe:
 
-    rgba(57, 51, 71, 0.15)        literal, four plain arguments
+    rgba(57, 51, 72, 0.15)        literal, four plain arguments
     var(--lul-chevron-h)          plain substitution, no maths
 
 So: every derived value is written out as its own variable rather than computed. If you add
@@ -172,7 +176,7 @@ landing page: `/product` redirects to `/reports`, `/sector` to `/developers`.
 
 - **The active-page underline is a background gradient, not a border.** Squarespace paints it
   with `background-image: linear-gradient(...)`, `background-size: 1px 1px`, `repeat-x` — so
-  `text-decoration: none` and `border: none` do nothing. `header.custom.css` clears it with
+  `text-decoration: none` and `border: none` do nothing. `styles/lul.css` clears it with
   `background-image: none`. Note it is painted on *different elements* depending on the page:
   the `<a>` for a top-level page, but the inner `.header-nav-folder-title-text` span when a
   folder parent is active, so both have to be covered.
@@ -191,7 +195,7 @@ landing page: `/product` redirects to `/reports`, `/sector` to `/developers`.
 
 - **Dropdown markers are drawn in CSS, not markup.** Squarespace injects a stroked chevron
   (`<use href="#openArrowHead">`) with JavaScript. A path's shape cannot be restyled from
-  CSS, so `header.custom.css` hides that SVG and draws a small filled triangle with
+  CSS, so `styles/lul.css` hides that SVG and draws a small filled triangle with
   `::after` + `clip-path`. This is why it works when pasted into Custom CSS — an earlier
   version added `<svg class="lul-chevron">` to `lul_header.html`, which only ever appeared
   in the local preview and did nothing live. Knobs: `--lul-chevron-w`, `--lul-chevron-gap`.

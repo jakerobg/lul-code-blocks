@@ -11,14 +11,16 @@
 <!-- Styling comes entirely from styles/lul.css (Squarespace → Design → Custom CSS),
      which carries the shared .lul-uc card component: grid, card, icon, title, body,
      list, link colours and the responsive reflow. This block used to ship its own
-     copy — see lul.css's header for why those copies were consolidated.
+     copy of all of it — lul.css's own header records why that was consolidated
+     ("All nine blocks shipped the same CSS under SIX different namespaces ... One
+     stylesheet, one namespace").
 
-     No <style> here on purpose. Do not reintroduce one: a local copy silently
-     shadows the shared component and the two drift apart. Modifiers go on the root
-     element — --tight, --four, --center, --wrap2.
+     So there is no <style> here on purpose. Do not reintroduce one: a local copy
+     silently shadows the shared component and the two drift apart. Modifiers live
+     on the root element — --tight, --four, --center, --wrap2.
 
      The <link> below is for local preview only; Squarespace already has the CSS. -->
-<link rel="stylesheet" href="../styles/lul.css">
+<link rel="stylesheet" href="../../styles/lul.css">
 
 <section class="lul lul-uc" aria-label="Data quality">
     <div class="lul-uc__grid">

@@ -15,19 +15,25 @@
   ▶ CARD STYLE: matches the audience cards and carousel — 1px
     rgba(57,51,72,.3) border, radius 0, soft shadow + lift on hover.
 -->
+<!-- Local preview only. Squarespace already carries styles/lul.css in Custom
+     CSS; this line just makes the block render correctly on its own. -->
+<link rel="stylesheet" href="../styles/lul.css" />
 
 <section class="lul-prod" aria-label="Compare products">
     <style>
         .lul-prod {
-            --lul-ink: #393348;
-            --lul-accent: #594496;
-            --lul-accent-dark: #3f2e70;
-            --lul-body: rgba(57, 51, 72, 0.75);
-            --lul-line: rgba(57, 51, 72, 0.15);
-            --lul-border: rgba(57, 51, 72, 0.3);
-            --lul-eyebrow: rgba(57, 51, 72, 0.6); /* same grey as the specs eyebrow */
+            /* Colour and type come from styles/lul.css (Squarespace → Custom CSS).
+               Only the two tints it has no token for are declared here.
+
+               NOTE: this block used to define --lul-accent: #594496 locally, which
+               COLLIDED with lul.css's --lul-accent: #e0e5c2 (the pale green). The
+               local one won inside .lul-prod, so it worked — but the same name meant
+               two different colours depending where you read it. The purple is
+               lul.css's --lul-primary; that is what the rules below now use. */
+            --lul-body: rgba(57, 51, 72, 0.75); /* no token: the ramp has no 0.75 */
+            --lul-eyebrow: rgba(57, 51, 72, 0.6); /* no token: the ramp has no 0.6 */
             --lul-gap: 16px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: var(--lul-font-body);
             color: var(--lul-ink);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -67,7 +73,7 @@
             row-gap: 0;
             min-width: 0;
             background: #ffffff;
-            border: 1px solid var(--lul-border);
+            border: 1px solid var(--lul-ink-30);
             border-radius: 0;
             padding: 22px 20px 20px;
         }
@@ -92,7 +98,7 @@
 
         /* the page you're on */
         .lul-prod__card--current {
-            border: 2px solid var(--lul-accent);
+            border: 2px solid var(--lul-primary);
             padding: 21px 19px 19px; /* keeps the box the same size */
         }
 
@@ -132,10 +138,10 @@
         }
 
         .lul-prod__title {
-            font-size: 21px;
+            font-size: var(--lul-size-card-title-l);
             font-weight: 700;
             letter-spacing: -0.015em;
-            line-height: 1.2;
+            line-height: var(--lul-leading-card-title-l);
             color: var(--lul-ink);
             margin: 0 0 18px;
         }
@@ -143,31 +149,29 @@
         /* ── BEST FOR ──
            Uppercase eyebrow, same treatment as product_specs.html's eyebrow. */
         .lul-prod__bestfor {
-            font-size: 13px;
+            font-size: var(--lul-size-caption);
             font-weight: 700;
-            letter-spacing: 0.12em;
+            letter-spacing: var(--lul-track-eyebrow);
             text-transform: uppercase;
             color: var(--lul-eyebrow);
             margin: 0 0 4px;
         }
         .lul-prod__use {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: var(--lul-size-card-body);
+            line-height: var(--lul-leading-card-body);
             color: var(--lul-body);
             margin: 0 0 16px;
         }
 
         /* ── SPECS ── */
         .lul-prod__specs {
-            border-top: 1px solid var(--lul-line);
+            border-top: 1px solid var(--lul-ink-15);
             padding-top: 14px;
             margin-bottom: 12px;
         }
         .lul-prod__specs p {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: var(--lul-size-card-body);
+            line-height: var(--lul-leading-card-body);
             color: var(--lul-body);
             margin: 0 0 6px;
         }
@@ -181,9 +185,9 @@
 
         /* ── PRICING + BUTTON ── */
         .lul-prod__price {
-            border-top: 1px solid var(--lul-line);
+            border-top: 1px solid var(--lul-ink-15);
             padding-top: 14px;
-            font-size: 14px;
+            font-size: var(--lul-size-card-body);
             font-weight: 700;
             line-height: 1.4;
             color: var(--lul-ink);
@@ -195,13 +199,13 @@
             display: block;
             align-self: end;
             text-align: center;
-            font-size: 14px;
+            font-size: var(--lul-size-cta-compact);
             font-weight: 500;
             letter-spacing: 0.02em;
             padding: 10px 14px;
-            border: 1px solid var(--lul-accent);
+            border: 1px solid var(--lul-primary);
             border-radius: 0;
-            background: var(--lul-accent);
+            background: var(--lul-primary);
             color: #ffffff;
             text-decoration: none;
             transition:
@@ -209,8 +213,8 @@
                 border-color 0.25s ease;
         }
         .lul-prod__btn:hover {
-            background: var(--lul-accent-dark);
-            border-color: var(--lul-accent-dark);
+            background: var(--lul-primary-hover);
+            border-color: var(--lul-primary-hover);
         }
         /* current page: flat, unclickable */
         .lul-prod__btn--current,
@@ -384,7 +388,7 @@
                  | "tables"
                Use "" (empty) on a page that isn't one of the six.
                ════════════════════════════════════════════════════════════ */
-            var CURRENT = "slices";
+            var CURRENT = "districts";
 
             var script = document.currentScript;
             var root = script ? script.closest(".lul-prod") : document.querySelector(".lul-prod");

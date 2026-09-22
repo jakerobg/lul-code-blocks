@@ -1,30 +1,42 @@
 <!--
   RESOURCE CARDS — four helper links, 4 across (Squarespace Code Block).
 
+  TYPE AND COLOUR COME FROM styles/lul.css. This block sets layout only:
+  grid, surface, spacing, hover. It declares no font-family, no font-size and
+  no hex colour of its own. To restyle the type, edit styles/lul.css and every
+  block moves together.
+
   Deliberately SECONDARY to the product cards. Same family, quieter voice:
 
                         product cards          these
     surface             white, raised          flat tint, no lift
-    border              rgba(57,51,72,.3)      rgba(57,51,72,.12)
-    title               22px                   17px
-    body                15px                   14px, lighter ink
-    link                15px #594496           13px, uppercase, appears
-                                               fully only on hover
+    title               .lul-card-title-l      .lul-card-title-s
+                        (21px Space Grotesk)   (16px Inter 600)
+    body                .lul-card-body         .lul-card-body, muted
+    link                .lul-cta--tertiary     .lul-cta--tertiary, muted until hover
 
   Read as a utility strip under the real content — nothing here competes
-  with a product card for attention.
+  with a product card for attention. The doc lists "resource grid" under Card
+  title L, but that is the resources PAGE grid; this home-page strip is the
+  quietest of the three tiers by design, so it takes S.
 
   ▶ WIDTH: runs the full width of its Squarespace section. Control the inset
     from the section's content-width setting.
   ▶ TO EDIT: change the text inside each <a class="lul-res-card"> and set its
     href. Add or remove cards freely; the grid reflows.
+  ▶ NO ARROWS on the link label — the type doc is explicit: "No CTA label
+    carries a trailing arrow, chevron, or caret." Hover deepens the colour
+    instead.
 -->
 
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../styles/lul.css">
+
 <style>
-    /* ── LUL Resource Cards (secondary) ─────────────────────────────── */
+    /* ── LUL Resource Cards (secondary) — LAYOUT ONLY ───────────────── */
     .lul-res {
         padding: 30px 0;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
 
     .lul-res-grid {
@@ -38,8 +50,8 @@
         display: flex;
         flex-direction: column;
         /* flat tint instead of a raised white surface */
-        background: rgba(57, 51, 72, 0.035);
-        border: 1px solid rgba(57, 51, 72, 0.12);
+        background: var(--lul-ink-03);
+        border: 1px solid var(--lul-ink-12);
         border-radius: 0;
         padding: 18px 20px 16px;
         text-decoration: none;
@@ -48,50 +60,51 @@
             border-color 0.25s ease;
     }
     .lul-res-card:hover {
-        background: rgba(57, 51, 72, 0.06);
-        border-color: rgba(57, 51, 72, 0.24);
+        background: var(--lul-ink-06);
+        border-color: var(--lul-ink-24);
         /* no shadow, no lift — those belong to the product cards */
     }
 
+    /* Spacing only. The type classes in the markup carry face, size and
+       leading; .lul-muted carries the quieter ink. */
     .lul-res-title {
-        font-size: 17px;
-        font-weight: 500;
-        letter-spacing: -0.005em;
-        line-height: 1.3;
-        color: #393348;
         margin: 0 0 6px;
     }
     .lul-res-body {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1.5;
-        color: rgba(57, 51, 72, 0.6);
         margin: 0 0 18px;
         flex-grow: 1;
     }
+    /* The link is .lul-cta--tertiary from styles/lul.css. Two local lines:
+       placement, and a muted rest colour that keeps this strip the quietest of
+       the three tiers; hover falls through to the shared tertiary purple.
+
+       The colour override needs TWO classes. `.lul-cta.lul-cta--tertiary` is
+       (0,2,0), so a bare `.lul-res-link` (0,1,0) loses and the link comes out
+       purple at rest. `.lul-res .lul-res-link` ties at (0,2,0) and wins on
+       source order, since this <style> follows the shared sheet. */
     .lul-res-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 13px;
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        color: rgba(89, 68, 150, 0.75);
         align-self: flex-start;
-        transition:
-            gap 0.25s ease,
-            color 0.25s ease;
     }
+    .lul-res .lul-res-link {
+        color: var(--lul-grey-dark);
+    }
+    /* Driven by the CARD's hover, not the link's — the whole card is the link,
+       and the label is a <span> the pointer never lands on directly, so
+       .lul-cta--tertiary:hover would never fire. (0,2,1) beats the rule
+       above. */
     .lul-res-card:hover .lul-res-link {
-        gap: 10px;
-        color: #594496;
+        color: var(--lul-primary);
     }
 
-    /* Squarespace link-color override safety */
+    /* Squarespace link-colour override safety. `color: inherit` is load
+       bearing: the card is an <a>, and the type classes deliberately set no
+       colour, so without this the title takes the browser's (or Squarespace's)
+       link colour instead of the block's ink. The link label opts back out
+       above. */
     .lul-res a,
     .lul-res a:visited,
     .lul-res a:hover {
+        color: inherit;
         text-decoration: none;
     }
 
@@ -109,7 +122,6 @@
             padding: 16px 18px 14px;
         }
         .lul-res-body {
-            font-size: 15px;
             margin-bottom: 14px;
         }
     }
@@ -121,30 +133,30 @@
     }
 </style>
 
-<div class="lul-res">
+<div class="lul lul-res">
     <div class="lul-res-grid">
         <a class="lul-res-card" href="https://www.landuselabs.com/data-difference">
-            <h4 class="lul-res-title">Methodology</h4>
-            <p class="lul-res-body">How our zoning data is sourced, standardized, and verified.</p>
-            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+            <h4 class="lul-res-title lul-card-title-s">Methodology</h4>
+            <p class="lul-res-body lul-card-body lul-muted">How our zoning data is sourced, standardized, and verified.</p>
+            <span class="lul-res-link lul-cta lul-cta--tertiary">Access resource</span>
         </a>
 
         <a class="lul-res-card" href="/dictionaries" target="_blank" rel="noopener">
-            <h4 class="lul-res-title">Data Dictionaries</h4>
-            <p class="lul-res-body">Field definitions and schema documentation for all products.</p>
-            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+            <h4 class="lul-res-title lul-card-title-s">Data Dictionaries</h4>
+            <p class="lul-res-body lul-card-body lul-muted">Field definitions and schema documentation for all products.</p>
+            <span class="lul-res-link lul-cta lul-cta--tertiary">Access resource</span>
         </a>
 
         <a class="lul-res-card" href="https://www.landuselabs.com/glossary">
-            <h4 class="lul-res-title">Glossary</h4>
-            <p class="lul-res-body">Key zoning and land use terms explained.</p>
-            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+            <h4 class="lul-res-title lul-card-title-s">Glossary</h4>
+            <p class="lul-res-body lul-card-body lul-muted">Key zoning and land use terms explained.</p>
+            <span class="lul-res-link lul-cta lul-cta--tertiary">Access resource</span>
         </a>
 
         <a class="lul-res-card" href="https://www.landuselabs.com/abbreviations">
-            <h4 class="lul-res-title">Abbreviations Guide</h4>
-            <p class="lul-res-body">Common abbreviations used in zoning data and reports.</p>
-            <span class="lul-res-link">Access resource <span aria-hidden="true">&rarr;</span></span>
+            <h4 class="lul-res-title lul-card-title-s">Abbreviations Guide</h4>
+            <p class="lul-res-body lul-card-body lul-muted">Common abbreviations used in zoning data and reports.</p>
+            <span class="lul-res-link lul-cta lul-cta--tertiary">Access resource</span>
         </a>
     </div>
 </div>

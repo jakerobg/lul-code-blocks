@@ -1,24 +1,36 @@
+<!--
+  EXPLORE PRODUCTS — horizontal card carousel (Squarespace Code Block).
+
+  TYPE AND COLOUR COME FROM styles/lul.css. This block sets layout only:
+  carousel, card frame, media box, nav buttons, spacing, hover. No
+  font-family, no font-size and no hex colour live here. To restyle the type,
+  edit styles/lul.css and every block moves together.
+
+  Loudest of the three home-page tiers: these are Card title L, the sector
+  grid is Card title M, the resource strip is Card title S.
+
+  ▶ NO ARROWS on the link label — the type doc is explicit: "No CTA label
+    carries a trailing arrow, chevron, or caret." The old inline SVG arrow and
+    its gap-widening hover are gone; hover now deepens the colour. The nav
+    chevrons on the carousel itself are controls, not CTA labels, so they stay.
+-->
+
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../styles/lul.css">
+
 <style>
+    /* ── LUL Explore Products — LAYOUT ONLY ─────────────────────────── */
     .lul-products {
-        --lul-header: #393348;
-        --lul-text: #333333;
-        --lul-accent: #e0e5c2;
-        --lul-accent-dark: #c9d0a0;
-        --lul-card: #ffffff;
-        --lul-border: rgba(57, 51, 72, 0.08);
-        /* card outline — border from the coverage stat cards, shadow from
-           the audience cards */
-        --lul-card-border: rgba(57, 51, 72, 0.15);
-        --lul-card-border-hover: rgba(57, 51, 72, 0.4);
-        --lul-card-shadow: none;
-        --lul-card-shadow-hover: 0 6px 28px rgba(57, 51, 72, 0.1);
-        /* how much the graphics blow up past the frame: 1 = just fills,
-           >1 crops more (bigger), <1 shows more. Tables ignores this. */
+        /* Layout knobs only. Colour and type tokens come from styles/lul.css.
+
+           --lul-img-zoom: how much the graphics blow up past the frame.
+           1 = just fills, >1 crops more (bigger), <1 shows more.
+           Tables ignores this.
+           --lul-card-pad: inner padding around the image + text in each card. */
         --lul-img-zoom: 1;
-        /* inner padding around the image + text inside each card */
         --lul-card-pad: 40px;
-        font-family: Arial, Helvetica, sans-serif;
-        color: var(--lul-text);
+
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         max-width: none;
@@ -58,8 +70,8 @@
         flex: 0 0 calc((100% - 24px * 3) / 4);
         min-width: 300px;
         scroll-snap-align: start;
-        background: var(--lul-card);
-        border: 1px solid var(--lul-card-border);
+        background: var(--lul-white);
+        border: 1px solid var(--lul-ink-15);
         border-radius: 0;
         overflow: hidden;
         display: flex;
@@ -68,12 +80,12 @@
             transform 0.25s ease,
             border-color 0.25s ease,
             box-shadow 0.25s ease;
-        box-shadow: var(--lul-card-shadow);
+        box-shadow: none;
     }
     .lul-card:hover {
         transform: translateY(-2px);
-        border-color: var(--lul-card-border-hover);
-        box-shadow: var(--lul-card-shadow-hover);
+        border-color: var(--lul-ink-40);
+        box-shadow: 0 6px 28px var(--lul-ink-10);
     }
     /* The card is an <a>, so the title and copy inside it would otherwise
        take the theme's link colour and underline. */
@@ -90,7 +102,7 @@
         aspect-ratio: 4 / 3;
         overflow: hidden;
         position: relative;
-        background: #ffffff;
+        background: var(--lul-white);
         padding: var(--lul-card-pad) var(--lul-card-pad) 0;
     }
     .lul-card__media img {
@@ -119,61 +131,24 @@
         flex-direction: column;
         flex: 1;
     }
-    /* type matches the audience cards */
+
+    /* Spacing only — the type classes in the markup carry face, size, leading. */
     .lul-card__title {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 25px;
-        font-weight: 500;
-        letter-spacing: -0.01em;
-        line-height: 1.25;
-        color: var(--lul-header);
         margin: 0 0 14px;
     }
     .lul-card__desc {
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 15px;
-        font-weight: 400;
-        line-height: 1.55;
-        color: rgba(57, 51, 72, 0.75);
         margin: 0 0 20px;
         flex: 1;
     }
-    /* text link with arrow — no fill, left-aligned under the description */
+    /* The link is .lul-cta--tertiary from styles/lul.css — purple, 15px, no
+       box. Only its placement in the card's flex column is local. */
     .lul-card__btn {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         align-self: flex-start;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: none;
-        color: #594496;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 15px;
-        padding: 0;
-        border: none;
-        border-radius: 0;
-        cursor: pointer;
-        letter-spacing: 0.02em;
-        transition:
-            gap 0.25s ease,
-            color 0.25s ease;
     }
-    /* Driven by the CARD's hover, not the button's — the whole card is the
-       link now, so the arrow has to extend wherever the pointer is on it.
-       Same behaviour as the sector grid. */
+    /* Driven by the CARD's hover, not the link's — the whole card is the
+       link, so the colour has to shift wherever the pointer is on it. */
     .lul-card:hover .lul-card__btn {
-        background: none;
-        color: #3f2e70;
-        gap: 12px;
-    }
-    .lul-card__btn svg {
-        width: 16px;
-        height: 16px;
-        transition: transform 0.25s ease;
-    }
-    .lul-card:hover .lul-card__btn svg {
-        transform: translateX(2px);
+        color: var(--lul-primary-hover);
     }
     .lul-nav {
         position: absolute;
@@ -182,14 +157,14 @@
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        background: #fff;
-        border: 1px solid var(--lul-border);
-        box-shadow: 0 2px 6px rgba(57, 51, 72, 0.12);
+        background: var(--lul-white);
+        border: 1px solid var(--lul-ink-08);
+        box-shadow: 0 2px 6px var(--lul-ink-12);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--lul-header);
+        color: var(--lul-ink);
         z-index: 2;
         transition:
             background 0.2s ease,
@@ -243,14 +218,16 @@
         .lul-card__body {
             padding: 22px var(--lul-card-pad) 32px;
         }
+        /* Card body stays at 14px on mobile too. The doc is explicit that card
+           text is a summary the reader scans, not a paragraph they settle
+           into; the old 16px override made the grid heavier than the page. */
         .lul-card__desc {
-            font-size: 16px;
             margin-bottom: 20px;
         }
     }
 </style>
 
-<section class="lul-products" aria-label="Explore Our Products">
+<section class="lul lul-products" aria-label="Explore Our Products">
     <div class="lul-carousel">
         <button class="lul-nav lul-nav--prev" type="button" aria-label="Previous">
             <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -275,23 +252,13 @@
                     />
                 </div>
                 <div class="lul-card__body">
-                    <h3 class="lul-card__title">Parcel Reports</h3>
-                    <p class="lul-card__desc">
+                    <h3 class="lul-card__title lul-card-title-l">Parcel Reports</h3>
+                    <p class="lul-card__desc lul-card-body lul-muted">
                         On-demand reports summarizing zoning rules for 96+ million individual parcels across the
                         country.
                     </p>
-                    <span class="lul-card__btn">
-                        Learn more
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+                    <span class="lul-card__btn lul-cta lul-cta--tertiary">
+                        Learn more</span>
                 </div>
             </a>
 
@@ -305,22 +272,12 @@
                     />
                 </div>
                 <div class="lul-card__body">
-                    <h3 class="lul-card__title">Zoning API</h3>
-                    <p class="lul-card__desc">
+                    <h3 class="lul-card__title lul-card-title-l">Zoning API</h3>
+                    <p class="lul-card__desc lul-card-body lul-muted">
                         A REST endpoint returning the full set of zoning regulations governing any address we cover.
                     </p>
-                    <span class="lul-card__btn">
-                        Learn more
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+                    <span class="lul-card__btn lul-cta lul-cta--tertiary">
+                        Learn more</span>
                 </div>
             </a>
 
@@ -334,22 +291,12 @@
                     />
                 </div>
                 <div class="lul-card__body">
-                    <h3 class="lul-card__title">Zoning Districts</h3>
-                    <p class="lul-card__desc">
+                    <h3 class="lul-card__title lul-card-title-l">Zoning Districts</h3>
+                    <p class="lul-card__desc lul-card-body lul-muted">
                         GIS layers showing regulatory particulars for each zoning district in a selected geography.
                     </p>
-                    <span class="lul-card__btn">
-                        Learn more
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+                    <span class="lul-card__btn lul-cta lul-cta--tertiary">
+                        Learn more</span>
                 </div>
             </a>
 
@@ -363,23 +310,13 @@
                     />
                 </div>
                 <div class="lul-card__body">
-                    <h3 class="lul-card__title">Zoning Rasters</h3>
-                    <p class="lul-card__desc">
+                    <h3 class="lul-card__title lul-card-title-l">Zoning Rasters</h3>
+                    <p class="lul-card__desc lul-card-body lul-muted">
                         30x30 meter grid cells that standardize residential and nonresidential uses for high-level
                         analysis.
                     </p>
-                    <span class="lul-card__btn">
-                        Learn more
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+                    <span class="lul-card__btn lul-cta lul-cta--tertiary">
+                        Learn more</span>
                 </div>
             </a>
 
@@ -393,22 +330,12 @@
                     />
                 </div>
                 <div class="lul-card__body">
-                    <h3 class="lul-card__title">Zoning Slices</h3>
-                    <p class="lul-card__desc">
+                    <h3 class="lul-card__title lul-card-title-l">Zoning Slices</h3>
+                    <p class="lul-card__desc lul-card-body lul-muted">
                         GIS layers showing regulatory outcomes computed after combining base and overlay districts.
                     </p>
-                    <span class="lul-card__btn">
-                        Learn more
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+                    <span class="lul-card__btn lul-cta lul-cta--tertiary">
+                        Learn more</span>
                 </div>
             </a>
 
@@ -422,22 +349,12 @@
                     />
                 </div>
                 <div class="lul-card__body">
-                    <h3 class="lul-card__title">Zoning Tables</h3>
-                    <p class="lul-card__desc">
+                    <h3 class="lul-card__title lul-card-title-l">Zoning Tables</h3>
+                    <p class="lul-card__desc lul-card-body lul-muted">
                         Statistics summarizing zoning, housing, and demographic conditions at various geographic levels.
                     </p>
-                    <span class="lul-card__btn">
-                        Learn more
-                        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M4 10h12m0 0l-5-5m5 5l-5 5"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    </span>
+                    <span class="lul-card__btn lul-cta lul-cta--tertiary">
+                        Learn more</span>
                 </div>
             </a>
         </div>

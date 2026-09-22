@@ -1,5 +1,6 @@
 /**
- * Scope header.custom.css to a single Squarespace page, for safe testing.
+ * Scope styles/lul.css to a single Squarespace page, for safe testing.
+ * (header.custom.css was merged into styles/lul.css on 2026-09-21.)
  *
  *   node tools/scope-to-page.mjs collection-6a41d45bb52a355c76fed701 > /tmp/scoped.css
  *
@@ -19,8 +20,9 @@ const id = process.argv[2];
 if (!id) { console.error('usage: node scope-to-page.mjs <collection-id>'); process.exit(1); }
 const scope = `body#${id.replace(/^#/, '')}`;
 
-const css = fs.readFileSync(path.join(HERE, '..', 'header.custom.css'), 'utf8');
-const root = postcss.parse(css, { from: 'header.custom.css' });
+const SHEET = path.join(HERE, '..', '..', 'styles', 'lul.css');
+const css = fs.readFileSync(SHEET, 'utf8');
+const root = postcss.parse(css, { from: SHEET });
 
 root.walkRules(rule => {
   // don't touch rules inside @keyframes

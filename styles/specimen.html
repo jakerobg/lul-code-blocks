@@ -7,20 +7,20 @@
 <link rel="stylesheet" href="lul.css">
 <style>
   /* Specimen chrome only. None of this ships; it is the graph paper, not the type. */
-  body { margin: 0; background: #fff; color: #393347; }
+  body { margin: 0; background: #fff; color: #393348; }
   .wrap { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
   .row { display: grid; grid-template-columns: 148px 1fr; gap: 24px;
-         padding: 18px 0; border-top: 1px solid rgba(57, 51, 71, 0.15); align-items: baseline; }
+         padding: 18px 0; border-top: 1px solid rgba(57, 51, 72, 0.15); align-items: baseline; }
   .spec { font: 400 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
           color: #6b6580; padding-top: 6px; }
-  .spec b { display: block; font-weight: 600; color: #393347; }
+  .spec b { display: block; font-weight: 600; color: #393348; }
   h2.sec { font: 600 13px/1.2 Inter, sans-serif; letter-spacing: 0.12em;
            text-transform: uppercase; color: #6b6580; margin: 56px 0 8px; }
   h2.sec:first-of-type { margin-top: 24px; }
   .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
   .sw { font: 400 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6b6580; }
-  .sw i { display: block; height: 52px; border-radius: 3px; border: 1px solid rgba(57,51,71,0.15); margin-bottom: 6px; }
-  .sw b { display: block; font-weight: 600; color: #393347; }
+  .sw i { display: block; height: 52px; border-radius: 3px; border: 1px solid rgba(57,51,72,0.15); margin-bottom: 6px; }
+  .sw b { display: block; font-weight: 600; color: #393348; }
   .sw em { display: block; font-style: normal; color: #8a8699; }
 </style>
 </head>
@@ -31,7 +31,7 @@
 
   <div class="row"><div class="spec"><b>Raw palette</b>Swatch · token · hex</div>
     <div class="swatches">
-      <div class="sw"><i style="background:var(--lul-ink)"></i><b>--lul-ink</b>#393347<em>Headings, body, secondary border</em></div>
+      <div class="sw"><i style="background:var(--lul-ink)"></i><b>--lul-ink</b>#393348<em>Headings, body, secondary border</em></div>
       <div class="sw"><i style="background:var(--lul-primary)"></i><b>--lul-primary</b>#594496<em>Primary button fill</em></div>
       <div class="sw"><i style="background:var(--lul-primary-hover)"></i><b>--lul-primary-hover</b>#3f2e70<em>Primary button hover</em></div>
       <div class="sw"><i style="background:var(--lul-grey-dark)"></i><b>--lul-grey-dark</b>#5c5c5c<em>Secondary text</em></div>
@@ -107,19 +107,23 @@
   <div class="row"><div class="spec"><b>.lul-card-body</b>Inter 400 · 14 / 1.5</div>
     <div class="lul-card-body">Merged base and overlay districts with prevailing regulations computed
       for every unique combination.</div></div>
-  <div class="row"><div class="spec"><b>.lul-card-link</b>Inter 600 · 15 / 1.35</div>
-    <div class="lul-card-link">Learn more</div></div>
+  <div class="row"><div class="spec"><b>card link</b>No class of its own —<br>use .lul-cta--tertiary</div>
+    <div><a class="lul-cta lul-cta--tertiary" href="#">Learn more</a></div></div>
 
   <h2 class="sec">CTA type</h2>
 
-  <div class="row"><div class="spec"><b>.lul-cta</b>Inter 600 · 16 / 1.2<br>Primary + secondary</div>
-    <div><span class="lul-cta">Get instant pricing</span> &nbsp;&nbsp;
-         <span class="lul-cta">Order Slices</span> &nbsp;&nbsp;
-         <span class="lul-cta">Download Data Dictionary</span></div></div>
-  <div class="row"><div class="spec"><b>.lul-cta-tertiary</b>Inter 600 · 15 / 1.35</div>
-    <div><span class="lul-cta-tertiary">Learn more</span> &nbsp;&nbsp;
-         <span class="lul-cta-tertiary">Access resource</span> &nbsp;&nbsp;
-         <span class="lul-cta-tertiary">Contact us for a quote</span></div></div>
+  <div class="row"><div class="spec"><b>.lul-cta</b>Inter 600 · 16 / 1.2<br>Type AND shell — one class is the whole button</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <a class="lul-cta lul-cta--primary" href="#">Get instant pricing</a>
+      <a class="lul-cta lul-cta--secondary" href="#">Order Slices</a>
+      <a class="lul-cta lul-cta--secondary" href="#">Download Data Dictionary</a>
+    </div></div>
+  <div class="row"><div class="spec"><b>.lul-cta--tertiary</b>Inter 600 · 15 / 1.35<br>Purple text button</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
+      <a class="lul-cta lul-cta--tertiary" href="#">Learn more</a>
+      <a class="lul-cta lul-cta--tertiary" href="#">Access resource</a>
+      <a class="lul-cta lul-cta--tertiary" href="#">Contact us for a quote</a>
+    </div></div>
   <div class="row"><div class="spec"><b>.lul-cta-compact</b>Inter 600 · 14 / 1.3</div>
     <div><span class="lul-cta-compact">Residential basics</span> &nbsp;&nbsp;
          <span class="lul-cta-compact">Full regulatory package</span> &nbsp;&nbsp;

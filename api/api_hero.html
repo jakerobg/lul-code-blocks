@@ -33,16 +33,18 @@
   ▶ Classes are prefixed lul-apihero- / --lulapi- so this can share a page
     with the terminal graphic and the building blocks.
 -->
+<!-- Local preview only. Squarespace already carries styles/lul.css in Custom
+     CSS; this line just makes the block render correctly on its own. -->
+<link rel="stylesheet" href="../styles/lul.css">
+
 
 <section class="lul-apihero">
     <style>
         .lul-apihero {
-            --lulapi-header: #393348;
-            --lulapi-muted: #5c5c5c; /* subtitle */
-            /* the house primary purple, as used on BUTTONS/BUTTONS_PRIMARY_SECONDARY.html */
-            --lulapi-code: #594496; /* GET and the {variable} */
+            /* Colour and type come from styles/lul.css. The ink, the muted grey and
+               the primary purple are all tokens there now; only this tint stays
+               local, because the ramp is ink-based and this is a primary tint. */
             --lulapi-code-bg: rgba(89, 68, 150, 0.09);
-            --lulapi-prompt: #594496; /* the ">" on the title */
 
             --lulapi-max-w: 1100px; /* width of the CONTENT */
             --lulapi-gutter: 24px; /* added to the cap, not taken out of it */
@@ -53,13 +55,12 @@
                title holds 5rem above 8000/N px of window and bottoms out
                below 4rem*16*100/N px. At 6.5 that's 1231px and 985px. */
             --lulapi-title-size: clamp(4rem, 6.5vw, 5rem);
-            --lulapi-sub-size: 1.1rem;
             --lulapi-blink: 1.05s; /* caret blink period */
 
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: var(--lul-font-body);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            color: var(--lulapi-header);
+            color: var(--lul-ink);
             width: 100%;
             max-width: calc(var(--lulapi-max-w) + 2 * var(--lulapi-gutter));
             margin-left: auto;
@@ -75,7 +76,15 @@
         }
 
         .lul-apihero__headline {
-            font-weight: 600;
+            /* The display treatment from lul.css: Space Grotesk at the oversized
+               weight. --lul-weight-display-alt (500) rather than --lul-weight-display
+               (700) because the scale reserves the lighter one for exactly this —
+               "oversized treatments only" — and Space Grotesk ships only 500 and 700,
+               so the previous 600 was being synthesised by the browser anyway.
+               The size stays a local clamp: the hero is deliberately larger than
+               --lul-size-display (56px) and needs to scale with the viewport. */
+            font-family: var(--lul-font-display);
+            font-weight: var(--lul-weight-display-alt);
             font-size: var(--lulapi-title-size);
             /* At 1.1 the line box is shorter than the font's own ascent plus
                descent, so the tail of the "g" in Zoning hangs below it and any
@@ -84,13 +93,13 @@
                to sit without changing the line spacing or the type size. */
             line-height: 1.1;
             padding-bottom: 0.12em;
-            letter-spacing: -0.02em;
+            letter-spacing: var(--lul-track-display);
             margin: 0;
-            color: var(--lulapi-header);
+            color: var(--lul-ink);
         }
         /* the ">" — a design device, sized and spaced off the title */
         .lul-apihero__prompt {
-            color: var(--lulapi-prompt);
+            color: var(--lul-primary);
             font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
             font-weight: 700;
             margin-right: 0.28em;
@@ -116,9 +125,9 @@
         }
 
         .lul-apihero__subtitle {
-            font-size: var(--lulapi-sub-size);
-            line-height: 1.55;
-            color: var(--lulapi-muted);
+            font-size: var(--lul-size-body-l);
+            line-height: var(--lul-leading-body-l);
+            color: var(--lul-grey-dark);
             margin: 20px 0 0;
             max-width: 46ch;
         }
@@ -131,7 +140,7 @@
 
         /* the parcel count, picked out in the same purple */
         .lul-apihero__num {
-            color: var(--lulapi-code);
+            color: var(--lul-primary);
             font-weight: 700;
         }
 
@@ -140,7 +149,7 @@
             font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
             font-size: 0.92em;
             font-weight: 700;
-            color: var(--lulapi-code);
+            color: var(--lul-primary);
             background: var(--lulapi-code-bg);
             padding: 0.1em 0.34em;
             border-radius: 4px;

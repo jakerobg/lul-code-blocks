@@ -23,6 +23,10 @@
   ▶ All classes are prefixed lul-pgrid- / --lulg- so this can share a page
     with product_table.html without either one clobbering the other.
 -->
+<!-- Local preview only. Squarespace already carries styles/lul.css in Custom
+     CSS; this line just makes the block render correctly on its own. -->
+<link rel="stylesheet" href="../styles/lul.css">
+
 
 <section class="lul-pgrid" aria-label="Explore products">
     <style>
@@ -197,7 +201,7 @@
             display: block;
             align-self: end;
             text-align: center;
-            font-size: 14px;
+            font-size: var(--lul-size-cta-compact);
             font-weight: 500;
             letter-spacing: 0.02em;
             padding: 8px 14px;

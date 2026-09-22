@@ -1,23 +1,27 @@
 <!--
   Coverage Stats — four square stat cards (Squarespace Code Block).
-  Big count-up number fills each card; a smaller muted subheader sits
-  beneath it. Numbers tick up from 0 → target the first time the block
-  scrolls into view. Values come live from the zoning-atlas coverage API.
+  Big count-up number fills each card; a smaller uppercase label sits above
+  it. Numbers tick up from 0 → target the first time the block scrolls into
+  view. Values come live from the zoning-atlas coverage API.
+
+  TYPE AND COLOUR COME FROM styles/lul.css. The number is .lul-stat (Space
+  Grotesk 700, 40px, tabular figures — the doc's data face) and the label is
+  .lul-eyebrow, the one uppercase element the system allows. This block sets
+  layout, the card surface and the count-up behaviour only.
 
   ▶ CONFIG (top of the <script> below): SELECTED lists the 4 cards. Each
     is either a metric key (fetched live from METRICS) or a hardcoded
     { value, label } card.
-
-  Self-contained; all classes prefixed lul-cov- to avoid collisions.
 -->
-<section class="lul-cov" aria-label="Data coverage statistics">
+
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="styles/lul.css" />
+
+<section class="lul lul-cov" aria-label="Data coverage statistics">
     <style>
         .lul-cov {
-            --lul-header: #594496;
-            --lul-card: #ffffff; /* grey card, matches research-band feel */
-            --lul-sub: #393348;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: var(--lul-header);
+            color: var(--lul-primary);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             width: 100%;
@@ -50,32 +54,31 @@
         }
 
         .lul-cov__card {
-            background: var(--lul-card);
+            background: var(--lul-white);
             border-radius: 0;
             padding: 25px 20px 25px 20px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             min-height: 150px; /* taller card -> bigger number-to-text gap */
-            box-shadow: 2px 6px 10px rgba(57, 51, 72, 0.28);
+            box-shadow: 2px 6px 10px var(--lul-ink-28);
             text-align: left;
             align-items: flex-start;
-            border: solid 1px rgba(57, 51, 72, 0.3);
+            border: solid 1px var(--lul-ink-30);
         }
 
+        /* Face, size, leading, tracking and tabular figures all come from
+           .lul-stat. Only the colour and the push-to-bottom are local. */
         .lul-cov__num {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-weight: 400;
-            font-size: 2.9rem;
-            line-height: 1;
-            letter-spacing: -0.03em;
-            color: var(--lul-header);
+            color: var(--lul-primary);
             margin: 0;
             margin-top: auto; /* number sits at the bottom, label on top */
         }
         .lul-cov__plus {
             font-size: 0.6em; /* a little smaller than the number */
-            font-weight: 400;
+            /* No font-weight: it used to be pinned to 400 to match the old
+               400-weight number. .lul-stat is 700, so pinning it would now
+               render the + lighter than the digits it follows. */
             margin-left: 0.15em;
             vertical-align: 0.5em;
         }
@@ -89,28 +92,24 @@
                content down by the border width like a border-box border would */
             box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
         }
+        /* The cream (#eeecef) is deliberately NOT a palette token: it is a
+           light-on-dark value with no equivalent in the sheet. --lul-grey-medium
+           (#efedec) is within two units of it but is a light-mode SURFACE, so
+           borrowing it here would tie two unrelated things together. */
         .lul-cov__card--accent .lul-cov__num {
             color: #eeecef;
         }
         .lul-cov__card--accent .lul-cov__sub {
             color: rgba(238, 236, 239, 0.78);
-            opacity: 1;
         }
         .lul-cov__card--accent .lul-cov__plus {
             color: rgba(238, 236, 239, 0.6);
         }
 
-        /* uppercase label — same treatment as uppercase_label.html.
-           Sits at the TOP of the card; the number is pushed to the bottom. */
+        /* Uppercase label. Type comes from .lul-eyebrow, colour from
+           .lul-muted; only its position in the card is local. It sits at the
+           TOP; the number is pushed to the bottom by margin-top:auto above. */
         .lul-cov__sub {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            line-height: 1.4;
-            color: #393348;
-            opacity: 0.8;
             margin: 0;
         }
 
@@ -137,7 +136,12 @@
                       (optional per-card flags: plus:false, accent:true → transparent tile)
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
-            var SELECTED = [{ value: 90000000, label: "parcels" }, "acres", "population", "pages"];
+            var SELECTED = [
+                { value: 96000000, label: "parcels", plus: true, accent: false },
+                "housing_units",
+                "population",
+                "pages",
+            ];
 
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
@@ -250,10 +254,10 @@
                 var card = document.createElement("article");
                 card.className = "lul-cov__card" + (def.accent ? " lul-cov__card--accent" : "");
                 var num = document.createElement("p");
-                num.className = "lul-cov__num";
+                num.className = "lul-cov__num lul-stat";
                 num.textContent = "—";
                 var sub = document.createElement("p");
-                sub.className = "lul-cov__sub";
+                sub.className = "lul-cov__sub lul-eyebrow lul-muted";
                 card.appendChild(sub);
                 card.appendChild(num);
                 grid.appendChild(card);

@@ -1,0 +1,128 @@
+<!--
+  CHECKLIST — uppercase heading, checkmark list, footnote (Squarespace Code Block).
+
+  TYPE AND COLOUR COME FROM styles/lul.css. The heading is .lul-eyebrow (the
+  one uppercase element the system allows), the rows are .lul-body and the
+  footnote .lul-small + .lul-muted. What stays here is the checklist layout
+  only: the columns, the row rhythm and the CSS-drawn checkmark.
+
+  ▶ TO EDIT: add or remove <li> rows. The checkmark is drawn by CSS, so the
+    markup stays clean — no icon to copy per row.
+  ▶ TWO COLUMNS: set --lul-chk-cols to 2 (below). Rows flow down the first
+    column, then the second. Collapses back to one column on narrow screens.
+  ▶ CHECKMARK: --lul-chk-check sets its width; its height is 1.6em so it
+    always matches the row's line box.
+
+  This is the only checklist in the repo, so the layout has not been hoisted
+  into the shared sheet. If a second one appears, move .lul-chk there.
+-->
+
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../../../styles/lul.css">
+
+<section class="lul lul-chk">
+    <style>
+        .lul-chk {
+            --lul-chk-check: 18px; /* checkmark width */
+            --lul-chk-gap: 14px;   /* space between rows */
+            --lul-chk-cols: 1;
+            --lul-chk-mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4 10.5 8 14.5 16 6' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            color: var(--lul-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 0;
+        }
+        .lul-chk *,
+        .lul-chk *::before,
+        .lul-chk *::after {
+            box-sizing: border-box;
+        }
+
+        /* Type from .lul-eyebrow; only the space below it is local. */
+        .lul-chk__heading {
+            margin: 0 0 22px;
+        }
+
+        .lul-chk__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            columns: var(--lul-chk-cols);
+            column-gap: 40px;
+        }
+        .lul-chk__list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin: 0 0 var(--lul-chk-gap);
+            /* keeps a wrapped row from splitting across columns */
+            break-inside: avoid;
+        }
+        .lul-chk__list li:last-child {
+            margin-bottom: 0;
+        }
+        /* checkmark drawn from a masked SVG — no icon markup per row, and it
+           still takes its color from --lul-check */
+        .lul-chk__list li::before {
+            content: "";
+            flex: none;
+            width: var(--lul-chk-check);
+            /* 1.6em == .lul-body's line-height, so the mark centres on the
+               row's first line. An em rather than calc(): Squarespace compiles
+               Custom CSS as LESS, which rejects var() inside calc(). */
+            height: 1.6em;
+            background-color: var(--lul-primary);
+            -webkit-mask: var(--lul-chk-mark) no-repeat center / 100% auto;
+            mask: var(--lul-chk-mark) no-repeat center / 100% auto;
+        }
+
+        /* LEAD ROW — the first item, set larger and heavier so it reads as the
+           headline stat. Add class="lul-chk__lead" to any <li>. The checkmark
+           scales automatically because it's sized off --lul-chk-size. */
+        .lul-chk__list li.lul-chk__lead {
+            font-weight: var(--lul-weight-semibold);
+            margin-bottom: 20px;
+            /* full-width even in two-column mode */
+            column-span: all;
+        }
+        /* the number itself, in the accent purple */
+        .lul-chk__lead b {
+            font-weight: var(--lul-weight-semibold);
+            color: var(--lul-primary);
+        }
+
+        /* Type from .lul-small + .lul-muted; only the space above is local. */
+        .lul-chk__note {
+            margin: 34px 0 0;
+        }
+
+        /* One column once the screen gets narrow. @media, not @container:
+           LESS reads a leading @name as a variable, so @container is a syntax
+           error in Squarespace's Custom CSS. 580px viewport is the equivalent
+           of the 460px block width this used to test. */
+        @media (max-width: 580px) {
+            .lul-chk {
+                --lul-chk-cols: 1;
+            }
+        }
+    </style>
+
+    <h3 class="lul-chk__heading lul-eyebrow">What's included in the report</h3>
+
+    <ul class="lul-chk__list lul-body">
+        <li class="lul-chk__lead">
+            <span><b>120</b> zoning rules</span>
+        </li>
+        <li>Zoning district designation</li>
+        <li>Housing types allowed</li>
+        <li>Most common nonresidential uses</li>
+        <li>Setbacks</li>
+        <li>Height limits</li>
+        <li>Parking minimums</li>
+    </ul>
+
+    <p class="lul-chk__note lul-small lul-muted">Coverage spans 90+ million parcels nationwide.</p>
+</section>

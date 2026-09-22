@@ -1,0 +1,92 @@
+<!--
+  USE CASE CARDS — three icon cards, 3 across (Squarespace Code Block).
+  Same card system as the product-spec cards and the audience cards. TYPE,
+  COLOUR AND LAYOUT ALL COME FROM styles/lul.css (section 6, .lul-uc). This
+  file is markup only.
+
+  These are informational, not links, so they're <article> elements with no
+  hover lift — motion and shadow stay reserved for the clickable product and
+  audience cards. To make them clickable, swap <article> for <a href="…"> and
+  add .lul-uc__card--link, which carries the hover treatment.
+  ▶ WIDTH: fills its Squarespace section. Control the inset from the
+    section's content-width setting.
+  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
+    3 across, stacked under 640px.
+  ▶ ICONS: inline SVG, swap the <path> data for any 24x24 outline icon.
+-->
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../../styles/lul.css">
+
+<section class="lul lul-uc" aria-label="Use cases">
+    <div class="lul-uc__grid">
+        <!-- Zoning Reform -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L2 19v3h3l7.3-7.3a4 4 0 0 0 5.4-5.4l-2.8 2.8-2.6-.6-.6-2.6Z" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Zoning Reform</h4>
+            <p class="lul-uc__body">
+                Support zoning code rewrites by seeing exactly how each district regulates density, uses, and
+                dimensional standards.
+            </p>
+        </article>
+        <!-- Map Display -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m12 2 9 4.5-9 4.5-9-4.5Z" />
+                    <path d="m3 11.5 9 4.5 9-4.5" />
+                    <path d="m3 16.5 9 4.5 9-4.5" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Map Display</h4>
+            <p class="lul-uc__body">
+                Show zoning district layers as they appear in codes in static and interactive maps for internal and
+                external audiences.
+            </p>
+        </article>
+        <!-- Regulatory Comparison -->
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path d="m17 2 4 4-4 4" />
+                    <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+                    <path d="m7 22-4-4 4-4" />
+                    <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+                </svg>
+            </span>
+            <h4 class="lul-uc__title">Regulatory Comparison</h4>
+            <p class="lul-uc__body">
+                Investigate how different cities, counties, and towns treat zoning districts to find trends and
+                inconsistencies.
+            </p>
+        </article>
+    </div>
+</section>

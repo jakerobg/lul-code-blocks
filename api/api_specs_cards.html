@@ -3,16 +3,16 @@
 
   The API-page version of product_pages/PRODUCT_SPECS/product_specs_cards_*.
   Identical card system, so it sits beside them unchanged:
-    border  1px rgba(57,51,72,.3)
+    border  1px --lul-ink-30
     radius  0 (sitewide)
-    title   22px / 500 / #393348
-    body    15px Arial / rgba(57,51,72,.75)
-    icon    46x46 well at rgba(57,51,72,.06), 24x24 outline glyph
+    title   --lul-size-card-title-l / --lul-weight-medium / --lul-ink
+    body    --lul-size-ui / Inter / rgba(57,51,72,.75)
+    icon    46x46 well at --lul-ink-06, 24x24 outline glyph
   Informational, not links — <article> elements, no hover lift.
 
   ▶ REFLOW: measured against the BLOCK's width, not the browser window —
     3 across, stacked under 640px.
-  ▶ PREFIXED lul-apispec- rather than reusing .lul-uc, which the product
+  ▶ PREFIXED lul-uc- rather than reusing .lul-uc, which the product
     specs and the use-case cards share. The values are identical, but the API
     page already carries its own hero, terminal and badge blocks, and a
     shared class means editing one block's --lul-gap silently moves the
@@ -25,86 +25,27 @@
     schedule with a measured bar, and literal curly braces. Swap the <path>
     data for any 24x24 outline icon.
 -->
-<section class="lul-apispec" aria-label="API specifications">
-    <style>
-        .lul-apispec {
-            --lulspec-ink: #393348;
-            --lulspec-gap: 24px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 20px 0;
-            container-type: inline-size;
-            container-name: lulapispec;
-        }
-        .lul-apispec *,
-        .lul-apispec *::before,
-        .lul-apispec *::after {
-            box-sizing: border-box;
-        }
-        .lul-apispec__grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--lulspec-gap);
-        }
-        .lul-apispec__card {
-            flex: 1 1 calc(33.333% - (var(--lulspec-gap) * 2 / 3));
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
-            border: 1px solid rgba(57, 51, 72, 0.3);
-            border-radius: 0;
-            padding: 26px 24px 28px;
-        }
-        .lul-apispec__icon {
-            width: 46px;
-            height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(57, 51, 72, 0.06);
-            color: var(--lulspec-ink);
-            margin-bottom: 22px;
-            flex: none;
-        }
-        .lul-apispec__icon svg {
-            width: 24px;
-            height: 24px;
-            display: block;
-        }
-        .lul-apispec__title {
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.01em;
-            line-height: 1.25;
-            color: var(--lulspec-ink);
-            margin: 0 0 12px;
-        }
-        .lul-apispec__body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 15px;
-            font-weight: 400;
-            line-height: 1.55;
-            color: rgba(57, 51, 72, 0.75);
-            margin: 0;
-        }
-        /* ── RESPONSIVE ───────────────────────────────────────────────
-             > 640px  →  3 across
-             ≤ 640px  →  stacked                                      */
-        @container lulapispec (max-width: 640px) {
-            .lul-apispec {
-                --lulspec-gap: 16px;
-            }
-            .lul-apispec__card {
-                flex-basis: 100%;
-            }
-        }
-    </style>
-    <div class="lul-apispec__grid">
+<!-- Styling comes entirely from styles/lul.css (Squarespace → Design → Custom CSS),
+     which carries the shared .lul-uc card component: grid, card, icon, title, body,
+     list, link colours and the responsive reflow.
+
+     This block used to ship its own copy under a private prefix (lul-apispec__). lul.css's
+     own header names that as the problem the consolidation fixed — a use-case block
+     and a specs block for the same product each carrying an identical-but-separate
+     copy, fighting on any page that used both.
+
+     No <style> here on purpose. Do not reintroduce one: a local copy silently
+     shadows the shared component and the two drift apart. Modifiers go on the root
+     element — --tight, --four, --center, --wrap2.
+
+     The <link> below is for local preview only; Squarespace already has the CSS. -->
+<link rel="stylesheet" href="../styles/lul.css">
+
+<section class="lul lul-uc" aria-label="API specifications">
+    <div class="lul-uc__grid">
         <!-- Point Query — crosshair sighted on a single point -->
-        <article class="lul-apispec__card">
-            <span class="lul-apispec__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -122,13 +63,13 @@
                     <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
                 </svg>
             </span>
-            <h4 class="lul-apispec__title">Point Query</h4>
-            <p class="lul-apispec__body">One set of rules per address or coordinate pair.</p>
+            <h4 class="lul-uc__title">Point Query</h4>
+            <p class="lul-uc__body">One set of rules per address or coordinate pair.</p>
         </article>
 
         <!-- Full Regulatory Precision — a ruled schedule with a measured bar -->
-        <article class="lul-apispec__card">
-            <span class="lul-apispec__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -146,16 +87,16 @@
                     <path d="M17 10.6v2.8" />
                 </svg>
             </span>
-            <h4 class="lul-apispec__title">Full Regulatory Precision</h4>
-            <p class="lul-apispec__body">
+            <h4 class="lul-uc__title">Full Regulatory Precision</h4>
+            <p class="lul-uc__body">
                 Returns our full corpus of zoning characteristics—including use treatments, parking requirements,
                 setbacks, building heights, and more.
             </p>
         </article>
 
         <!-- JSON Object — literal curly braces around a value -->
-        <article class="lul-apispec__card">
-            <span class="lul-apispec__icon">
+        <article class="lul-uc__card">
+            <span class="lul-uc__icon">
                 <svg
                     viewBox="0 0 24 24"
                     fill="none"
@@ -170,8 +111,8 @@
                     <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
                 </svg>
             </span>
-            <h4 class="lul-apispec__title">JSON Object</h4>
-            <p class="lul-apispec__body">Structured data ready to incorporate into your workflow or schema.</p>
+            <h4 class="lul-uc__title">JSON Object</h4>
+            <p class="lul-uc__body">Structured data ready to incorporate into your workflow or schema.</p>
         </article>
     </div>
 </section>

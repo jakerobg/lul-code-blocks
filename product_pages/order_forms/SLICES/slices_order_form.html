@@ -31,6 +31,18 @@
       USE_TYPE_LABELS  — use_type → chip label (+ tooltip for acronyms)
 -->
 
+<!-- Local preview only. Squarespace already carries styles/lul.css in Custom
+     CSS; this line just makes the block render correctly on its own.
+
+     THIS BLOCK'S CSS STAYS LOCAL ON PURPOSE. Do not hoist it into
+     styles/lul.css: the colour ramp is built on rgb(var(--lul-ink-rgb)) and
+     the layout on @container, and Squarespace compiles Custom CSS as LESS,
+     which rejects both (a colour function over a variable, and a leading
+     @name read as a variable). Inside a code block the CSS is passed through
+     uncompiled, so both work here and only here. What IS shared is the type
+     face and the palette values, which already match styles/lul.css. -->
+<link rel="stylesheet" href="../../../styles/lul.css" />
+
 <style>
     #lul-slices {
         /* ── Colour system ──────────────────────────────────────────────────
@@ -45,18 +57,18 @@
 
         --lul-ink: rgb(var(--lul-ink-rgb));
         --lul-accent: rgb(var(--lul-accent-rgb));
-        --lul-accent-dark: #3f2e70;
+        --lul-accent-dark: var(--lul-primary-hover);
         --lul-green: rgb(var(--lul-green-rgb));
         --lul-green-line: rgb(191, 199, 150); /* a readable stroke against the fill */
 
         /* Surfaces are opaque on purpose — they stack (card on panel on page),
            and translucent fills would composite differently depending on what
            happens to sit behind them. */
-        --lul-surface: #ffffff; /* cards, inputs, tiles */
-        --lul-on-accent: #ffffff; /* text sitting on the accent */
+        --lul-surface: var(--lul-white); /* cards, inputs, tiles */
+        --lul-on-accent: var(--lul-white); /* text sitting on the accent */
         /* Warm neutral ramp, lightest to darkest. Kept in one family on purpose
            — a warm panel behind cool grey fills reads as a mismatch. */
-        --lul-panel: #efedec; /* grey panel behind the cards */
+        --lul-panel: var(--lul-grey-medium); /* grey panel behind the cards */
         --lul-chip: #eeecea; /* pills, tags, accordion headers */
         --lul-fill: #e7e4e1; /* step numbers, accordion hover */
 
@@ -85,11 +97,17 @@
         --lul-max-w: 1280px;
 
         /* Error state */
-        --lul-error-bg: #fff3f3;
-        --lul-error-line: rgba(180, 0, 0, 0.2);
-        --lul-error-ink: #7a0000;
+        /* Error colours come from styles/lul.css so the form matches the
+           thank-you page and anything else that reports a failure. The form
+           used to run its own darker red (#7a0000 on #fff3f3).
+           --lul-error-line is NOT redeclared here: styles/lul.css defines it
+           on :root under the same name, so it is inherited. Redeclaring it
+           locally with a var() of itself would be a cycle and resolve to
+           nothing. */
+        --lul-error-bg: var(--lul-bg-error);
+        --lul-error-ink: var(--lul-error);
 
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-family: var(--lul-font-body);
         color: var(--lul-ink);
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -177,7 +195,7 @@
     #lul-slices .lul-step__label {
         display: inline-block !important;
         vertical-align: middle !important;
-        font-size: 12.5px;
+        font-size: var(--lul-size-caption);
         font-weight: 400;
         line-height: 1.2;
         color: var(--lul-muted);
@@ -225,20 +243,20 @@
         margin-bottom: 0;
     }
     .lul-sl__intro {
-        font-size: 14.5px;
+        font-size: var(--lul-size-small);
         line-height: 1.6;
         color: var(--lul-ink);
         margin: 0 0 22px;
     }
     .lul-sl__h {
-        font-size: 15px;
-        font-weight: 700;
+        font-size: var(--lul-size-ui);
+        font-weight: var(--lul-weight-semibold);
         letter-spacing: -0.01em;
         margin: 0 0 12px;
         color: var(--lul-ink);
     }
     .lul-sl__hint {
-        font-size: 13.5px;
+        font-size: var(--lul-size-small);
         line-height: 1.55;
         color: var(--lul-muted);
         margin: 0 0 14px;
@@ -253,8 +271,8 @@
         margin: 20px 0 14px;
     }
     .lul-sl__eyebrow {
-        font-size: 10.5px;
-        font-weight: 700;
+        font-size: var(--lul-size-eyebrow);
+        font-weight: var(--lul-weight-semibold);
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--lul-muted);
@@ -331,13 +349,13 @@
     }
     .lul-sl__tile-name {
         display: block;
-        font-size: 14px;
+        font-size: var(--lul-size-small);
         font-weight: 700;
         margin-bottom: 5px;
     }
     .lul-sl__tile-desc {
         display: block;
-        font-size: 12.5px;
+        font-size: var(--lul-size-caption);
         line-height: 1.45;
         color: var(--lul-muted);
     }
@@ -383,8 +401,8 @@
         pointer-events: none;
     }
     #lul-slices .lul-input {
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 15px;
+        font-family: var(--lul-font-body);
+        font-size: var(--lul-size-ui);
         padding: 13px 14px;
         border: 1px solid var(--lul-line);
         border-radius: 0;
@@ -437,7 +455,7 @@
         width: 100% !important;
         text-align: left !important;
         font-family: inherit !important;
-        font-size: 14px !important;
+        font-size: var(--lul-size-small) !important;
         font-weight: 400 !important;
         line-height: 1.35 !important;
         letter-spacing: normal !important;
@@ -457,7 +475,7 @@
         outline: none;
     }
     #lul-geo-status {
-        font-size: 13px;
+        font-size: var(--lul-size-caption);
         color: var(--lul-muted);
         margin-top: 8px;
     }
@@ -466,7 +484,7 @@
     .lul-msg {
         padding: 14px 16px;
         border-radius: 0;
-        font-size: 14px;
+        font-size: var(--lul-size-small);
         line-height: 1.55;
         margin-bottom: 16px;
     }
@@ -495,7 +513,7 @@
     }
     .lul-sl__chip {
         font-family: inherit;
-        font-size: 13px;
+        font-size: var(--lul-size-caption);
         font-weight: 500;
         color: var(--lul-ink);
         background: var(--lul-surface);
@@ -608,14 +626,14 @@
         padding: 13px 16px;
         cursor: pointer;
         color: var(--lul-ink);
-        font-size: 13.5px;
+        font-size: var(--lul-size-small);
         font-weight: 700;
     }
     .lul-sl__group-head.is-on .lul-sl__group-btn {
         color: var(--lul-accent);
     }
     .lul-sl__group-meta {
-        font-size: 12.5px;
+        font-size: var(--lul-size-caption);
         font-weight: 400;
         color: var(--lul-muted);
         white-space: nowrap;
@@ -654,7 +672,7 @@
         border-radius: 0;
         cursor: pointer;
         margin: 0;
-        font-size: 13.5px;
+        font-size: var(--lul-size-small);
         line-height: 1.4;
     }
     .lul-sl__var:hover {
@@ -671,8 +689,8 @@
         margin-top: 4px;
     }
     .lul-sl__sub-label {
-        font-size: 10.5px;
-        font-weight: 700;
+        font-size: var(--lul-size-eyebrow);
+        font-weight: var(--lul-weight-semibold);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--lul-muted);
@@ -680,7 +698,7 @@
         padding: 0 12px;
     }
     .lul-sl__empty {
-        font-size: 13.5px;
+        font-size: var(--lul-size-small);
         line-height: 1.55;
         color: var(--lul-muted);
         padding: 18px 2px;
@@ -702,19 +720,23 @@
         }
     }
     .lul-sl__side-title {
-        font-size: 15px;
-        font-weight: 700;
+        font-size: var(--lul-size-ui);
+        font-weight: var(--lul-weight-semibold);
         margin: 0 0 16px;
     }
     .lul-sl__price {
-        font-size: 34px;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1;
+        /* The doc's Stat step: Space Grotesk 700 at 40px with tabular figures,
+           so the price does not jitter horizontally as it updates. */
+        font-family: var(--lul-font-display);
+        font-size: var(--lul-size-stat);
+        font-weight: var(--lul-weight-display);
+        letter-spacing: var(--lul-track-stat);
+        line-height: var(--lul-leading-stat);
+        font-variant-numeric: tabular-nums;
         color: var(--lul-accent);
     }
     .lul-sl__price-unit {
-        font-size: 13px;
+        font-size: var(--lul-size-caption);
         font-weight: 400;
         color: var(--lul-muted);
         margin-left: 6px;
@@ -725,11 +747,11 @@
         margin: 16px 0;
     }
     .lul-sl__count {
-        font-size: 13.5px;
+        font-size: var(--lul-size-small);
         margin: 0 0 8px;
     }
     .lul-sl__side-empty {
-        font-size: 12.5px;
+        font-size: var(--lul-size-caption);
         line-height: 1.5;
         color: var(--lul-muted);
         margin: 0;
@@ -740,7 +762,7 @@
         padding: 0;
         max-height: 190px;
         overflow-y: auto;
-        font-size: 12.5px;
+        font-size: var(--lul-size-caption);
         line-height: 1.45;
         color: var(--lul-muted);
     }
@@ -751,7 +773,7 @@
         display: flex;
         align-items: flex-start;
         gap: 9px;
-        font-size: 11.5px;
+        font-size: var(--lul-size-caption);
         line-height: 1.45;
         color: var(--lul-muted);
         margin: 0 0 14px;
@@ -774,8 +796,8 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        font-weight: 700;
-        font-size: 14.5px;
+        font-weight: var(--lul-weight-semibold);
+        font-size: var(--lul-size-cta-compact);
         padding: 14px 18px;
         border-radius: 0;
         border: 1px solid var(--lul-accent);
@@ -795,8 +817,9 @@
         border-color: var(--lul-chip);
         color: var(--lul-muted);
         cursor: not-allowed;
-        font-weight: 400;
-        font-size: 13px;
+        /* No type overrides: a disabled button is the same button, greyed.
+           It used to drop to 13px/400 while the enabled one was 14.5px/700,
+           so the label visibly shrank the moment it went inactive. */
     }
 
     /* ── Spinner ── */
@@ -804,7 +827,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        font-size: 14px;
+        font-size: var(--lul-size-small);
         color: var(--lul-muted);
         padding: 10px 0;
     }

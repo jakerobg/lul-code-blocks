@@ -38,27 +38,26 @@
   ▶ Classes are prefixed lul-apihc- so this can share a page with
     api_hero.html without either restyling the other.
 -->
+<!-- Local preview only. Squarespace already carries styles/lul.css in Custom
+     CSS; this line just makes the block render correctly on its own. -->
+<link rel="stylesheet" href="../styles/lul.css">
+
 
 <section class="lul-apihc">
     <style>
         .lul-apihc {
-            --lulapihc-header: #393348;
-            --lulapihc-muted: #5c5c5c;
-            --lulapihc-prompt: #594496; /* the ">", house primary purple */
-            --lulapihc-accent: #594496; /* "Zoning API" inside the headline */
 
             --lulapihc-max-w: 1200px;
 
             /* same values as api_hero.html */
             --lulapihc-title-size: 3rem;
-            --lulapihc-sub-size: 1.2rem;
             --lulapihc-sub-max: 70ch;
             --lulapihc-sub-fade: 420ms; /* subtitle fade, after the title lands */
 
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: var(--lul-font-body);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            color: var(--lulapihc-header);
+            color: var(--lul-ink);
             width: 100%;
             max-width: var(--lulapihc-max-w);
             margin-left: auto;
@@ -74,16 +73,24 @@
         }
 
         .lul-apihc__headline {
-            font-weight: 600;
+            /* The display treatment from lul.css, matching api_hero.html: Space
+               Grotesk at --lul-weight-display-alt (500), which the scale reserves
+               for "oversized treatments only". Space Grotesk ships 500 and 700
+               only, so the previous 600 was being synthesised by the browser.
+               line-height and letter-spacing were already the display values.
+               The size stays local: 3rem sits between --lul-size-h1 (42px) and
+               --lul-size-display (56px), and the centred layout is built around it. */
+            font-family: var(--lul-font-display);
+            font-weight: var(--lul-weight-display-alt);
             font-size: var(--lulapihc-title-size);
-            line-height: 1;
-            letter-spacing: -0.02em;
+            line-height: var(--lul-leading-display);
+            letter-spacing: var(--lul-track-display);
             margin: 0;
-            color: var(--lulapihc-header);
+            color: var(--lul-ink);
         }
         /* the ">" — a design device, sized and spaced off the title */
         .lul-apihc__prompt {
-            color: var(--lulapihc-prompt);
+            color: var(--lul-primary);
             font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
             font-weight: 700;
             margin-right: 0.28em;
@@ -102,13 +109,13 @@
         }
         /* the product name, picked out in the house purple */
         .lul-apihc__accent {
-            color: var(--lulapihc-accent);
+            color: var(--lul-primary);
         }
 
         .lul-apihc__subtitle {
-            font-size: var(--lulapihc-sub-size);
-            line-height: 1.5;
-            color: var(--lulapihc-muted);
+            font-size: var(--lul-size-body-l);
+            line-height: var(--lul-leading-body-l);
+            color: var(--lul-grey-dark);
             /* auto margins centre the measure inside the 1000px */
             margin: 12px auto 0;
             max-width: var(--lulapihc-sub-max);

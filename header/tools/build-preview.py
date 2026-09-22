@@ -29,8 +29,8 @@ out = f"""<!doctype html>
 {inline_css}
 </style>
 
-<!-- your overrides -->
-<link rel="stylesheet" href="header.custom.css">
+<!-- your overrides: palette, type scale and the header restyle, one file -->
+<link rel="stylesheet" href="../styles/lul.css">
 </head>
 <body class="{body_cls}">
 <!-- #siteWrapper is required: several Squarespace rules are scoped to it -->
