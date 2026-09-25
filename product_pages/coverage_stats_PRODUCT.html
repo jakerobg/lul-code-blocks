@@ -69,6 +69,11 @@
         /* Face, size, leading, tracking and tabular figures come from
            .lul-stat; only the light-on-dark colour is local. */
         .lul-cov__num {
+            /* Holds the number's line open before the fetch lands. The card is
+               built empty so nothing flashes, and without this the empty <p>
+               would collapse to 0 and the block would grow when the numbers
+               arrive. 1em == one line at --lul-leading-stat (1.0). */
+            min-height: 1em;
             color: var(--lul-white);
             margin: 0;
         }
@@ -118,6 +123,17 @@
             var grid = root.querySelector("#lul-cov-grid");
             if (!grid) return;
             var API = "https://api.zoningatlas.org/nza_coverage";
+
+            /* Parcels come from their OWN endpoint, not the coverage API: a small
+               static JSON file published by the parcel-count-public repo and
+               refreshed whenever the count is recomputed.
+
+                 { "parcel_count": 97872884, "generated_at": "2026-09-24T17:06:31Z" }
+
+               Both endpoints are fetched together and either may fail on its own —
+               a card whose source is down falls back to its hardcoded number
+               rather than taking the whole block with it. */
+            var PARCELS_API = "https://land-use-labs.github.io/parcel-count-public/parcels.json";
             /* ════════════════════════════════════════════════════════════
                1) CHOOSE THE 4 CARDS (in display order). Each entry is either:
                     • a metric KEY (string) from the METRICS registry → fetched live
@@ -126,10 +142,10 @@
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
             var SELECTED = [
-                "slices",
+                "parcels",
                 "jurisdictions",
-                "acres",
-                { value: 186, label: "zoning rules", plus: false, accent: true },
+                "districts",
+                { value: 100, label: "of top-100 cities", plus: false, accent: false },
             ];
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
@@ -144,6 +160,20 @@
             //   dp   = decimal places on the big number (0 = whole, 1 = tenths)
             //   unit = force "K" | "M" | "B" (omit = auto by magnitude)
             var METRICS = {
+                /* Lives on PARCELS_API (see `src`), not the coverage API.
+
+                   FLOORED to whole millions, which is why it carries dp 0 AND
+                   floor. The "+" has to stay honest: 97,872,884 must read 97M+,
+                   never the 98M+ that rounding would produce. Matches the
+                   formatting of the hardcoded number it replaced (96M+). */
+                parcels: {
+                    src: "parcels",
+                    field: "parcel_count",
+                    sub: "parcels",
+                    fallback: 96000000,
+                    dp: 0,
+                    floor: true,
+                },
                 population: {
                     field: "population_covered",
                     sub: "residents",
@@ -179,26 +209,27 @@
             var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
             // ── Number formatting ──────────────────────────────────────
             // Round to `dp` decimals; dp 0 → whole number, else drop trailing ".0".
-            function roundDp(x, dp) {
-                if (dp === 0) return String(Math.round(x));
-                return (Math.round(x * 10) / 10).toFixed(1).replace(/\.0$/, "");
+            function roundDp(x, dp, floor) {
+                var round = floor ? Math.floor : Math.round;
+                if (dp === 0) return String(round(x));
+                return (round(x * 10) / 10).toFixed(1).replace(/\.0$/, "");
             }
             // Format a number with K / M / B. `dp` = decimal places (default 1).
             // `unit` (optional) forces "K" | "M" | "B"; otherwise it's picked by
             // magnitude, and anything under 100,000 is shown with commas.
-            function abbr(n, dp, unit) {
+            function abbr(n, dp, unit, floor) {
                 if (dp == null) dp = 1;
                 var a = Math.abs(n);
-                if (unit === "B" || (!unit && a >= 1e9)) return roundDp(n / 1e9, dp) + "B";
-                if (unit === "M" || (!unit && a >= 1e6)) return roundDp(n / 1e6, dp) + "M";
-                if (unit === "K" || (!unit && a > 99999)) return roundDp(n / 1e3, dp) + "K";
+                if (unit === "B" || (!unit && a >= 1e9)) return roundDp(n / 1e9, dp, floor) + "B";
+                if (unit === "M" || (!unit && a >= 1e6)) return roundDp(n / 1e6, dp, floor) + "M";
+                if (unit === "K" || (!unit && a > 99999)) return roundDp(n / 1e3, dp, floor) + "K";
                 return Math.round(n).toLocaleString("en-US");
             }
             // Number + a smaller trailing "+" (e.g. 216.8M+). `show` is the
             // per-card plus flag (defaults on if omitted).
-            function withPlus(n, show, dp, unit) {
-                if (show === false) return abbr(n, dp, unit);
-                return abbr(n, dp, unit) + '<span class="lul-cov__plus">+</span>';
+            function withPlus(n, show, dp, unit, floor) {
+                if (show === false) return abbr(n, dp, unit, floor);
+                return abbr(n, dp, unit, floor) + '<span class="lul-cov__plus">+</span>';
             }
             // ── Build the cards from SELECTED ──────────────────────────
             // Each entry resolves to a def { field (null if hardcoded), sub, fallback, plus }.
@@ -213,6 +244,8 @@
                         return null;
                     }
                     return {
+                        src: m.src || "coverage",
+                        floor: m.floor,
                         field: m.field,
                         sub: m.sub,
                         fallback: m.fallback,
@@ -223,6 +256,8 @@
                     };
                 }
                 return {
+                    src: "coverage",
+                    floor: entry.floor,
                     field: null,
                     sub: entry.label,
                     fallback: entry.value,
@@ -238,9 +273,16 @@
                 card.className = "lul-cov__card" + (def.accent ? " lul-cov__card--accent" : "");
                 var num = document.createElement("p");
                 num.className = "lul-cov__num lul-stat";
-                num.textContent = "—";
+                /* Deliberately blank, not a placeholder glyph. It used to be an
+                   em dash, which flashed and then swapped for the real number.
+                   The line's height is held open by min-height in the CSS. */
+                num.textContent = "";
                 var sub = document.createElement("p");
                 sub.className = "lul-cov__sub lul-eyebrow";
+                /* The label comes from the config, not the API, so there is no
+                   reason to wait for the fetch. Filling it here is what stops
+                   the card growing by a line when the data lands. */
+                sub.textContent = def.sub;
                 card.appendChild(sub);
                 card.appendChild(num);
                 grid.appendChild(card);
@@ -250,15 +292,17 @@
             function num(row, field) {
                 return field && row && typeof row[field] === "number" ? row[field] : null;
             }
-            function populate(row) {
+            /* `rows` is a map keyed by source: { coverage: …, parcels: … }.
+               null (the timeout path) means every card uses its fallback. */
+            function populate(rows) {
                 records.forEach(function (rec) {
                     var def = rec.def;
-                    var val = num(row, def.field);
+                    var val = num(rows ? rows[def.src] : null, def.field);
                     if (val === null && typeof def.fallback === "number") val = def.fallback;
                     rec.subEl.textContent = def.sub;
                     rec.target = typeof val === "number" ? val : null;
                     if (rec.target === null) rec.el.textContent = "—";
-                    else rec.el.innerHTML = withPlus(rec.target, def.plus, def.dp, def.unit);
+                    else rec.el.innerHTML = withPlus(rec.target, def.plus, def.dp, def.unit, def.floor);
                 });
             }
             // ── Animation ──────────────────────────────────────────────
@@ -272,10 +316,10 @@
                     var eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
                     // number only while counting; the "+" appears once it lands
                     if (p < 1) {
-                        rec.el.textContent = abbr(rec.target * eased, rec.def.dp, rec.def.unit);
+                        rec.el.textContent = abbr(rec.target * eased, rec.def.dp, rec.def.unit, rec.def.floor);
                         requestAnimationFrame(frame);
                     } else {
-                        rec.el.innerHTML = withPlus(rec.target, rec.def.plus, rec.def.dp, rec.def.unit);
+                        rec.el.innerHTML = withPlus(rec.target, rec.def.plus, rec.def.dp, rec.def.unit, rec.def.floor);
                     }
                 }
                 requestAnimationFrame(frame);
@@ -287,7 +331,13 @@
                 if (reduce || !("IntersectionObserver" in window)) {
                     records.forEach(function (rec) {
                         if (rec.target !== null)
-                            rec.el.innerHTML = withPlus(rec.target, rec.def.plus, rec.def.dp, rec.def.unit);
+                            rec.el.innerHTML = withPlus(
+                                rec.target,
+                                rec.def.plus,
+                                rec.def.dp,
+                                rec.def.unit,
+                                rec.def.floor,
+                            );
                     });
                     return;
                 }
@@ -315,17 +365,22 @@
                 populate(null);
                 begin();
             }, 2500);
-            fetch(API, { headers: { Accept: "application/json" } })
-                .then(function (r) {
-                    if (!r.ok) throw new Error("HTTP " + r.status);
-                    return r.json();
-                })
-                .then(function (data) {
-                    var row = Array.isArray(data) ? data[0] : data;
-                    populate(row || null);
-                })
-                .catch(function () {
-                    populate(null); // keep hardcoded fallbacks where available
+            function getJson(url) {
+                return fetch(url, { headers: { Accept: "application/json" } })
+                    .then(function (r) {
+                        if (!r.ok) throw new Error("HTTP " + r.status);
+                        return r.json();
+                    })
+                    .then(function (data) {
+                        return Array.isArray(data) ? data[0] : data;
+                    })
+                    .catch(function () {
+                        return null; // this source falls back; the other still loads
+                    });
+            }
+            Promise.all([getJson(API), getJson(PARCELS_API)])
+                .then(function (res) {
+                    populate({ coverage: res[0] || null, parcels: res[1] || null });
                 })
                 .then(function () {
                     clearTimeout(timer);

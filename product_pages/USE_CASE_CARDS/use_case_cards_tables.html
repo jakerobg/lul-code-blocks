@@ -10,9 +10,9 @@
   card title and its tooltip becomes the card body, so the copy reads on the
   page instead of only on hover.
 
-  ▶ REFLOW: 3 across → 2 across under 640px → stacked under 420px (measured
-    against the BLOCK's width, not the browser window). Six cards divide
-    evenly into 3 and 2, so no row is ever left short.
+  ▶ REFLOW: 6 cards, 3 across = two full rows. Cards stretch to fill the row
+    (no --center, which pins them to 33.333% and leaves the remainder empty on
+    any row that is not exactly full). Steps to 2 across, then 1, as it narrows.
   ▶ ICONS: "Data Visualization" reuses the glyph from the slices card's
     Geospatial Visualization, since it's the same idea; the other five are
     new. Swap the <path> data for any 24x24 outline icon.
@@ -29,7 +29,7 @@
      so this line can be deleted when pasting the block in (harmless if left). -->
 <link rel="stylesheet" href="../../styles/lul.css">
 
-<section class="lul lul-uc lul-uc--center lul-uc--wrap2" aria-label="Zoning Tables use cases">
+<section class="lul lul-uc lul-uc--wrap2" aria-label="Zoning Tables use cases">
     <div class="lul-uc__grid">
         <!-- Cross-Geography Comparison — two panels weighed side by side -->
         <article class="lul-uc__card">

@@ -45,6 +45,13 @@ html.squarespace-damask .sqs-blockStatus {
       so write the arithmetic out: `calc(33.333% - 16px)`, not
       `calc(33.333% - (var(--gap) * 2 / 3))`.
 
+      No slash between two numbers, either — LESS reads it as division. The
+      worst offender is `grid-area: 1 / 1`, which folds to `grid-area: 1`; the
+      grid items then auto-place into separate columns and their contents are
+      crushed to a sliver. Write `grid-row: 1; grid-column: 1;` instead. The
+      same applies to `aspect-ratio: 4 / 3`, `font: 600 16px/1.2` and
+      `border-radius: 10px / 20px`.
+
       No modern at-rules either. LESS reads a leading `@name` as a variable, so
       `@container luluc (max-width: 640px)` is a syntax error — this cost a
       "syntax error on line 749" on first paste. @media, @supports, @keyframes
@@ -99,6 +106,7 @@ html.squarespace-damask .sqs-blockStatus {
   --lul-ink-10: rgba(57, 51, 72, 0.1);   /* card shadow */
   --lul-ink-12: rgba(57, 51, 72, 0.12);
   --lul-ink-15: rgba(57, 51, 72, 0.15);  /* hairline borders */
+  --lul-ink-18: rgba(57, 51, 72, 0.18);  /* tab keylines */
   --lul-ink-24: rgba(57, 51, 72, 0.24);
   --lul-ink-28: rgba(57, 51, 72, 0.28);  /* stat-card drop shadow */
   --lul-ink-30: rgba(57, 51, 72, 0.3);   /* card border at rest */
@@ -147,9 +155,9 @@ html.squarespace-damask .sqs-blockStatus {
      margin. Only the steps with an agreed value are declared; h3 and h4 have
      none yet, so those classes still set no margin and the block keeps
      control. */
-  --lul-space-display: 24px;
-  --lul-space-h1:      20px;
-  --lul-space-h2:      16px;
+  --lul-space-display: 22px;
+  --lul-space-h1:      18px;
+  --lul-space-h2:      14px;
 
   /* ---- tracking ------------------------------------------------------- */
   --lul-track-display: -0.02em;
@@ -488,6 +496,44 @@ html.squarespace-damask .sqs-blockStatus {
 }
 
 /* Presets, filters, in-flow controls — "Clear all", "Residential basics". */
+/* Quaternary — the segmented toggle: a white button with a keyline that fills
+   with ink when selected. Used for the product tabs on the industry pages.
+
+   It is a .lul-cta like the others, so it takes the CTA type and padding and
+   follows any change to them. That is the whole point of it being here: the
+   tabs used to run their own 500-weight / 0.02em tracking / 10px-24px box,
+   which drifted from the buttons directly beneath them in the same panel.
+
+   `.is-active` is the selected state. It is styled here rather than in the tab
+   component because the fill belongs to the button, not to the bar.
+
+   NOT to be confused with tertiary, which is the purple TEXT action. The four
+   tiers are: primary filled purple, secondary outlined, tertiary text,
+   quaternary segmented toggle. */
+.lul-cta.lul-cta--quaternary {
+  background: var(--lul-white);
+  border-color: var(--lul-ink-18);
+  color: var(--lul-ink);
+  white-space: nowrap;
+}
+.lul-cta.lul-cta--quaternary:hover {
+  background: var(--lul-ink-05);
+}
+.lul-cta.lul-cta--quaternary.is-active,
+.lul-cta.lul-cta--quaternary.is-active:hover {
+  background: var(--lul-ink);
+  border-color: var(--lul-ink);
+  color: var(--lul-white);
+  /* lifts the filled button above its neighbours' shared borders */
+  position: relative;
+  z-index: 1;
+}
+.lul-cta.lul-cta--quaternary:focus-visible {
+  outline: 2px solid var(--lul-primary);
+  outline-offset: 2px;
+  z-index: 2;
+}
+
 .lul-cta-compact {
   font-family: var(--lul-font-body);
   font-weight: var(--lul-weight-semibold);
@@ -643,7 +689,7 @@ html.squarespace-damask .sqs-blockStatus {
   --lul-uc-gap: 24px;
   width: 100%;
   box-sizing: border-box;
-  padding: 25px 0;
+  padding: 22px 0;
 }
 .lul-uc--tight {
   padding: 20px 0;
@@ -654,20 +700,32 @@ html.squarespace-damask .sqs-blockStatus {
   box-sizing: border-box;
 }
 
+/* CSS GRID, NOT FLEX + calc(). This is load bearing.
+
+   The flex version sized each card with `flex-basis: calc(33.333% - 16px)`,
+   subtracting its share of the gap by hand. Squarespace compiles Custom CSS as
+   LESS, and LESS evaluates arithmetic INSIDE calc() at build time: it reduces
+   `33.333% - 16px` to `17.333%`. Cards then come out ~17% wide, so six of them
+   laid out five-across with one stranded on the next row — visible only on the
+   live site, never locally, because a code block's own CSS is not compiled.
+
+   Grid needs no arithmetic: `repeat(N, minmax(0, 1fr))` divides the row and
+   `gap` is subtracted natively, so there is nothing for LESS to fold. The
+   minmax(0, …) is what lets a long word shrink its track instead of
+   overflowing (1fr alone floors at min-content). */
 .lul-uc__grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--lul-uc-gap);
 }
-.lul-uc--center .lul-uc__grid {
-  justify-content: center;
+.lul-uc--four .lul-uc__grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.lul-uc--five .lul-uc__grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-/* flex-grow 1 by default so a short last row fills the width; --center pairs
-   `justify-content` with flex-grow 0 so those cards keep their column width
-   and sit centred instead. */
 .lul-uc__card {
-  flex: 1 1 calc(33.333% - 16px);   /* 16px = the 24px gap * 2/3 */
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -675,15 +733,6 @@ html.squarespace-damask .sqs-blockStatus {
   border: 1px solid var(--lul-ink-30);
   border-radius: 0;
   padding: 26px 24px 28px;
-}
-.lul-uc--four .lul-uc__card {
-  flex-basis: calc(25% - 18px);     /* 18px = the 24px gap * 3/4 */
-}
-.lul-uc--five .lul-uc__card {
-  flex-basis: calc(20% - 19.2px);   /* 19.2px = the 24px gap * 4/5 */
-}
-.lul-uc--center .lul-uc__card {
-  flex-grow: 0;
 }
 
 /* Cards are not links in these blocks; this is here for when they become one. */
@@ -764,38 +813,195 @@ html.squarespace-damask .sqs-blockStatus {
 
 /* ---- responsive. Default 3 -> 1; --wrap2 steps through 2.
 
+   Every override re-declares grid-template-columns on the GRID, so there is no
+   calc() anywhere in this component (see the note above the grid rules). The
+   modifier selectors are listed explicitly because a media query adds no
+   specificity: `.lul-uc__grid` is (0,1,0) while `.lul-uc--four .lul-uc__grid`
+   is (0,2,0), so without naming them a --four or --five block would keep its
+   desktop column count all the way down and never stack.
+
    @media, NOT @container. These blocks used container queries so they reflowed
    on the code block's own width rather than the viewport's, which is the more
-   correct behaviour — but Squarespace compiles Custom CSS as LESS, and LESS
-   reads a leading `@name` as a variable, so `@container luluc (...)` is a
-   syntax error the moment the sheet is pasted in. The 760px/420px viewport
-   breakpoints are the ones these blocks already shipped as their
-   no-container-query fallback. ---- */
+   correct behaviour — but LESS reads a leading `@name` as a variable, so
+   `@container luluc (...)` is a syntax error the moment the sheet is pasted
+   in. The 760px/420px viewport breakpoints are the ones these blocks already
+   shipped as their no-container-query fallback. ---- */
 @media (max-width: 760px) {
   .lul-uc {
     --lul-uc-gap: 16px;
   }
-  /* The modifiers are listed here on purpose. `.lul-uc__card` alone is (0,1,0) and
-     `.lul-uc--four .lul-uc__card` is (0,2,0); a media query contributes nothing to
-     specificity, so without these a --four or --five block kept its desktop basis
-     all the way down and never stacked. */
-  .lul-uc__card,
-  .lul-uc--four .lul-uc__card,
-  .lul-uc--five .lul-uc__card {
-    flex-basis: 100%;
+  .lul-uc__grid,
+  .lul-uc--four .lul-uc__grid,
+  .lul-uc--five .lul-uc__grid {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .lul-uc--wrap2 .lul-uc__card {
-    flex-basis: calc(50% - 8px);
+  .lul-uc--wrap2 .lul-uc__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 420px) {
-  .lul-uc--wrap2 .lul-uc__card {
-    flex-basis: 100%;
+  .lul-uc--wrap2 .lul-uc__grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* --------------------------------------------------------------------------
-   7. Numerals
+   7. Product tabs (.lul-tabs)
+   A segmented bar of .lul-cta--quaternary buttons over a bordered panel; each
+   panel is text on the left, an image on the right. Used by the industry pages.
+
+   The bar's buttons are plain .lul-cta--quaternary — the fill, the keyline and
+   the .is-active state all live in section 4, so the tabs follow any change to
+   the button system instead of re-stating it.
+
+     .lul-tabs               the block; --lul-tabs-max caps its width
+     .lul-tabs__bar          the segmented row
+     .lul-tabs__panels       the bordered grey box; panels stack in one cell
+     .lul-tabs__panel        one panel, .is-active reveals it
+     .lul-tabs__text / __media   the two columns
+     .lul-tabs__title / __body   panel copy
+     .lul-tabs__actions      the CTA row under the copy
+
+   Panels are stacked in a single grid cell and toggled with `visibility`, not
+   `display`, so the box keeps the height of its tallest panel and the page
+   does not jump as you switch tabs.
+   -------------------------------------------------------------------------- */
+
+.lul-tabs {
+  --lul-tabs-max: 1180px;   /* set to none to fill the Squarespace section */
+  --lul-tabs-panel-pad: 48px 44px;
+  /* NEGATIVE on purpose: the source PNGs have whitespace baked in, and the
+     image is pulled back over it. Stored pre-negated because `calc(var(--x) *
+     -1)` is evaluated by LESS at build time and would not survive being pasted
+     into Squarespace's Custom CSS. */
+  --lul-tabs-media-bleed-top: -3%;
+  --lul-tabs-media-bleed-bottom: -3%;
+
+  max-width: var(--lul-tabs-max);
+  margin-inline: auto;
+  color: var(--lul-ink);
+  box-sizing: border-box;
+}
+.lul-tabs *,
+.lul-tabs *::before,
+.lul-tabs *::after {
+  box-sizing: border-box;
+}
+
+.lul-tabs__bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 0 36px;
+}
+/* collapse the shared borders between neighbouring tabs */
+.lul-tabs__bar .lul-cta + .lul-cta {
+  margin-left: -1px;
+}
+
+.lul-tabs__panels {
+  display: grid;
+  background: var(--lul-grey-medium);
+  /* same 1px keyline as the spec / how-we-build cards, so the panel reads as
+     part of that card family */
+  border: 1px solid var(--lul-ink-30);
+  padding: var(--lul-tabs-panel-pad);
+}
+.lul-tabs__panel {
+  /* Every panel occupies the SAME cell, so the box is as tall as the tallest
+     one and nothing reflows between tabs.
+
+     Written as two declarations, NOT `grid-area: 1 / 1`. LESS treats a slash
+     between two numbers as division and folds that to `grid-area: 1`, which
+     leaves the column unset — the panels then auto-place into separate
+     side-by-side columns and each one's text is crushed into a vertical
+     sliver. It only breaks once pasted into Squarespace's Custom CSS, because
+     a code block's own CSS is never compiled. Keep both lines slash-free. */
+  grid-row: 1;
+  grid-column: 1;
+  display: flex;
+  /* top-aligned: the heading's cap height lines up with the top edge of the
+     image rather than the block being vertically centred */
+  align-items: flex-start;
+  gap: 48px;
+  visibility: hidden;
+}
+.lul-tabs__panel.is-active {
+  visibility: visible;
+}
+
+.lul-tabs__text {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 600px;
+}
+.lul-tabs__media {
+  flex: 0 1 450px;
+  min-width: 0;
+  margin-left: auto;
+}
+.lul-tabs__media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: none;
+  margin-top: var(--lul-tabs-media-bleed-top);
+  margin-bottom: var(--lul-tabs-media-bleed-bottom);
+}
+
+/* The H3 step, on an <h3>. The panel titles sit inside a Squarespace page that
+   already has its own h1/h2, so they are a level below those rather than peers.
+   Keeps its own 18px margin: the gap is to the panel body, not to a section. */
+.lul-tabs__title {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-h3);
+  line-height: var(--lul-leading-h3);
+  color: var(--lul-ink);
+  margin: 0 0 18px;
+}
+.lul-tabs__body {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-body);
+  line-height: var(--lul-leading-body);
+  color: var(--lul-grey-dark);
+  margin: 0 0 32px;
+}
+.lul-tabs__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+@media (max-width: 850px) {
+  .lul-tabs {
+    --lul-tabs-panel-pad: 32px 24px 36px;
+  }
+  /* two tabs per row, and drop the border collapse so the wrapped row
+     does not pull into the one above it */
+  .lul-tabs__bar .lul-cta {
+    flex: 1 1 50%;
+  }
+  .lul-tabs__bar .lul-cta + .lul-cta {
+    margin-left: 0;
+  }
+  .lul-tabs__panel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 28px;
+  }
+  .lul-tabs__text,
+  .lul-tabs__media {
+    flex: 1 1 auto;
+    max-width: none;
+    margin-left: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. Numerals
    Tabular in tables, stat bands, chart labels and folios — figures have to
    line up in a column. Proportional figures only in running prose. The
    slashed zero stays OFF throughout: it reads as technical rather than
@@ -815,7 +1021,7 @@ html.squarespace-damask .sqs-blockStatus {
 }
 
 /* --------------------------------------------------------------------------
-   8. Mobile step-down
+   9. Mobile step-down
    NOT IN THE DOC — the typography spec gives one web scale and is silent on
    breakpoints. 56px display and 42px H1 overflow a 375px viewport, so the
    four largest steps are stepped down here. Literal values, no calc(), so
@@ -921,7 +1127,7 @@ html.squarespace-damask .sqs-blockStatus {
   --lul-chevron-w:         0.46em; /* dropdown triangle width */
   --lul-chevron-gap:       0.32em; /* space between label and triangle */
   --lul-chevron-h:         0.28em; /* triangle height (~0.6 x width) */
-  --lul-logo-height:       62px;   /* Squarespace renders it at 70px */
+  --lul-logo-height:       56px;   /* Squarespace renders it at 70px */
 }
 
 /* --------------------------------------------------------------------------

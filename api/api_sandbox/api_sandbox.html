@@ -1,0 +1,2450 @@
+<!--
+  ZONING API SANDBOX — live request against the production gateway
+
+
+  Calls https://lul-api-prod.azure-api.net/api/v1/point — Parameters are either `addr=` or `lat=`+`lon=`; the key rides as
+  `subscription-key=`
+
+  The demo key answers for Lafayette, CO only. A point outside it comes back 403
+  outside_demo.
+-->
+
+<!-- Local preview only. Squarespace already carries lul.css in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../../styles/lul.css" />
+
+<section id="lul-sandbox" class="lul lul-sb" aria-label="Zoning API sandbox">
+    <style>
+        /* ── tokens ──────────────────────────────────────────────────────────
+           The palette, the faces and the type scale all come from styles/lul.css,
+           which Squarespace already carries in Custom CSS. Nothing from it is
+           redeclared here. The terminal is deliberately NOT on the design
+           system — it is a stylised dark surface imitating a code editor, and the
+           whole point is that it does not look like the rest of the site. */
+        #lul-sandbox {
+            --lul-max-w: 1380px;
+            --lul-left-w: 580px; /* the left panel */
+            --lul-labelw: 104px; /* the field-label column */
+            --lul-fieldgap: 14px; /* label → input */
+            /* Air above and below whichever query panel is open. Declared once and used
+               on both the tab strip and the panel, so the address/coordinates panel and
+               the map panel are spaced identically without either one setting its own. */
+            --lul-sb-sectiongap: 26px;
+            /* The map panel runs tighter than the address panel underneath. It can:
+               its card is pinned to the terminal's height, so the space below the map
+               is space taken FROM the map, and the hint and the readout already
+               separate the map from the button on their own. Whatever comes off this
+               number goes straight into the map. */
+            --lul-sb-mapgap: 12px;
+            /* The secondary button's box, one step down. lul.css has --lul-cta-pad for
+               the full-size CTA and .lul-cta-compact for the smaller TYPE step, but no
+               padding to go with it — so the compact box is set here and used by both
+               the trigger and the menu rows, which keeps their left edges aligned. */
+            --lul-sb-ctapad: 11px 20px;
+            --lul-shadow: 0 2px 8px var(--lul-ink-08);
+
+            /* The one face the design system does not carry. Code affordances in the
+               left panel — the endpoint name, the > prompts, the type placeholders —
+               are monospace on purpose: they mark the strings that are literally what
+               gets sent. Declared once here instead of five times below. */
+            --lul-sb-mono: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+
+            /* terminal palette — lifted from api_terminal.html */
+            --lulterm-bg: #1c1a24;
+            --lulterm-chrome: #2b2833;
+            --lulterm-border: #3a3646;
+            --lulterm-text: #e0d8f0;
+            --lulterm-dim: #8b849c;
+            --lulterm-key: #b8a8d8;
+            --lulterm-str: #9fd3b8;
+            --lulterm-num: #e08068;
+            --lulterm-caret: #b8a8d8;
+            --lulterm-guide: #332f41; /* indent rules */
+            --lulterm-thumb: #413c52; /* scrollbar */
+            --lulterm-thumb-hi: #565068;
+            /* Matches the terminal at the top of the API page (api_terminal.html),
+               which sets --lulterm-radius: 10px. */
+            --lulterm-radius: 10px;
+            /* NOT --lul-shadow. That is the card's shadow — 8% ink — and the card is a
+               white box on grey, where 8% is enough to lift it. The terminal is a near
+               black box on the same grey, and an 8% ink shadow under it is invisible.
+               Deeper and wider so the window actually reads as raised, still ink from
+               the palette rather than a new colour. */
+            --lulterm-shadow: 0 6px 18px var(--lul-ink-24);
+            --lulterm-line-h: 1.65;
+            --lulterm-pad-y: 16px;
+            --lulterm-pad-x: 18px;
+            /* Stepped at breakpoints, never fluid. A cqi-based size shrank the type
+               continuously as the browser narrowed, and because the window's height was
+               derived from it the whole terminal crept upwards on the way down. Size and
+               height are now independent: the type steps down once, at the width where
+               the terminal is at its narrowest (beside the 480px left panel), and steps
+               back up when the columns stack and it has the full width again. */
+            --lulterm-font-size: 13px;
+            /* One fixed height at every width — 28 lines at the desktop size, kept as a
+               number so nothing in the layout can pull the bottom edge up. */
+            --lulterm-h: 632px;
+
+            font-family: var(--lul-font-body);
+            font-size: var(--lul-size-body);
+            font-weight: var(--lul-weight-regular);
+            line-height: var(--lul-leading-body);
+            color: var(--lul-ink);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            max-width: var(--lul-max-w);
+            margin-inline: auto;
+            box-sizing: border-box;
+            container-type: inline-size;
+            container-name: lulsb;
+        }
+        #lul-sandbox *,
+        #lul-sandbox *::before,
+        #lul-sandbox *::after {
+            box-sizing: border-box;
+        }
+
+        /* ── block header ──
+           .lul-h1's type spec on an <h2>: the page this block sits in already has its
+           own h1, so the level is h2 and only the treatment is borrowed. The bottom
+           margin is --lul-space-h1, the system's own gap under an h1, which is what
+           sets the distance to the line beneath.
+
+           The ">" is the same prompt glyph the hero headline carries, in the same
+           purple, and it reuses .lul-sb__prompt — it only needs the optical gap the
+           hero gives it, since here it is inline text rather than a flex item. */
+        .lul-sb__head {
+            margin-bottom: 28px;
+        }
+        .lul-sb__title {
+            font-family: var(--lul-font-display);
+            font-weight: var(--lul-weight-display);
+            font-size: var(--lul-size-h1);
+            line-height: var(--lul-leading-h1);
+            letter-spacing: var(--lul-track-h1);
+            color: var(--lul-ink);
+            margin: 0 0 var(--lul-space-h1);
+        }
+        .lul-sb__title .lul-sb__prompt {
+            margin-right: 0.28em;
+        }
+        .lul-sb__lede {
+            font-family: var(--lul-font-body);
+            font-weight: var(--lul-weight-regular);
+            font-size: var(--lul-size-body);
+            line-height: var(--lul-leading-body);
+            color: var(--lul-ink);
+            margin: 0;
+        }
+
+        /* ── panel + columns ── */
+        .lul-sb__panel {
+            background: var(--lul-grey-medium);
+            padding: 36px clamp(16px, 3cqi, 30px) 30px;
+        }
+        .lul-sb__cols {
+            display: grid;
+            grid-template-columns: var(--lul-left-w) minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+        @container lulsb (max-width: 940px) {
+            .lul-sb__cols {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        /* ── left card ── */
+        .lul-sb__card {
+            background: var(--lul-white);
+            box-shadow: var(--lul-shadow);
+            padding: 24px clamp(18px, 2.4cqi, 26px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* the endpoint picker sits on its own line at the top */
+        .lul-sb__pickrow {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 14px;
+        }
+        .lul-sb__picker {
+            position: relative;
+        }
+        /* The design system's secondary CTA, box and all: .lul-cta's type step
+           (--lul-size-cta) and weight, .lul-cta's --lul-cta-pad, and
+           .lul-cta--secondary's transparent fill with an ink border. It used to run at
+           the compact step with its own 9px/16px padding, which read as a different
+           species of control from the site's buttons.
+
+           The one departure is hover. The system's secondary hovers to --lul-white,
+           which assumes the button sits on a grey ground — on this white card that is
+           no change at all, and a dropdown with no hover feedback is worse than an
+           inconsistent one. Grey-medium is the card's own hover colour, already used by
+           the menu rows below, and it doubles as the open state. */
+        .lul-sb__pick {
+            font-family: var(--lul-font-body);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--lul-size-cta-compact);
+            line-height: var(--lul-leading-cta-compact);
+            font-weight: var(--lul-weight-semibold);
+            padding: var(--lul-sb-ctapad);
+            border: 1px solid var(--lul-ink);
+            border-radius: 0;
+            background: transparent;
+            color: var(--lul-ink);
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease,
+                color 0.25s ease;
+        }
+        .lul-sb__pick:hover,
+        .lul-sb__pick[aria-expanded="true"] {
+            background: var(--lul-grey-medium);
+        }
+
+        /* the prompt carrot, pointing at the label — same glyph and treatment as the
+           hero headline's prompt in api_hero.html */
+        .lul-sb__prompt {
+            font-family: var(--lul-sb-mono);
+            font-weight: var(--lul-weight-semibold);
+            color: var(--lul-primary);
+        }
+        .lul-sb__pickname {
+            font-family: var(--lul-sb-mono);
+        }
+        .lul-sb__chev {
+            margin-left: 2px;
+            width: 9px;
+            height: 5.5px;
+            flex: 0 0 auto;
+            background: currentColor;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transition: transform 0.15s ease;
+        }
+        .lul-sb__pick[aria-expanded="true"] .lul-sb__chev {
+            transform: rotate(180deg);
+        }
+        .lul-sb__menu {
+            position: absolute;
+            z-index: 5;
+            top: calc(100% - 1px);
+            left: 0;
+            /* An absolutely positioned box shrink-to-fits against its containing block,
+               which here is the ~130px picker — so a wide child just wrapped instead of
+               widening the menu. max-content sizes it to its widest row, capped so a
+               long note cannot run off the card. */
+            min-width: 100%;
+            width: max-content;
+            max-width: 300px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            background: var(--lul-white);
+            border: 1px solid var(--lul-ink);
+            box-shadow: 0 4px 10px var(--lul-ink-08);
+        }
+        .lul-sb__menu[hidden] {
+            display: none;
+        }
+        .lul-sb__menuitem {
+            display: block;
+            width: 100%;
+            text-align: left;
+            font-family: var(--lul-sb-mono);
+            font-size: var(--lul-size-cta-compact);
+            line-height: var(--lul-leading-cta-compact);
+            padding: 11px 20px;
+            border: 0;
+            background: transparent;
+            color: var(--lul-ink);
+            cursor: pointer;
+        }
+        .lul-sb__menuitem:hover,
+        .lul-sb__menuitem[aria-current="true"] {
+            background: var(--lul-grey-medium);
+        }
+        /* Not an option — a note about what is not here yet. It sits inside the menu
+           because that is where someone goes looking for the list of endpoints, and it
+           is the only place the absence is a question. Kept out of the listbox's
+           options with role="presentation" so it is never focusable or announced as a
+           choice, and set in the body face to separate it from the mono option rows. */
+        .lul-sb__menunote {
+            font-family: var(--lul-font-body);
+            font-size: var(--lul-size-caption);
+            line-height: var(--lul-leading-caption);
+            font-style: italic;
+            color: var(--lul-grey-dark);
+            border-top: 1px solid var(--lul-ink-15);
+            padding: 10px 20px;
+            margin: 0;
+        }
+
+        /* what the endpoint returns */
+        .lul-sb__blurb {
+            font-size: var(--lul-size-card-body);
+            line-height: var(--lul-leading-card-body);
+            font-weight: var(--lul-weight-semibold);
+            margin: 0 0 12px;
+            color: var(--lul-ink);
+        }
+        /* The tertiary CTA is the system's link treatment, so the colour and the
+           hover come from there. The underline is kept: inside a paragraph there is
+           no button box to signal the link, which is the case the tertiary spec
+           does not cover. */
+        .lul-sb__blurb a {
+            color: var(--lul-primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .lul-sb__blurb a:hover {
+            color: var(--lul-primary-hover);
+        }
+
+        /* the geographic lock, one paragraph, italic */
+        .lul-sb__lock {
+            font-size: var(--lul-size-caption);
+            font-style: italic;
+            line-height: var(--lul-leading-caption);
+            color: var(--lul-grey-dark);
+            margin: 0 0 18px;
+        }
+
+        /* The numbered steps are the card's headings, so they take .lul-h4 — Inter
+           semibold at --lul-size-h4, the step the system hands to H4 and below. They
+           were on --lul-size-ui (15px), which is the same size as the field labels
+           underneath them and left the two reading as one flat level. At 18px against
+           15px labels and 13px notes there are three distinct sizes.
+
+           No tracking: the h4 spec carries none, unlike the display steps.
+           lul.css declares no --lul-space-h4, so the margin stays the block's. */
+        .lul-sb__sectiontitle {
+            font-family: var(--lul-font-body);
+            font-size: var(--lul-size-h4);
+            line-height: var(--lul-leading-h4);
+            font-weight: var(--lul-weight-semibold);
+            margin: 0 0 18px;
+            color: var(--lul-ink);
+        }
+        /* On the picker row the title labels the control beside it rather than heading
+           a section below it, so it loses the gap underneath. */
+        .lul-sb__sectiontitle--inline {
+            margin: 0;
+        }
+
+        /* ── query-mode tabs ──
+           Two ways to name the same point. They carry the design system's tertiary CTA
+           treatment — Inter 600 at --lul-size-cta-tertiary, purple, no fill and no
+           border — because a tertiary is exactly what an unselected tab is: a
+           low-commitment text action. The box is cleared to nothing, so the first tab's
+           text sits flush with the card's left edge rather than inset by its own
+           padding; the row is spaced with a gap instead.
+
+           Colour runs the other way from the tertiary spec, and deliberately: an
+           inactive tab is ink, the selected one is purple with a purple rule. That is a
+           real deviation — a tertiary CTA is purple at rest — but it is the reading that
+           holds for tabs, where purple marks WHERE YOU ARE rather than what you can
+           click. --lul-primary is the system's accent for exactly that emphasis, so the
+           deviation is in which state gets the accent, not in the palette. Type, box and
+           hover still follow the tertiary spec. */
+        .lul-sb__tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 22px;
+            border-bottom: 1px solid var(--lul-ink-15);
+            margin: 0 0 var(--lul-sb-sectiongap);
+        }
+        .lul-sb__tab {
+            font-family: var(--lul-font-body);
+            font-size: var(--lul-size-cta-tertiary);
+            line-height: var(--lul-leading-cta-tertiary);
+            font-weight: var(--lul-weight-semibold);
+            padding: 0 0 9px;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            background: none;
+            color: var(--lul-ink);
+            cursor: pointer;
+            margin-bottom: -1px;
+            transition:
+                color 0.2s ease,
+                border-color 0.2s ease;
+        }
+        .lul-sb__tab:hover {
+            color: var(--lul-primary-hover);
+        }
+        .lul-sb__tab[aria-selected="true"] {
+            color: var(--lul-primary);
+            border-bottom-color: var(--lul-primary);
+        }
+        .lul-sb__tabpanel {
+            margin-bottom: 0;
+        }
+        .lul-sb__tabpanel[hidden] {
+            display: none;
+        }
+
+        /* Sits over the input column, not the label column, because it separates two
+           ways of filling the SAME box — an address or a coordinate pair. Uppercase and
+           tracked, which in this system means it is an eyebrow and takes that step. */
+        .lul-sb__or {
+            font-size: var(--lul-size-eyebrow);
+            line-height: var(--lul-leading-eyebrow);
+            font-weight: var(--lul-weight-semibold);
+            letter-spacing: var(--lul-track-eyebrow);
+            text-transform: uppercase;
+            color: var(--lul-ink);
+            margin: 2px 0 8px calc(var(--lul-labelw) + var(--lul-fieldgap));
+        }
+        @container lulsb (max-width: 420px) {
+            .lul-sb__or {
+                margin-left: 0;
+            }
+        }
+
+        /* ── the map ──
+           Leaflet paints its own controls and attribution; only the frame is ours.
+
+           In map mode the card is stretched to the row's height — which is the
+           terminal's, since the terminal is the taller column — and the map absorbs
+           whatever is left over. So the card ends flush with the terminal instead of
+           overhanging it by the 24px its fixed 280px map used to cost, and the button
+           lands on the terminal's bottom edge. Only the map tab does this: the address
+           panel keeps its natural height so its button stays with the fields rather
+           than being pushed to the bottom of an over-tall card.
+
+           The height is a floor, not a size — if the terminal ever gets shorter than
+           the rest of the card, the map stops giving ground here. */
+        .lul-sb__cols:has([data-sb-panel="map"]:not([hidden])) .lul-sb__card {
+            align-self: stretch;
+        }
+        [data-sb-panel="map"]:not([hidden]) {
+            margin-bottom: var(--lul-sb-mapgap);
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+        .lul-sb__map {
+            width: 100%;
+            flex: 1 1 auto;
+            min-height: 200px;
+            border: 1px solid var(--lul-ink-15);
+            background: var(--lul-grey-light);
+        }
+        /* The map is a picker before it is a pan surface, so the cursor says "click a
+           point" rather than Leaflet's default "drag me" hand. It stays a crosshair
+           while dragging too: swapping to a grabbing fist mid-drag would contradict
+           what the cursor just promised, and panning still works regardless.
+
+           Written with the id on purpose. Leaflet's stylesheet is injected at runtime
+           and therefore lands AFTER this block's <style> in the document, so matching
+           its specificity would lose on order — these have to outrank it outright. */
+        #lul-sandbox .lul-sb__map,
+        #lul-sandbox .lul-sb__map .leaflet-grab,
+        #lul-sandbox .lul-sb__map .leaflet-interactive,
+        #lul-sandbox .lul-sb__map.leaflet-dragging,
+        #lul-sandbox .lul-sb__map.leaflet-dragging .leaflet-grab,
+        #lul-sandbox .lul-sb__map.leaflet-dragging .leaflet-interactive {
+            cursor: crosshair;
+        }
+        /* ── attribution ──
+           Collapsed to an ⓘ that sits in the corner, expanding leftwards into the
+           credit on tap. Laid out right to left so opening it grows away from the map's
+           edge instead of pushing the button off it. */
+        #lul-sandbox .lul-sb__map .leaflet-control-attribution {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            box-shadow: none;
+            margin: 0 3px 3px 0;
+            padding: 0;
+        }
+        #lul-sandbox .lul-sb__attribtoggle {
+            flex: 0 0 auto;
+            width: 16px;
+            height: 16px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            background: var(--lul-white);
+            color: var(--lul-grey-dark);
+            font-family: var(--lul-font-display);
+            font-size: 11px;
+            font-weight: var(--lul-weight-semibold);
+            line-height: 16px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px var(--lul-ink-15);
+        }
+        #lul-sandbox .lul-sb__attribtoggle:hover {
+            color: var(--lul-ink);
+        }
+        #lul-sandbox .lul-sb__attribtext {
+            display: none;
+        }
+        #lul-sandbox .lul-sb__attrib.is-open .lul-sb__attribtext {
+            display: block;
+            max-width: 210px;
+            padding: 4px 6px;
+            background: var(--lul-white);
+            font-family: var(--lul-font-body);
+            /* Below the type scale's smallest step on purpose: this is a legal credit,
+               not text anyone reads, and the scale has no step for that. */
+            font-size: 9px;
+            line-height: 1.35;
+            color: var(--lul-grey-dark);
+        }
+        #lul-sandbox .lul-sb__attribtext a {
+            color: var(--lul-grey-dark);
+            text-decoration: underline;
+        }
+
+        /* The zoom buttons and the attribution links are still links. */
+        #lul-sandbox .lul-sb__map .leaflet-control a,
+        #lul-sandbox .lul-sb__map .leaflet-control button {
+            cursor: pointer;
+        }
+
+        .lul-sb__maphint {
+            font-size: var(--lul-size-caption);
+            line-height: var(--lul-leading-caption);
+            font-style: italic;
+            color: var(--lul-grey-dark);
+            margin: 6px 0 0;
+        }
+        /* The picked coordinate, echoed back so the click has a visible result even
+           before the call returns. */
+        /* The readout holds its line whether or not there is a coordinate in it, so
+           dropping a pin cannot nudge the button. The reserve has to be computed from
+           the same two values the filled line box uses — it was 1.4em against an
+           inherited 1.6 leading, which left the empty box 2px short and moved the
+           button down on the first click. */
+        .lul-sb__mappick {
+            font-family: var(--lul-sb-mono);
+            font-size: var(--lul-size-caption);
+            line-height: var(--lul-leading-caption);
+            color: var(--lul-ink);
+            margin: 6px 0 0;
+            min-height: calc(var(--lul-size-caption) * var(--lul-leading-caption));
+            /* One line, always. The card's height is pinned to the terminal's and the
+               map absorbs the slack, so any second line here is a line taken off the
+               map. Anything too long to fit is clipped rather than allowed to wrap. */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lul-sb__maperr {
+            color: var(--lul-error);
+            margin-left: 12px;
+        }
+
+        /* ── fields: label left, input right ── */
+        .lul-sb__row {
+            display: grid;
+            grid-template-columns: var(--lul-labelw) minmax(0, 1fr);
+            align-items: start;
+            column-gap: var(--lul-fieldgap);
+            margin-bottom: 12px;
+        }
+        @container lulsb (max-width: 420px) {
+            .lul-sb__row {
+                grid-template-columns: minmax(0, 1fr);
+                row-gap: 4px;
+            }
+        }
+        .lul-sb__label {
+            font-size: var(--lul-size-ui);
+            font-weight: var(--lul-weight-semibold);
+            color: var(--lul-ink);
+            line-height: 1;
+            padding-top: 11px; /* optically centres against the input */
+            margin: 0;
+        }
+        @container lulsb (max-width: 420px) {
+            .lul-sb__label {
+                padding-top: 0;
+            }
+        }
+        .lul-sb__ex {
+            font-size: var(--lul-size-caption);
+            line-height: var(--lul-leading-caption);
+            font-style: italic;
+            color: var(--lul-ink-40);
+            margin: 4px 0 0;
+        }
+        #lul-sandbox .lul-input {
+            font-family: var(--lul-font-body);
+            font-size: var(--lul-size-ui);
+            line-height: var(--lul-leading-ui);
+            padding: 9px 11px;
+            border: 1px solid var(--lul-ink-15);
+            border-radius: 0;
+            background: var(--lul-white);
+            color: var(--lul-ink);
+            outline: none;
+            width: 100%;
+            transition: border-color 0.15s;
+            -webkit-appearance: none;
+        }
+        /* the placeholder is the value TYPE, not an example — monospace so it reads as
+           a type annotation rather than as text someone forgot to delete */
+        #lul-sandbox .lul-input::placeholder {
+            font-family: var(--lul-sb-mono);
+            font-size: var(--lul-size-caption);
+            color: var(--lul-ink-40);
+            opacity: 1;
+        }
+        #lul-sandbox .lul-input:focus {
+            border-color: var(--lul-primary);
+        }
+        #lul-sandbox .lul-input.is-bad {
+            border-color: var(--lul-error-line);
+            background: var(--lul-bg-error);
+        }
+
+        /* The status line IS the gap between the panel and the button, rather than
+           something stacked inside it. The gap is --lul-sb-sectiongap and one line of
+           caption type is shorter than that, so a message appears in space that is
+           already reserved and the card never changes height — which is why the panel
+           below now carries no bottom margin of its own.
+
+           One line, clipped not wrapped, for the same reason the map readout is. */
+        .lul-sb__status {
+            font-size: var(--lul-size-caption);
+            line-height: var(--lul-leading-caption);
+            color: var(--lul-grey-dark);
+            margin: 0;
+            height: var(--lul-sb-sectiongap);
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lul-sb__status.is-error {
+            color: var(--lul-error);
+        }
+        /* Map mode reports on the readout line instead, and its gap is its own. */
+        [data-sb-panel="map"]:not([hidden]) ~ .lul-sb__status {
+            display: none;
+        }
+
+        /* ── the call button, at the bottom ──
+           The design system's primary CTA, full width. Fill, border and hover are
+           --lul-primary / --lul-primary-hover, which is what the purple in this block
+           always was. Type is the compact step, matching the picker above it. */
+        .lul-sb__call {
+            font-family: var(--lul-font-body);
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: var(--lul-weight-semibold);
+            font-size: var(--lul-size-cta-compact);
+            line-height: var(--lul-leading-cta-compact);
+            padding: 13px 18px;
+            border-radius: 0;
+            border: 1px solid var(--lul-primary);
+            background: var(--lul-primary);
+            color: var(--lul-white);
+            cursor: pointer;
+            margin-top: auto;
+            transition:
+                background 0.25s ease,
+                border-color 0.25s ease;
+        }
+        .lul-sb__call:hover:not(:disabled) {
+            background: var(--lul-primary-hover);
+            border-color: var(--lul-primary-hover);
+        }
+        .lul-sb__call:disabled {
+            background: var(--lul-grey-medium);
+            border-color: var(--lul-grey-medium);
+            color: var(--lul-grey-dark);
+            cursor: not-allowed;
+        }
+        .lul-sb__callprompt {
+            font-family: var(--lul-sb-mono);
+            font-weight: var(--lul-weight-semibold);
+        }
+        .lul-sb__call.is-busy .lul-sb__callprompt {
+            animation: lul-sb-pulse 0.9s ease-in-out infinite;
+        }
+        @keyframes lul-sb-pulse {
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ── terminal ── */
+        .lul-sb__bar {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--lulterm-chrome);
+            border-bottom: 1px solid var(--lulterm-border);
+            padding: 9px 12px;
+        }
+        .lul-sb__dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+            background: #4a4557;
+        }
+        .lul-sb__termlabel {
+            margin-left: 6px;
+            font-size: calc(var(--lulterm-font-size) * 0.92);
+            color: var(--lulterm-dim);
+            letter-spacing: 0.04em;
+        }
+
+        .lul-sb__term {
+            background: var(--lulterm-bg);
+            border: 1px solid var(--lulterm-border);
+            /* overflow: hidden below is what makes the radius apply to the bar and the
+               scrolling body too, rather than only to this box's own border. */
+            border-radius: var(--lulterm-radius);
+            box-shadow: var(--lulterm-shadow);
+            overflow: hidden;
+            font-family: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+        }
+        .lul-sb__body {
+            padding: var(--lulterm-pad-y) var(--lulterm-pad-x);
+            font-size: var(--lulterm-font-size);
+            line-height: var(--lulterm-line-h);
+            color: var(--lulterm-text);
+            white-space: pre;
+            height: var(--lulterm-h);
+            overflow: auto;
+            /* Visible, unlike api_terminal.html, which hides them: this pane is
+               scrolled deliberately — a 500-line response does not fit — so the bar is
+               the affordance that says so. Styled dark to sit in the terminal rather
+               than the OS chrome. The window keeps its fixed height either way, so a
+               bar that takes layout space (Windows, Linux) cannot resize it. */
+            /* NOT scrollbar-width/scrollbar-color: when either standard property is
+               set, Chrome switches to the standard styling path and IGNORES the
+               ::-webkit-scrollbar rules below — which on macOS leaves an overlay bar
+               that only appears while scrolling (measured: zero layout gutter). Styling
+               the webkit pseudo-elements alone gives a classic, always-visible bar.
+               Firefox has no equivalent and keeps its own default bar. */
+        }
+        .lul-sb__body::-webkit-scrollbar {
+            width: 11px;
+            height: 11px;
+        }
+        .lul-sb__body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .lul-sb__body::-webkit-scrollbar-thumb {
+            background: var(--lulterm-thumb);
+            border: 3px solid var(--lulterm-bg); /* inset, so it reads as a slim bar */
+            border-radius: 6px;
+        }
+        .lul-sb__body::-webkit-scrollbar-thumb:hover {
+            background: var(--lulterm-thumb-hi);
+        }
+        .lul-sb__body::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        /* The one width where the terminal is squeezed: still two columns, but sharing
+           the row with a 480px panel. Below 940px the columns stack and it is full
+           width again, so the size goes back up. Neither step changes --lulterm-h. */
+        @container lulsb (max-width: 1040px) {
+            .lul-sb__term {
+                --lulterm-font-size: 12px;
+            }
+        }
+        @container lulsb (max-width: 940px) {
+            .lul-sb__term {
+                --lulterm-font-size: 13px;
+            }
+        }
+
+        /* JSON colours — same names as api_terminal.html */
+        .lul-sb__k {
+            color: var(--lulterm-key);
+        }
+        .lul-sb__s {
+            color: var(--lulterm-str);
+        }
+        .lul-sb__n {
+            color: var(--lulterm-num);
+        }
+        .lul-sb__p {
+            color: var(--lulterm-dim);
+        }
+        .lul-sb__method {
+            color: var(--lulterm-num);
+            font-weight: 700;
+        }
+        .lul-sb__url {
+            color: var(--lulterm-text);
+        }
+        .lul-sb__note {
+            color: var(--lulterm-dim);
+        }
+        .lul-sb__err {
+            color: #e08068;
+        }
+        /* IDE-style indent guides. Each line paints one 1px rule per enclosing level,
+           using a repeating gradient clipped to that line's own indent width — so a
+           line at depth 3 shows three rules and a top-level brace shows none, the way
+           an editor draws them. The font is monospace, so one indent level is exactly
+           2ch and the rules land on the characters rather than near them. */
+        /* The request line is the one line in here that is not JSON: a single long URL
+           with no indentation to preserve, so it is the one line allowed to reflow when
+           the terminal narrows instead of pushing a horizontal scrollbar. Everything
+           else keeps the body's `pre` — JSON's shape IS its indentation, and the indent
+           guides are drawn per line box, so a wrapped JSON line would stripe wrongly. */
+        .lul-sb__line--wrap {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+        .lul-sb__line {
+            display: block;
+            --depth: 0;
+            background-image: repeating-linear-gradient(
+                to right,
+                var(--lulterm-guide) 0 1px,
+                transparent 1px calc(2ch)
+            );
+            background-size: calc(var(--depth) * 2ch) 100%;
+            background-repeat: no-repeat;
+        }
+        .lul-sb__caret {
+            display: inline-block;
+            width: 0.55em;
+            height: 1.05em;
+            background: var(--lulterm-caret);
+            vertical-align: -0.18em;
+            margin-left: 0.1em;
+            animation: lul-sb-blink 1s steps(1) infinite;
+        }
+        @keyframes lul-sb-blink {
+            50% {
+                opacity: 0;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .lul-sb__caret,
+            .lul-sb__call.is-busy .lul-sb__callprompt {
+                animation: none;
+            }
+        }
+    </style>
+
+    <div class="lul-sb__panel">
+        <header class="lul-sb__head">
+            <h2 class="lul-sb__title"><span class="lul-sb__prompt" aria-hidden="true">&gt;</span>Try our API Demo</h2>
+            <p class="lul-sb__lede">Use a demo key and test our API output in Lafayette, CO.</p>
+        </header>
+
+        <div class="lul-sb__cols">
+            <!-- ── LEFT ── -->
+            <div class="lul-sb__card">
+                <div class="lul-sb__pickrow">
+                    <p class="lul-sb__sectiontitle lul-sb__sectiontitle--inline">1. Select endpoint</p>
+                    <div class="lul-sb__picker">
+                        <button
+                            type="button"
+                            class="lul-sb__pick"
+                            data-sb-pick
+                            aria-haspopup="listbox"
+                            aria-expanded="false"
+                        >
+                            <span class="lul-sb__prompt" aria-hidden="true">&gt;</span>
+                            <span class="lul-sb__pickname" data-sb-pickname>v1/zoning</span>
+                            <span class="lul-sb__chev" aria-hidden="true"></span>
+                        </button>
+                        <ul class="lul-sb__menu" data-sb-menu role="listbox" hidden></ul>
+                    </div>
+                </div>
+
+                <p class="lul-sb__blurb" data-sb-blurb></p>
+
+                <p class="lul-sb__lock" data-sb-lock></p>
+
+                <p class="lul-sb__sectiontitle">2. Select how to query</p>
+
+                <div class="lul-sb__tabs" role="tablist" aria-label="How to name the point">
+                    <button
+                        type="button"
+                        class="lul-sb__tab"
+                        role="tab"
+                        id="lul-sb-tab-map"
+                        aria-controls="lul-sb-panel-map"
+                        aria-selected="true"
+                        data-sb-tab="map"
+                    >
+                        Click on the map
+                    </button>
+                    <button
+                        type="button"
+                        class="lul-sb__tab"
+                        role="tab"
+                        id="lul-sb-tab-point"
+                        aria-controls="lul-sb-panel-point"
+                        aria-selected="false"
+                        tabindex="-1"
+                        data-sb-tab="point"
+                    >
+                        Address/coordinates
+                    </button>
+                </div>
+
+                <div
+                    class="lul-sb__tabpanel"
+                    role="tabpanel"
+                    id="lul-sb-panel-map"
+                    aria-labelledby="lul-sb-tab-map"
+                    data-sb-panel="map"
+                >
+                    <div class="lul-sb__map" data-sb-map></div>
+                    <p class="lul-sb__maphint">Click inside the outlined boundary to drop a point.</p>
+                    <p class="lul-sb__mappick">
+                        <span data-sb-mappick></span><span class="lul-sb__maperr" data-sb-maperr></span>
+                    </p>
+                </div>
+
+                <div
+                    class="lul-sb__tabpanel"
+                    role="tabpanel"
+                    id="lul-sb-panel-point"
+                    aria-labelledby="lul-sb-tab-point"
+                    data-sb-panel="point"
+                    hidden
+                >
+                    <div class="lul-sb__row">
+                        <label class="lul-sb__label" for="lul-sb-addr">Address</label>
+                        <div>
+                            <input
+                                id="lul-sb-addr"
+                                class="lul-input"
+                                type="text"
+                                placeholder="string"
+                                autocomplete="off"
+                                spellcheck="false"
+                                data-sb-addr
+                            />
+                            <p class="lul-sb__ex">example: 1290 S. Public Road Lafayette, CO 80026</p>
+                        </div>
+                    </div>
+
+                    <p class="lul-sb__or">or</p>
+
+                    <div class="lul-sb__row">
+                        <label class="lul-sb__label" for="lul-sb-lat">Latitude</label>
+                        <div>
+                            <input
+                                id="lul-sb-lat"
+                                class="lul-input"
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="number"
+                                autocomplete="off"
+                                spellcheck="false"
+                                data-sb-lat
+                            />
+                            <p class="lul-sb__ex">example: 39.987446</p>
+                        </div>
+                    </div>
+
+                    <div class="lul-sb__row">
+                        <label class="lul-sb__label" for="lul-sb-lon">Longitude</label>
+                        <div>
+                            <input
+                                id="lul-sb-lon"
+                                class="lul-input"
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="number"
+                                autocomplete="off"
+                                spellcheck="false"
+                                data-sb-lon
+                            />
+                            <p class="lul-sb__ex">example: -105.089973</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lul-sb__status" data-sb-status role="status" aria-live="polite"></div>
+
+                <button type="button" class="lul-sb__call" data-sb-call>
+                    <span class="lul-sb__callprompt" aria-hidden="true">&gt;</span> Query API
+                </button>
+            </div>
+
+            <!-- ── RIGHT ── -->
+            <div class="lul-sb__term">
+                <div class="lul-sb__bar" aria-hidden="true">
+                    <span class="lul-sb__dot"></span>
+                    <span class="lul-sb__dot"></span>
+                    <span class="lul-sb__dot"></span>
+                    <span class="lul-sb__termlabel" data-sb-termlabel>zoning-api</span>
+                </div>
+                <div class="lul-sb__body" data-sb-out aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            var root = document.getElementById("lul-sandbox");
+            if (!root || root.dataset.sbReady) return;
+            root.dataset.sbReady = "1";
+
+            /* ── edit these ─────────────────────────────────────────────────────── */
+            var DOCS_URL = "https://lul-api-prod.azure-api.net/docs/api/v1/docs/";
+
+            /* One entry per query type. Add another and it appears in the picker. */
+            var ENDPOINTS = [
+                {
+                    id: "point",
+                    label: "v1/point",
+                    path: "/api/v1/point", // what the terminal prints
+                    url: "https://lul-api-prod.azure-api.net/api/v1/point", // what is called
+                    blurb:
+                        "Zoning endpoint returns all zoning districts and their regulations. " +
+                        '<a href="' +
+                        DOCS_URL +
+                        '" target="_blank" rel="noopener">Read our docs</a> to learn more.',
+                },
+            ];
+
+            /* The demo key is limited to one jurisdiction. */
+            var JURISDICTION = "Lafayette, CO";
+            var EXAMPLE = { addr: "1290 S. Public Road Lafayette, CO 80026", lat: "39.987446", lon: "-105.089973" };
+
+            /* The key, in fragments. Obfuscation only — see the header comment. It rides
+               as the `subscription-key` query parameter, which is what the gateway reads;
+               the demo app ships the same key in its own JavaScript. */
+            var KEY_PARTS = ["OWI3N2E2N2E1NT", "JkNDQ4NWIzYWY4", "NTUzMGFlNDJiYjQ="];
+            function apiKey() {
+                return atob(KEY_PARTS.join(""));
+            }
+
+            /* ── map ──
+               Esri's World Street Map through plain Leaflet — the same basemap, the same
+               service and the same attribution as the Django demo app in
+               lul/zoning-api-django, so the two demos of this API look like each other.
+
+               It replaced OpenFreeMap's Positron, which is a VECTOR style and therefore
+               dragged in maplibre-gl (211 KB gzipped against Leaflet's 42 KB) plus a
+               WebGL requirement, on a 272px map — a cost every visitor paid once the map
+               became the default tab. It also replaced a stint on Esri's Light Gray
+               Canvas, which is prettier under an overlay but carries real tiles only to
+               z16; this service has them to z19, so nothing here is ever an upscale.
+               (Measured, not assumed: Esri answers 200 with a "Map data not yet
+               available" graphic for tiles it lacks, so status codes prove nothing —
+               tiles have to be compared by content.)
+
+               Labels are baked into these tiles, so unlike Light Gray Canvas there is no
+               separate reference layer to stack. */
+            var MAP_CENTER = [39.991, -105.1064];
+            var MAP_ZOOM = 13;
+            var LEAFLET_CSS = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+            var LEAFLET_JS = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+            var BASEMAP_URL =
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
+            var BASEMAP_ATTRIB =
+                "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, " +
+                "Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012";
+
+            /* The demo jurisdiction's outline, drawn so nobody clicks the 99% of the
+               map that the demo key cannot answer for. Lifted from the API repo's
+               demo_jurisdictions.json, rounded to 5dp and thinned — it is a "you are
+               inside / outside" cue at zoom 13, not a survey boundary. */
+            var LAFAYETTE = [
+                [
+                    [
+                        [-105.15154, 40.0002],
+                        [-105.15129, 40.0002],
+                        [-105.15116, 40.0002],
+                        [-105.14985, 40.00021],
+                        [-105.14969, 40.00021],
+                        [-105.14953, 40.00021],
+                        [-105.14722, 40.0002],
+                        [-105.14666, 40.00021],
+                        [-105.14474, 40.00021],
+                        [-105.14368, 40.00021],
+                        [-105.14354, 40.00022],
+                        [-105.14265, 40.00021],
+                        [-105.14227, 40.00021],
+                        [-105.14059, 40.00023],
+                        [-105.14058, 40.00064],
+                        [-105.1406, 40.00082],
+                        [-105.14066, 40.00099],
+                        [-105.14075, 40.00113],
+                        [-105.14131, 40.0016],
+                        [-105.14179, 40.00198],
+                        [-105.14159, 40.00218],
+                        [-105.14151, 40.00234],
+                        [-105.14148, 40.0025],
+                        [-105.14148, 40.00348],
+                        [-105.14152, 40.00366],
+                        [-105.14106, 40.00377],
+                        [-105.14049, 40.00377],
+                        [-105.1405, 40.004],
+                        [-105.14053, 40.00738],
+                        [-105.13395, 40.0074],
+                        [-105.13125, 40.0074],
+                        [-105.13121, 40.00795],
+                        [-105.13122, 40.01005],
+                        [-105.13122, 40.01064],
+                        [-105.13123, 40.01207],
+                        [-105.1358, 40.01204],
+                        [-105.13581, 40.01344],
+                        [-105.13582, 40.01458],
+                        [-105.13583, 40.01475],
+                        [-105.13583, 40.01556],
+                        [-105.13583, 40.01726],
+                        [-105.13583, 40.01833],
+                        [-105.13559, 40.01833],
+                        [-105.1345, 40.01833],
+                        [-105.13106, 40.01833],
+                        [-105.13104, 40.01877],
+                        [-105.13102, 40.02021],
+                        [-105.13101, 40.02141],
+                        [-105.13101, 40.02177],
+                        [-105.131, 40.02216],
+                        [-105.131, 40.0223],
+                        [-105.131, 40.02278],
+                        [-105.12938, 40.02287],
+                        [-105.1236, 40.02289],
+                        [-105.12183, 40.0229],
+                        [-105.12169, 40.0229],
+                        [-105.1217, 40.02217],
+                        [-105.1217, 40.02199],
+                        [-105.117, 40.022],
+                        [-105.117, 40.02085],
+                        [-105.11699, 40.01938],
+                        [-105.11699, 40.01909],
+                        [-105.11699, 40.01655],
+                        [-105.11698, 40.0148],
+                        [-105.11574, 40.0148],
+                        [-105.11473, 40.01481],
+                        [-105.11451, 40.01481],
+                        [-105.1123, 40.01481],
+                        [-105.11056, 40.01482],
+                        [-105.11026, 40.01483],
+                        [-105.10757, 40.01484],
+                        [-105.10756, 40.0143],
+                        [-105.10754, 40.01331],
+                        [-105.10753, 40.01077],
+                        [-105.10312, 40.01077],
+                        [-105.10292, 40.01076],
+                        [-105.10292, 40.01109],
+                        [-105.10276, 40.01108],
+                        [-105.09888, 40.01109],
+                        [-105.09814, 40.01108],
+                        [-105.09768, 40.01107],
+                        [-105.09769, 40.01246],
+                        [-105.09687, 40.01245],
+                        [-105.09555, 40.01246],
+                        [-105.09459, 40.01245],
+                        [-105.09331, 40.01244],
+                        [-105.09331, 40.01467],
+                        [-105.09053, 40.01468],
+                        [-105.08656, 40.01472],
+                        [-105.08638, 40.01473],
+                        [-105.08441, 40.01475],
+                        [-105.08428, 40.01475],
+                        [-105.08396, 40.01475],
+                        [-105.08387, 40.0146],
+                        [-105.08388, 40.0077],
+                        [-105.08387, 40.00747],
+                        [-105.0746, 40.00755],
+                        [-105.07448, 40.00755],
+                        [-105.07448, 40.00719],
+                        [-105.07448, 40.00627],
+                        [-105.0746, 40.00626],
+                        [-105.07645, 40.00624],
+                        [-105.07645, 40.0055],
+                        [-105.0746, 40.00549],
+                        [-105.07459, 40.00486],
+                        [-105.0746, 40.00424],
+                        [-105.0746, 40.00405],
+                        [-105.07473, 40.00403],
+                        [-105.07487, 40.004],
+                        [-105.075, 40.00396],
+                        [-105.07525, 40.00387],
+                        [-105.07537, 40.00382],
+                        [-105.0756, 40.0037],
+                        [-105.0775, 40.00245],
+                        [-105.07846, 40.00178],
+                        [-105.07916, 40.00129],
+                        [-105.07916, 40.00031],
+                        [-105.07858, 40.00033],
+                        [-105.07459, 40.00036],
+                        [-105.07438, 40.00036],
+                        [-105.06732, 40.00037],
+                        [-105.0671, 40.00037],
+                        [-105.06506, 40.00037],
+                        [-105.06205, 40.00037],
+                        [-105.06072, 40.00037],
+                        [-105.06059, 40.00059],
+                        [-105.05938, 40.0024],
+                        [-105.06041, 40.00284],
+                        [-105.06023, 40.00311],
+                        [-105.05987, 40.00365],
+                        [-105.05883, 40.00365],
+                        [-105.05828, 40.00364],
+                        [-105.05813, 40.00388],
+                        [-105.05801, 40.00406],
+                        [-105.05736, 40.00508],
+                        [-105.05712, 40.00545],
+                        [-105.05643, 40.00545],
+                        [-105.05621, 40.00545],
+                        [-105.05616, 40.00563],
+                        [-105.05602, 40.00567],
+                        [-105.0559, 40.00567],
+                        [-105.05571, 40.00567],
+                        [-105.05557, 40.00566],
+                        [-105.05555, 40.0046],
+                        [-105.05556, 40.00386],
+                        [-105.05555, 40.00201],
+                        [-105.05554, 40.00086],
+                        [-105.05553, 40.00042],
+                        [-105.05552, 40.00025],
+                        [-105.05435, 40.00026],
+                        [-105.05282, 40.00026],
+                        [-105.05282, 40.00012],
+                        [-105.05429, 40.00012],
+                        [-105.0587, 40.00013],
+                        [-105.05956, 40.00014],
+                        [-105.05993, 40.00014],
+                        [-105.06059, 40.00014],
+                        [-105.0717, 40.00011],
+                        [-105.07173, 39.99708],
+                        [-105.07175, 39.99549],
+                        [-105.07178, 39.99396],
+                        [-105.07179, 39.99349],
+                        [-105.07179, 39.99312],
+                        [-105.0718, 39.99246],
+                        [-105.07179, 39.99153],
+                        [-105.07177, 39.99099],
+                        [-105.07177, 39.99058],
+                        [-105.06814, 39.99054],
+                        [-105.06735, 39.99053],
+                        [-105.0678, 39.99],
+                        [-105.06827, 39.98943],
+                        [-105.06923, 39.98943],
+                        [-105.07068, 39.98944],
+                        [-105.07176, 39.98945],
+                        [-105.07175, 39.98874],
+                        [-105.06874, 39.9886],
+                        [-105.07031, 39.98671],
+                        [-105.07072, 39.98669],
+                        [-105.07179, 39.98669],
+                        [-105.07178, 39.98625],
+                        [-105.07179, 39.98522],
+                        [-105.0718, 39.98481],
+                        [-105.07181, 39.98351],
+                        [-105.07181, 39.98309],
+                        [-105.07141, 39.98309],
+                        [-105.07091, 39.98308],
+                        [-105.06984, 39.98307],
+                        [-105.06949, 39.98307],
+                        [-105.06778, 39.98306],
+                        [-105.06763, 39.98306],
+                        [-105.06734, 39.98306],
+                        [-105.06709, 39.98306],
+                        [-105.06707, 39.98445],
+                        [-105.06704, 39.98591],
+                        [-105.06704, 39.98612],
+                        [-105.06704, 39.98634],
+                        [-105.06703, 39.98654],
+                        [-105.06409, 39.98649],
+                        [-105.06347, 39.98647],
+                        [-105.06296, 39.98647],
+                        [-105.06275, 39.98646],
+                        [-105.06235, 39.98646],
+                        [-105.06025, 39.98648],
+                        [-105.06003, 39.98648],
+                        [-105.05971, 39.98648],
+                        [-105.05806, 39.98649],
+                        [-105.05779, 39.98649],
+                        [-105.05277, 39.98654],
+                        [-105.05277, 39.9864],
+                        [-105.05279, 39.97949],
+                        [-105.05981, 39.97943],
+                        [-105.06237, 39.97945],
+                        [-105.06238, 39.97833],
+                        [-105.06239, 39.97584],
+                        [-105.06313, 39.97585],
+                        [-105.07189, 39.97589],
+                        [-105.07188, 39.97548],
+                        [-105.0719, 39.97521],
+                        [-105.07191, 39.97506],
+                        [-105.07188, 39.97431],
+                        [-105.07188, 39.97317],
+                        [-105.07188, 39.97227],
+                        [-105.07226, 39.97227],
+                        [-105.07425, 39.97229],
+                        [-105.0765, 39.9723],
+                        [-105.07649, 39.96527],
+                        [-105.08106, 39.96529],
+                        [-105.08355, 39.96529],
+                        [-105.08383, 39.96529],
+                        [-105.08455, 39.96529],
+                        [-105.08507, 39.96529],
+                        [-105.08515, 39.96515],
+                        [-105.08524, 39.96498],
+                        [-105.08575, 39.96407],
+                        [-105.08591, 39.96379],
+                        [-105.08607, 39.96348],
+                        [-105.08621, 39.96317],
+                        [-105.08636, 39.96285],
+                        [-105.08649, 39.96254],
+                        [-105.08662, 39.96222],
+                        [-105.08673, 39.9619],
+                        [-105.08684, 39.96158],
+                        [-105.087, 39.96105],
+                        [-105.0871, 39.96062],
+                        [-105.08718, 39.96019],
+                        [-105.08722, 39.95999],
+                        [-105.08746, 39.95996],
+                        [-105.08752, 39.95975],
+                        [-105.08775, 39.95975],
+                        [-105.08803, 39.95975],
+                        [-105.08804, 39.95886],
+                        [-105.08804, 39.95869],
+                        [-105.08804, 39.95844],
+                        [-105.08869, 39.95842],
+                        [-105.0887, 39.95803],
+                        [-105.08904, 39.95803],
+                        [-105.08925, 39.95811],
+                        [-105.08969, 39.95811],
+                        [-105.08983, 39.95811],
+                        [-105.08987, 39.95796],
+                        [-105.08987, 39.9578],
+                        [-105.09, 39.95772],
+                        [-105.09025, 39.95772],
+                        [-105.09038, 39.95772],
+                        [-105.09086, 39.95772],
+                        [-105.09103, 39.95779],
+                        [-105.09126, 39.95786],
+                        [-105.09139, 39.95788],
+                        [-105.09193, 39.95788],
+                        [-105.09252, 39.95788],
+                        [-105.09347, 39.95787],
+                        [-105.094, 39.95787],
+                        [-105.09489, 39.95787],
+                        [-105.09726, 39.95786],
+                        [-105.09755, 39.95786],
+                        [-105.09895, 39.95786],
+                        [-105.09931, 39.95786],
+                        [-105.09984, 39.95786],
+                        [-105.09996, 39.95799],
+                        [-105.09996, 39.95813],
+                        [-105.09996, 39.95828],
+                        [-105.09996, 39.95844],
+                        [-105.09996, 39.9588],
+                        [-105.09996, 39.95898],
+                        [-105.09989, 39.9616],
+                        [-105.09835, 39.96161],
+                        [-105.09822, 39.96161],
+                        [-105.0966, 39.96161],
+                        [-105.09554, 39.96161],
+                        [-105.09505, 39.96162],
+                        [-105.09334, 39.96162],
+                        [-105.0926, 39.96162],
+                        [-105.09184, 39.96162],
+                        [-105.09071, 39.96162],
+                        [-105.09035, 39.96162],
+                        [-105.09035, 39.96218],
+                        [-105.09036, 39.96345],
+                        [-105.09034, 39.96492],
+                        [-105.09034, 39.96526],
+                        [-105.09069, 39.96526],
+                        [-105.09219, 39.96526],
+                        [-105.09285, 39.96526],
+                        [-105.0952, 39.96525],
+                        [-105.09987, 39.96526],
+                        [-105.09987, 39.96577],
+                        [-105.09986, 39.96679],
+                        [-105.09986, 39.96718],
+                        [-105.09986, 39.9674],
+                        [-105.09985, 39.96849],
+                        [-105.09988, 39.97241],
+                        [-105.09774, 39.97241],
+                        [-105.09754, 39.97241],
+                        [-105.09754, 39.97367],
+                        [-105.09755, 39.97611],
+                        [-105.10304, 39.9761],
+                        [-105.10454, 39.9761],
+                        [-105.10862, 39.97611],
+                        [-105.10862, 39.97535],
+                        [-105.1091, 39.97531],
+                        [-105.10929, 39.9753],
+                        [-105.10924, 39.9761],
+                        [-105.11003, 39.97609],
+                        [-105.11076, 39.97608],
+                        [-105.11177, 39.97609],
+                        [-105.11238, 39.97608],
+                        [-105.11271, 39.97608],
+                        [-105.11338, 39.97608],
+                        [-105.11381, 39.97608],
+                        [-105.11392, 39.97694],
+                        [-105.11392, 39.97732],
+                        [-105.11392, 39.97749],
+                        [-105.11392, 39.97808],
+                        [-105.11391, 39.9793],
+                        [-105.11391, 39.97971],
+                        [-105.11386, 39.98309],
+                        [-105.11386, 39.98329],
+                        [-105.11702, 39.98332],
+                        [-105.11714, 39.98332],
+                        [-105.11734, 39.98331],
+                        [-105.1174, 39.98515],
+                        [-105.11739, 39.98534],
+                        [-105.11739, 39.9869],
+                        [-105.11758, 39.98701],
+                        [-105.11864, 39.98701],
+                        [-105.11865, 39.98821],
+                        [-105.11865, 39.98985],
+                        [-105.11866, 39.99012],
+                        [-105.11856, 39.99057],
+                        [-105.11855, 39.99239],
+                        [-105.12234, 39.99237],
+                        [-105.12234, 39.99251],
+                        [-105.12232, 39.99364],
+                        [-105.12232, 39.99379],
+                        [-105.12232, 39.99415],
+                        [-105.12249, 39.99415],
+                        [-105.12281, 39.99415],
+                        [-105.12325, 39.99414],
+                        [-105.12389, 39.99417],
+                        [-105.12418, 39.99416],
+                        [-105.12436, 39.99416],
+                        [-105.12475, 39.99415],
+                        [-105.12575, 39.99414],
+                        [-105.12787, 39.99413],
+                        [-105.1296, 39.99413],
+                        [-105.13075, 39.99413],
+                        [-105.13182, 39.99413],
+                        [-105.13688, 39.99416],
+                        [-105.13735, 39.99416],
+                        [-105.13733, 39.99567],
+                        [-105.13733, 39.99865],
+                        [-105.13705, 39.99858],
+                        [-105.13683, 39.99849],
+                        [-105.13668, 39.99839],
+                        [-105.13648, 39.99834],
+                        [-105.13643, 39.99982],
+                        [-105.13643, 40.00003],
+                        [-105.13822, 40.00006],
+                        [-105.14208, 40.00006],
+                        [-105.1424, 40.00006],
+                        [-105.14279, 40.00006],
+                        [-105.14472, 40.00005],
+                        [-105.14674, 40.00004],
+                        [-105.14952, 40.00004],
+                        [-105.14969, 40.00004],
+                        [-105.14982, 39.9989],
+                        [-105.14983, 39.99836],
+                        [-105.1497, 39.99644],
+                        [-105.14971, 39.99521],
+                        [-105.14709, 39.99518],
+                        [-105.14677, 39.99518],
+                        [-105.14678, 39.99455],
+                        [-105.14678, 39.99416],
+                        [-105.14678, 39.994],
+                        [-105.15118, 39.99398],
+                        [-105.15273, 39.99397],
+                        [-105.15273, 39.99413],
+                        [-105.15273, 39.99429],
+                        [-105.15273, 39.99459],
+                        [-105.15273, 39.99619],
+                        [-105.15395, 39.99618],
+                        [-105.15457, 39.99618],
+                        [-105.15708, 39.99617],
+                        [-105.15727, 39.99617],
+                        [-105.15718, 39.99704],
+                        [-105.15712, 39.99736],
+                        [-105.15708, 39.99755],
+                        [-105.15704, 39.99797],
+                        [-105.15685, 39.99995],
+                        [-105.15684, 40.00013],
+                        [-105.15505, 40.00012],
+                        [-105.1539, 40.00012],
+                        [-105.15377, 40.00012],
+                        [-105.15357, 40.00012],
+                        [-105.15344, 40.00027],
+                        [-105.15324, 40.0004],
+                        [-105.15302, 40.00056],
+                        [-105.15268, 40.00062],
+                        [-105.15219, 40.00057],
+                        [-105.15177, 40.00041],
+                        [-105.1517, 40.0002],
+                        [-105.15154, 40.0002],
+                    ],
+                    [
+                        [-105.07318, 39.99411],
+                        [-105.07208, 39.99409],
+                        [-105.0722, 39.99439],
+                        [-105.07241, 39.99472],
+                        [-105.07276, 39.99506],
+                        [-105.07331, 39.99555],
+                        [-105.07364, 39.99584],
+                        [-105.07391, 39.99612],
+                        [-105.07413, 39.99632],
+                        [-105.07441, 39.9968],
+                        [-105.0746, 39.9972],
+                        [-105.07465, 39.99757],
+                        [-105.07463, 40.00005],
+                        [-105.0786, 40.00008],
+                        [-105.07885, 40.00008],
+                        [-105.07946, 40.00008],
+                        [-105.07946, 39.9997],
+                        [-105.07983, 39.9997],
+                        [-105.07978, 39.99956],
+                        [-105.07975, 39.99937],
+                        [-105.07876, 39.99867],
+                        [-105.07834, 39.99839],
+                        [-105.07815, 39.99822],
+                        [-105.07814, 39.99801],
+                        [-105.07795, 39.99776],
+                        [-105.07778, 39.99749],
+                        [-105.07709, 39.99681],
+                        [-105.07719, 39.99574],
+                        [-105.0773, 39.99464],
+                        [-105.07731, 39.99418],
+                        [-105.07318, 39.99411],
+                    ],
+                    [
+                        [-105.09006, 39.97612],
+                        [-105.08854, 39.97606],
+                        [-105.0854, 39.97603],
+                        [-105.08107, 39.97601],
+                        [-105.07869, 39.97599],
+                        [-105.0786, 39.97612],
+                        [-105.07653, 39.97879],
+                        [-105.07655, 39.97911],
+                        [-105.07655, 39.97953],
+                        [-105.07796, 39.97955],
+                        [-105.0878, 39.97967],
+                        [-105.08977, 39.97969],
+                        [-105.08991, 39.9797],
+                        [-105.09033, 39.9797],
+                        [-105.09041, 39.97927],
+                        [-105.09056, 39.97899],
+                        [-105.09051, 39.97878],
+                        [-105.09043, 39.97861],
+                        [-105.0904, 39.97846],
+                        [-105.09039, 39.97675],
+                        [-105.09033, 39.97655],
+                        [-105.09011, 39.9762],
+                        [-105.09006, 39.97612],
+                    ],
+                    [
+                        [-105.07824, 39.9941],
+                        [-105.07809, 39.9941],
+                        [-105.07749, 39.99409],
+                        [-105.07748, 39.99451],
+                        [-105.07834, 39.99452],
+                        [-105.07826, 39.99415],
+                        [-105.07824, 39.9941],
+                    ],
+                    [
+                        [-105.08966, 39.98189],
+                        [-105.08964, 39.98228],
+                        [-105.0905, 39.98229],
+                        [-105.0905, 39.98189],
+                        [-105.08966, 39.98189],
+                    ],
+                    [
+                        [-105.0913, 39.97704],
+                        [-105.09094, 39.97672],
+                        [-105.09069, 39.97646],
+                        [-105.09042, 39.97608],
+                        [-105.09055, 39.97649],
+                        [-105.0906, 39.97663],
+                        [-105.09061, 39.97854],
+                        [-105.09076, 39.97877],
+                        [-105.09094, 39.97876],
+                        [-105.09114, 39.97869],
+                        [-105.09142, 39.97865],
+                        [-105.09256, 39.97868],
+                        [-105.09295, 39.97867],
+                        [-105.09319, 39.97859],
+                        [-105.09336, 39.97846],
+                        [-105.09349, 39.9783],
+                        [-105.09353, 39.97807],
+                        [-105.09282, 39.97785],
+                        [-105.09232, 39.97769],
+                        [-105.09208, 39.97758],
+                        [-105.09189, 39.97748],
+                        [-105.09165, 39.97728],
+                        [-105.0913, 39.97704],
+                    ],
+                    [
+                        [-105.09353, 39.97865],
+                        [-105.09332, 39.97877],
+                        [-105.09302, 39.97883],
+                        [-105.09229, 39.97887],
+                        [-105.09155, 39.97886],
+                        [-105.0913, 39.97887],
+                        [-105.09111, 39.97891],
+                        [-105.09088, 39.97902],
+                        [-105.09069, 39.97919],
+                        [-105.09057, 39.9794],
+                        [-105.09057, 39.9797],
+                        [-105.09079, 39.9797],
+                        [-105.09099, 39.9797],
+                        [-105.09141, 39.9797],
+                        [-105.09153, 39.9797],
+                        [-105.0925, 39.97969],
+                        [-105.09305, 39.97971],
+                        [-105.09521, 39.97971],
+                        [-105.0952, 39.97859],
+                        [-105.0952, 39.97845],
+                        [-105.09394, 39.97814],
+                        [-105.09374, 39.97842],
+                        [-105.09353, 39.97865],
+                    ],
+                    [
+                        [-105.09487, 40.01106],
+                        [-105.09569, 40.01107],
+                        [-105.09569, 40.01007],
+                        [-105.09569, 40.00979],
+                        [-105.09517, 40.00979],
+                        [-105.09507, 40.01027],
+                        [-105.09463, 40.01026],
+                        [-105.09331, 40.01026],
+                        [-105.09331, 40.01071],
+                        [-105.09331, 40.01088],
+                        [-105.09331, 40.01105],
+                        [-105.09344, 40.01105],
+                        [-105.09378, 40.01105],
+                        [-105.09464, 40.01105],
+                        [-105.09487, 40.01106],
+                    ],
+                    [
+                        [-105.09575, 39.97242],
+                        [-105.09535, 39.97242],
+                        [-105.09532, 39.97328],
+                        [-105.09594, 39.97328],
+                        [-105.09593, 39.97242],
+                        [-105.09575, 39.97242],
+                    ],
+                    [
+                        [-105.10291, 40.00868],
+                        [-105.1021, 40.00868],
+                        [-105.10065, 40.00867],
+                        [-105.10065, 40.00988],
+                        [-105.10124, 40.00988],
+                        [-105.1021, 40.00989],
+                        [-105.10264, 40.0099],
+                        [-105.10292, 40.0099],
+                        [-105.10292, 40.00961],
+                        [-105.10291, 40.00879],
+                        [-105.10291, 40.00868],
+                    ],
+                    [
+                        [-105.11117, 40.00018],
+                        [-105.11171, 40.00018],
+                        [-105.11456, 40.00017],
+                        [-105.11457, 39.99952],
+                        [-105.11225, 39.99951],
+                        [-105.11214, 39.99919],
+                        [-105.11202, 39.99889],
+                        [-105.11116, 39.9989],
+                        [-105.11117, 40.00018],
+                    ],
+                    [
+                        [-105.11227, 40.00993],
+                        [-105.11228, 40.01141],
+                        [-105.11229, 40.01303],
+                        [-105.1123, 40.01462],
+                        [-105.11467, 40.01461],
+                        [-105.11553, 40.01461],
+                        [-105.1157, 40.01461],
+                        [-105.11666, 40.01464],
+                        [-105.11741, 40.01463],
+                        [-105.11768, 40.01463],
+                        [-105.11818, 40.01463],
+                        [-105.11885, 40.01463],
+                        [-105.12151, 40.01461],
+                        [-105.12182, 40.01461],
+                        [-105.12392, 40.01461],
+                        [-105.12437, 40.01461],
+                        [-105.12519, 40.01461],
+                        [-105.12518, 40.01105],
+                        [-105.12303, 40.01106],
+                        [-105.1217, 40.01106],
+                        [-105.12169, 40.01082],
+                        [-105.12167, 40.00983],
+                        [-105.12163, 40.00745],
+                        [-105.11945, 40.00745],
+                        [-105.11594, 40.00747],
+                        [-105.11226, 40.00748],
+                        [-105.11227, 40.00993],
+                    ],
+                    [
+                        [-105.11339, 39.99105],
+                        [-105.11338, 39.99056],
+                        [-105.11338, 39.99042],
+                        [-105.11266, 39.99042],
+                        [-105.11265, 39.99057],
+                        [-105.11264, 39.99105],
+                        [-105.11339, 39.99105],
+                    ],
+                    [
+                        [-105.12574, 39.99424],
+                        [-105.12477, 39.99424],
+                        [-105.12475, 39.99732],
+                        [-105.12461, 39.99732],
+                        [-105.12323, 39.99732],
+                        [-105.12323, 39.99749],
+                        [-105.1239, 39.9975],
+                        [-105.12451, 39.9975],
+                        [-105.12483, 39.9975],
+                        [-105.12515, 39.9975],
+                        [-105.1254, 39.9975],
+                        [-105.12579, 39.9975],
+                        [-105.12611, 39.9975],
+                        [-105.12739, 39.9975],
+                        [-105.12792, 39.99751],
+                        [-105.12793, 39.99724],
+                        [-105.12803, 39.99708],
+                        [-105.1279, 39.99688],
+                        [-105.1279, 39.99629],
+                        [-105.12793, 39.99607],
+                        [-105.12795, 39.99595],
+                        [-105.12797, 39.99563],
+                        [-105.12795, 39.99541],
+                        [-105.12795, 39.99424],
+                        [-105.12574, 39.99424],
+                    ],
+                    [
+                        [-105.12901, 40.00019],
+                        [-105.12907, 40.00005],
+                        [-105.12907, 39.99873],
+                        [-105.12908, 39.99835],
+                        [-105.12792, 39.99833],
+                        [-105.12793, 40.00014],
+                        [-105.12814, 40.00018],
+                        [-105.12852, 40.00019],
+                        [-105.12865, 40.00019],
+                        [-105.12887, 40.00019],
+                        [-105.12901, 40.00019],
+                    ],
+                    [
+                        [-105.1338, 40.00016],
+                        [-105.13494, 40.00015],
+                        [-105.13569, 40.00015],
+                        [-105.13575, 39.99851],
+                        [-105.13499, 39.99899],
+                        [-105.1348, 39.99911],
+                        [-105.13455, 39.99927],
+                        [-105.13436, 39.99964],
+                        [-105.1342, 39.99988],
+                        [-105.13394, 40.00006],
+                        [-105.1338, 40.00016],
+                    ],
+                ],
+                [
+                    [
+                        [-105.11165, 40.04652],
+                        [-105.11152, 40.04663],
+                        [-105.11121, 40.04694],
+                        [-105.11031, 40.04751],
+                        [-105.11002, 40.04752],
+                        [-105.1096, 40.04741],
+                        [-105.10912, 40.04741],
+                        [-105.10886, 40.04753],
+                        [-105.10756, 40.04816],
+                        [-105.10728, 40.0483],
+                        [-105.10627, 40.0482],
+                        [-105.10561, 40.04817],
+                        [-105.10519, 40.04823],
+                        [-105.10374, 40.04804],
+                        [-105.10333, 40.0479],
+                        [-105.10301, 40.04768],
+                        [-105.10264, 40.04765],
+                        [-105.10264, 40.04749],
+                        [-105.10263, 40.04652],
+                        [-105.10262, 40.0456],
+                        [-105.10263, 40.04394],
+                        [-105.10263, 40.04272],
+                        [-105.10264, 40.04208],
+                        [-105.1027, 40.04069],
+                        [-105.1051, 40.04068],
+                        [-105.10752, 40.04069],
+                        [-105.10752, 40.04011],
+                        [-105.11234, 40.04015],
+                        [-105.11702, 40.04019],
+                        [-105.12056, 40.04021],
+                        [-105.1206, 40.04213],
+                        [-105.12062, 40.04341],
+                        [-105.12027, 40.04385],
+                        [-105.11482, 40.04389],
+                        [-105.11237, 40.04391],
+                        [-105.11234, 40.04578],
+                        [-105.11234, 40.04651],
+                        [-105.11184, 40.04649],
+                        [-105.11171, 40.0465],
+                        [-105.11165, 40.04652],
+                    ],
+                ],
+                [
+                    [
+                        [-105.1031, 40.01315],
+                        [-105.1031, 40.01329],
+                        [-105.10311, 40.01425],
+                        [-105.10292, 40.01426],
+                        [-105.10292, 40.01339],
+                        [-105.10292, 40.01322],
+                        [-105.10292, 40.01307],
+                        [-105.1031, 40.01315],
+                    ],
+                ],
+            ];
+
+            var PRINT_MS = 2200; // target duration of the whole print
+            /* ───────────────────────────────────────────────────────────────────── */
+
+            var els = {
+                picker: root.querySelector(".lul-sb__picker"),
+                pick: root.querySelector("[data-sb-pick]"),
+                pickname: root.querySelector("[data-sb-pickname]"),
+                menu: root.querySelector("[data-sb-menu]"),
+                blurb: root.querySelector("[data-sb-blurb]"),
+                lock: root.querySelector("[data-sb-lock]"),
+                call: root.querySelector("[data-sb-call]"),
+                lat: root.querySelector("[data-sb-lat]"),
+                lon: root.querySelector("[data-sb-lon]"),
+                addr: root.querySelector("[data-sb-addr]"),
+                status: root.querySelector("[data-sb-status]"),
+                out: root.querySelector("[data-sb-out]"),
+                termlabel: root.querySelector("[data-sb-termlabel]"),
+                tabs: [].slice.call(root.querySelectorAll("[data-sb-tab]")),
+                panels: [].slice.call(root.querySelectorAll("[data-sb-panel]")),
+                map: root.querySelector("[data-sb-map]"),
+                mappick: root.querySelector("[data-sb-mappick]"),
+                maperr: root.querySelector("[data-sb-maperr]"),
+            };
+
+            var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var raf = null;
+            var current = ENDPOINTS[0];
+
+            function esc(s) {
+                return String(s).replace(/[&<>"]/g, function (c) {
+                    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+                });
+            }
+
+            /* ── the geographic lock, as one paragraph ── */
+            els.lock.textContent = "This is an API demo and will only return data within " + JURISDICTION + ".";
+
+            /* ── endpoint picker ── */
+            els.menu.innerHTML =
+                ENDPOINTS.map(function (ep) {
+                    return (
+                        '<li role="option"><button type="button" class="lul-sb__menuitem" data-ep="' +
+                        esc(ep.id) +
+                        '">' +
+                        esc(ep.label) +
+                        "</button></li>"
+                    );
+                }).join("") + '<li class="lul-sb__menunote" role="presentation">More endpoints coming soon.</li>';
+
+            function openMenu() {
+                els.menu.hidden = false;
+                els.pick.setAttribute("aria-expanded", "true");
+            }
+            function closeMenu() {
+                els.menu.hidden = true;
+                els.pick.setAttribute("aria-expanded", "false");
+                var items = els.menu.querySelectorAll("[data-ep]");
+                for (var i = 0; i < items.length; i++) {
+                    items[i].setAttribute(
+                        "aria-current",
+                        items[i].getAttribute("data-ep") === current.id ? "true" : "false",
+                    );
+                }
+            }
+            function selectEndpoint(ep) {
+                current = ep;
+                els.pickname.textContent = ep.label;
+                els.blurb.innerHTML = ep.blurb;
+                closeMenu();
+                resetTerm();
+            }
+
+            els.pick.addEventListener("click", function () {
+                if (els.menu.hidden) openMenu();
+                else closeMenu();
+            });
+            els.menu.addEventListener("click", function (e) {
+                var btn = e.target.closest("[data-ep]");
+                if (!btn) return;
+                var id = btn.getAttribute("data-ep");
+                for (var i = 0; i < ENDPOINTS.length; i++) {
+                    if (ENDPOINTS[i].id === id) {
+                        selectEndpoint(ENDPOINTS[i]);
+                        return;
+                    }
+                }
+            });
+            document.addEventListener("click", function (e) {
+                if (!els.menu.hidden && !els.picker.contains(e.target)) closeMenu();
+            });
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && !els.menu.hidden) {
+                    closeMenu();
+                    els.pick.focus();
+                }
+            });
+
+            /* ── status line ── */
+            /* In map mode nothing may grow below the map, so the status line is left
+               empty and a short form joins the coordinate readout instead — "Error:
+               outside_demo" rather than a sentence. The long version would only be
+               restating what the terminal has already printed in full. Everywhere else
+               the status line behaves as before. */
+            function say(msg, isError, code) {
+                /* A failure is reported the same way in both tabs: "Error: <code>",
+                   with the terminal beside it carrying the message, the request_id and
+                   the rest. Anything without a code is a prompt rather than a failure
+                   ("Click a point on the map.") and is shown as written. */
+                var text = code ? "Error: " + code : msg || "";
+                if (mode === "map") {
+                    els.status.textContent = "";
+                    els.status.classList.remove("is-error");
+                    els.maperr.textContent = text;
+                    return;
+                }
+                els.maperr.textContent = "";
+                els.status.textContent = text;
+                /* A code always reads as an error here, outside_demo included. It used
+                   to be styled as a neutral note, which made sense while it was phrased
+                   as one; now that both tabs label it "Error:", the two tabs would
+                   otherwise disagree on its colour. */
+                els.status.classList.toggle("is-error", !!isError || !!code);
+            }
+
+            /* ── terminal ── */
+            function clearTerm() {
+                if (raf) {
+                    cancelAnimationFrame(raf);
+                    raf = null;
+                }
+                els.out.textContent = "";
+            }
+
+            /* A line is { d: indent depth, h: html }. Depth drives the indent guides;
+               plain strings are accepted and treated as depth 0. */
+            function mkLine(line) {
+                var el = document.createElement("span");
+                el.className = "lul-sb__line";
+                if (typeof line === "string") {
+                    el.innerHTML = line;
+                } else {
+                    if (line.d) el.style.setProperty("--depth", line.d);
+                    if (line.cls) el.className += " " + line.cls;
+                    el.innerHTML = line.h;
+                }
+                return el;
+            }
+
+            function addLine(line) {
+                var el = mkLine(line);
+                els.out.appendChild(el);
+                return el;
+            }
+
+            function resetTerm() {
+                clearTerm();
+                els.termlabel.textContent = "zoning-api";
+                addLine({
+                    cls: "lul-sb__line--wrap",
+                    h: '<span class="lul-sb__note"># click on the map, or enter an address or coordinate pair, then Query API</span>',
+                });
+                addLine("");
+                addLine({
+                    cls: "lul-sb__line--wrap",
+                    h:
+                        '<span class="lul-sb__method">GET </span><span class="lul-sb__url">' +
+                        esc(current.path + "?addr=" + encodeURIComponent(EXAMPLE.addr)) +
+                        '</span><span class="lul-sb__caret"></span>',
+                });
+            }
+
+            function dump(lines, from) {
+                var frag = document.createDocumentFragment();
+                for (var i = from; i < lines.length; i++) frag.appendChild(mkLine(lines[i]));
+                els.out.appendChild(frag);
+                els.out.scrollTop = 0;
+            }
+
+            /* Print a few lines per frame, scrolling to follow.
+
+               requestAnimationFrame, not setInterval: each batch appends nodes and then
+               reads scrollHeight, forcing a synchronous layout of a list that keeps
+               growing, so a nominal short interval drifts badly on a long response. The
+               batch is sized from the line count, so a 500-line response and a 3-line
+               error both land near PRINT_MS.
+
+               rAF GETS ZERO FRAMES IN A HIDDEN TAB — not slow frames, none. So render
+               complete and still if the page is hidden at the start, and finish the
+               remainder immediately if it goes hidden mid-print; otherwise a visitor who
+               switches tab returns to a frozen half-response and a dead button. */
+            function printLines(lines, done) {
+                if (reduced || document.hidden) {
+                    dump(lines, 0);
+                    if (done) done();
+                    return;
+                }
+                var frames = Math.max(1, Math.round(PRINT_MS / 16));
+                var per = Math.max(1, Math.min(30, Math.ceil(lines.length / frames)));
+                var i = 0;
+                var finished = false;
+
+                function finish(fromIndex) {
+                    if (finished) return;
+                    finished = true;
+                    document.removeEventListener("visibilitychange", onHide);
+                    if (raf) {
+                        cancelAnimationFrame(raf);
+                        raf = null;
+                    }
+                    if (fromIndex < lines.length) dump(lines, fromIndex);
+                    els.out.scrollTop = 0;
+                    if (done) done();
+                }
+                function onHide() {
+                    if (document.hidden) finish(i);
+                }
+                document.addEventListener("visibilitychange", onHide);
+
+                function step() {
+                    var frag = document.createDocumentFragment();
+                    for (var n = 0; n < per && i < lines.length; n++, i++) {
+                        frag.appendChild(mkLine(lines[i]));
+                    }
+                    els.out.appendChild(frag);
+                    els.out.scrollTop = els.out.scrollHeight;
+                    if (i < lines.length) raf = requestAnimationFrame(step);
+                    else finish(lines.length);
+                }
+                raf = requestAnimationFrame(step);
+            }
+
+            /* ── JSON → coloured lines ──────────────────────────────────────────────
+               Two-space indented, one array entry per line, braces kept, so the block
+               reads as JSON rather than a table. */
+            function jsonLines(value, indent, keyName, isLast) {
+                var pad = new Array(indent + 1).join("  ");
+                var out = [];
+                var prefix =
+                    pad +
+                    (keyName !== null
+                        ? '<span class="lul-sb__k">"' + esc(keyName) + '"</span><span class="lul-sb__p">: </span>'
+                        : "");
+                var tail = isLast ? "" : '<span class="lul-sb__p">,</span>';
+
+                var L = function (html) {
+                    return { d: indent, h: html };
+                };
+
+                if (value === null) return [L(prefix + '<span class="lul-sb__n">null</span>' + tail)];
+                if (typeof value === "boolean" || typeof value === "number")
+                    return [L(prefix + '<span class="lul-sb__n">' + value + "</span>" + tail)];
+                if (typeof value === "string")
+                    return [L(prefix + '<span class="lul-sb__s">"' + esc(value) + '"</span>' + tail)];
+
+                if (Array.isArray(value)) {
+                    if (!value.length) return [L(prefix + '<span class="lul-sb__p">[]</span>' + tail)];
+                    out.push(L(prefix + '<span class="lul-sb__p">[</span>'));
+                    value.forEach(function (v, i) {
+                        out = out.concat(jsonLines(v, indent + 1, null, i === value.length - 1));
+                    });
+                    out.push(L(pad + '<span class="lul-sb__p">]</span>' + tail));
+                    return out;
+                }
+                var keys = Object.keys(value);
+                if (!keys.length) return [L(prefix + '<span class="lul-sb__p">{}</span>' + tail)];
+                out.push(L(prefix + '<span class="lul-sb__p">{</span>'));
+                keys.forEach(function (k, i) {
+                    out = out.concat(jsonLines(value[k], indent + 1, k, i === keys.length - 1));
+                });
+                out.push(L(pad + '<span class="lul-sb__p">}</span>' + tail));
+                return out;
+            }
+
+            /* ── inputs ── */
+            function markBad(el, bad) {
+                el.classList.toggle("is-bad", !!bad);
+            }
+            function readCoords() {
+                var lat = parseFloat(String(els.lat.value).trim());
+                var lon = parseFloat(String(els.lon.value).trim());
+                var latOk = isFinite(lat) && Math.abs(lat) <= 90;
+                var lonOk = isFinite(lon) && Math.abs(lon) <= 180;
+                markBad(els.lat, els.lat.value.trim() && !latOk);
+                markBad(els.lon, els.lon.value.trim() && !lonOk);
+                return latOk && lonOk ? { lat: lat, lon: lon } : null;
+            }
+
+            /* ── query-mode tabs ──
+               `mode` is the single source of truth for what gets sent: whichever tab is
+               open decides the parameters, so the two ways of naming a point can never
+               disagree about which one the visitor meant. */
+            var mode = "map";
+            var mapPoint = null;
+
+            function selectTab(next) {
+                mode = next;
+                els.tabs.forEach(function (t) {
+                    var on = t.getAttribute("data-sb-tab") === next;
+                    t.setAttribute("aria-selected", on ? "true" : "false");
+                    t.tabIndex = on ? 0 : -1;
+                });
+                els.panels.forEach(function (panel) {
+                    panel.hidden = panel.getAttribute("data-sb-panel") !== next;
+                });
+                say("");
+                if (next === "map") ensureMap();
+            }
+
+            els.tabs.forEach(function (tab) {
+                tab.addEventListener("click", function () {
+                    selectTab(tab.getAttribute("data-sb-tab"));
+                });
+                /* left/right arrows move between tabs, which is what a tablist is
+                   expected to do once it announces itself as one */
+                tab.addEventListener("keydown", function (e) {
+                    var i = els.tabs.indexOf(tab);
+                    var to = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : -1;
+                    if (to < 0 || to >= els.tabs.length) return;
+                    e.preventDefault();
+                    els.tabs[to].focus();
+                    selectTab(els.tabs[to].getAttribute("data-sb-tab"));
+                });
+            });
+
+            /* ── the map, loaded on first use ──────────────────────────────────────
+               Fetched the first time the map tab is opened. That used to mean "only if
+               the visitor asks for it"; with the map as the default tab it now means
+               "once, on load" — the loader is kept because it still guarantees the
+               three libraries are fetched exactly once, in order, and that the map is
+               only built after all three have landed. */
+            var mapPromise = null;
+            var MAP = null;
+
+            function loadCss(href) {
+                return new Promise(function (resolve) {
+                    if (document.querySelector('link[href="' + href + '"]')) return resolve();
+                    var l = document.createElement("link");
+                    l.rel = "stylesheet";
+                    l.href = href;
+                    l.onload = l.onerror = function () {
+                        resolve();
+                    };
+                    document.head.appendChild(l);
+                });
+            }
+            function loadScript(src) {
+                return new Promise(function (resolve, reject) {
+                    var found = document.querySelector('script[src="' + src + '"]');
+                    if (found) {
+                        if (found.dataset.loaded) return resolve();
+                        found.addEventListener("load", function () {
+                            resolve();
+                        });
+                        found.addEventListener("error", function () {
+                            reject(new Error("could not load " + src));
+                        });
+                        return;
+                    }
+                    var sc = document.createElement("script");
+                    sc.src = src;
+                    sc.onload = function () {
+                        sc.dataset.loaded = "1";
+                        resolve();
+                    };
+                    sc.onerror = function () {
+                        reject(new Error("could not load " + src));
+                    };
+                    document.head.appendChild(sc);
+                });
+            }
+
+            function ensureMap() {
+                if (mapPromise) {
+                    /* Leaflet measures the container when it is created. Opening the tab
+                       again after it was hidden needs a re-measure or the tiles sit in
+                       the top-left corner of a zero-sized box. */
+                    mapPromise.then(function () {
+                        if (MAP)
+                            setTimeout(function () {
+                                MAP.invalidateSize();
+                            }, 0);
+                    });
+                    return mapPromise;
+                }
+
+                mapPromise = loadCss(LEAFLET_CSS)
+                    .then(function () {
+                        return loadScript(LEAFLET_JS);
+                    })
+                    .then(function () {
+                        buildMap();
+                    })
+                    .catch(function (err) {
+                        els.map.textContent = "";
+                        say("The map could not load. Use the address or lat & lon tabs instead.", true);
+                        throw err;
+                    });
+                return mapPromise;
+            }
+
+            function buildMap() {
+                MAP = L.map(els.map, {
+                    center: MAP_CENTER,
+                    zoom: MAP_ZOOM,
+                    zoomControl: true,
+                    maxZoom: 18,
+                    /* Wheel and pinch zoom are on. The trade is real: over the map the
+                       wheel zooms instead of scrolling the page past it. Touch pinch is
+                       Leaflet's default and unaffected either way. */
+                    scrollWheelZoom: true,
+                    keyboard: false,
+                });
+
+                /* z19 is this service's deepest real level. The map stops at 18, so
+                   every zoom it offers has genuine tiles behind it and nothing is ever
+                   upscaled; the cap is stated anyway so a later maxZoom rise cannot
+                   silently start requesting the z20 placeholder. */
+                L.tileLayer(BASEMAP_URL, { attribution: BASEMAP_ATTRIB, maxNativeZoom: 19 }).addTo(MAP);
+
+                /* GeoJSON is [lon, lat]; Leaflet's polygons are [lat, lon]. */
+                var rings = LAFAYETTE.map(function (poly) {
+                    return poly.map(function (ring) {
+                        return ring.map(function (c) {
+                            return [c[1], c[0]];
+                        });
+                    });
+                });
+                L.polygon(rings, {
+                    fill: false,
+                    interactive: false,
+                    color: "#594496",
+                    weight: 2,
+                }).addTo(MAP);
+
+                var marker = null;
+                MAP.on("click", function (e) {
+                    mapPoint = { lat: +e.latlng.lat.toFixed(6), lon: +e.latlng.lng.toFixed(6) };
+                    if (marker) marker.setLatLng(e.latlng);
+                    else marker = L.marker(e.latlng).addTo(MAP);
+                    els.mappick.textContent = "lat " + mapPoint.lat + ", lon " + mapPoint.lon;
+                    say("");
+                });
+
+                /* The map is now a flex item that takes whatever height is left in the
+                   card, so its box changes on tab open, on window resize, and at the
+                   breakpoint where the columns stack. Leaflet only measures its
+                   container when told to, and a stale measurement leaves the canvas the
+                   wrong size with the tiles clipped — so watch the box rather than
+                   guessing when it settles. */
+                if (window.ResizeObserver) {
+                    new ResizeObserver(function () {
+                        MAP.invalidateSize();
+                    }).observe(els.map);
+                }
+
+                /* ── attribution, collapsed ──
+                   Esri's credit names eleven agencies and wraps to three lines at this
+                   width, which is more furniture than a 272px map can carry. It stays in
+                   the DOM, in full, one tap away behind an ⓘ — shrinking or dropping it
+                   is not an option, since Esri's terms require the credit to be shown.
+
+                   Built here, at the end, on purpose: L.Control.Attribution redraws by
+                   assigning innerHTML, so anything added before the last attributed
+                   layer would be thrown away by that rewrite. */
+                var attrib = MAP.attributionControl.getContainer();
+                attrib.classList.add("lul-sb__attrib");
+
+                var credit = document.createElement("span");
+                credit.className = "lul-sb__attribtext";
+                while (attrib.firstChild) credit.appendChild(attrib.firstChild);
+                attrib.appendChild(credit);
+
+                var toggle = document.createElement("button");
+                toggle.type = "button";
+                toggle.className = "lul-sb__attribtoggle";
+                toggle.setAttribute("aria-label", "Map credits");
+                toggle.setAttribute("aria-expanded", "false");
+                toggle.textContent = "i";
+                toggle.addEventListener("click", function () {
+                    var open = attrib.classList.toggle("is-open");
+                    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+                });
+                attrib.appendChild(toggle);
+
+                /* Without this a tap on the ⓘ would fall through to the map and drop a
+                   point underneath the control. */
+                L.DomEvent.disableClickPropagation(attrib);
+
+                setTimeout(function () {
+                    MAP.invalidateSize();
+                }, 0);
+            }
+
+            function busy(on) {
+                els.call.disabled = on;
+                els.call.classList.toggle("is-busy", on);
+            }
+
+            /* ── the call ──────────────────────────────────────────────────────────
+               The gateway resolves addresses itself, so there is no geocoding step here
+               any more: `addr` goes straight up and the response reports back the
+               coordinate it settled on, under query.geocode. */
+            function queryParams() {
+                if (mode === "point") {
+                    /* The address wins when both are filled. They cannot normally
+                       disagree — typing an address clears the coordinates below — but
+                       if they somehow do, the field someone typed last is the one they
+                       meant, and that is the address by the rule above. */
+                    var address = String(els.addr.value).trim();
+                    if (address) return { params: "?addr=" + encodeURIComponent(address) };
+
+                    var c = readCoords();
+                    if (c) return { params: "?lat=" + c.lat + "&lon=" + c.lon };
+
+                    return { error: "Enter an address, or a latitude and longitude." };
+                }
+                if (!mapPoint) return { error: "Click a point on the map." };
+                return { params: "?lat=" + mapPoint.lat + "&lon=" + mapPoint.lon };
+            }
+
+            function run() {
+                var q = queryParams();
+                if (q.error) {
+                    say(q.error, true);
+                    return;
+                }
+
+                busy(true);
+                clearTerm();
+
+                /* The printed line deliberately omits subscription-key. The key is in
+                   this file either way, but echoing it into the terminal puts it in
+                   every screenshot of the demo as well. */
+                addLine({
+                    cls: "lul-sb__line--wrap",
+                    h:
+                        '<span class="lul-sb__method">GET </span><span class="lul-sb__url">' +
+                        esc(current.path + q.params) +
+                        "</span>",
+                });
+
+                /* Setting window.LUL_SANDBOX_API_BASE before this block loads sends the
+                   call somewhere else and drops the key, on the assumption that whatever
+                   is there holds one of its own. That is the seam for moving the key off
+                   the page for good; unset, the call goes straight to the gateway. */
+                var override = window.LUL_SANDBOX_API_BASE;
+                var target = override
+                    ? override + q.params
+                    : current.url + q.params + "&subscription-key=" + encodeURIComponent(apiKey());
+
+                fetch(target, { headers: { Accept: "application/json" } })
+                    .then(function (r) {
+                        return r.json().then(function (body) {
+                            /* The gateway also sends x-landuselabs-credits-cost, but a
+                               cross-origin response only exposes content-type and
+                               content-length to script here, so there is no credit
+                               readout — reading it would need a same-origin proxy. */
+                            return { status: r.status, body: body };
+                        });
+                    })
+                    .then(function (res) {
+                        var body = res.body;
+                        var fields = body && body.zoning ? Object.keys(body.zoning).length : 0;
+                        var cov = body && body.coverage && body.coverage.status;
+
+                        els.termlabel.textContent =
+                            "zoning-api \u00b7 " +
+                            res.status +
+                            (fields ? " \u00b7 " + fields + " fields" : "") +
+                            (cov ? " \u00b7 " + cov : "");
+
+                        if (body && body.error) {
+                            say(
+                                body.code === "outside_demo"
+                                    ? "outside_demo \u2014 the Atlas has data here, but the demo key only covers " +
+                                          JURISDICTION +
+                                          "."
+                                    : body.message || "Request failed.",
+                                body.code !== "outside_demo",
+                                body.code || String(res.status),
+                            );
+                        } else if (res.status >= 400) {
+                            say("Request failed.", true, String(res.status));
+                        } else {
+                            /* Nothing to say on success: the response is right there in
+                               the terminal, and a status line here only pushes the button
+                               away from the fields. query.geocode.resolved_address is
+                               where the gateway put the address, for anyone checking. */
+                            say("");
+                        }
+
+                        printLines(jsonLines(body, 0, null, true), function () {
+                            busy(false);
+                        });
+                    })
+                    .catch(function (err) {
+                        var msg = err && err.message ? err.message : "Request failed";
+                        els.termlabel.textContent = "zoning-api \u00b7 error";
+                        addLine({ cls: "lul-sb__line--wrap", h: '<span class="lul-sb__err">' + esc(msg) + "</span>" });
+                        say(msg, true, "request_failed");
+                        busy(false);
+                    });
+            }
+
+            /* Typing an address clears any stale coordinates, so the two halves of the
+               panel can never describe different places. */
+            els.addr.addEventListener("input", function () {
+                if (els.addr.value.trim()) {
+                    els.lat.value = "";
+                    els.lon.value = "";
+                    markBad(els.lat, false);
+                    markBad(els.lon, false);
+                }
+            });
+
+            els.call.addEventListener("click", run);
+            [els.lat, els.lon, els.addr].forEach(function (el) {
+                el.addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        run();
+                    }
+                });
+            });
+
+            selectTab("map");
+            selectEndpoint(ENDPOINTS[0]);
+        })();
+    </script>
+</section>
