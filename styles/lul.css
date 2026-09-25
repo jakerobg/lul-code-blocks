@@ -218,6 +218,38 @@ html.squarespace-damask .sqs-blockStatus {
 .lul-bg-fill   { background-color: var(--lul-grey-medium); }
 .lul-hairline  { border: 1px solid var(--lul-ink-15); }
 
+/* Centred title block. Goes on a DIV WRAPPING the text, never on the heading
+   itself — see the note on `ch` below.
+
+   `width: 100%` is the part that does the real work. Squarespace often puts a
+   code block inside a flex or grid parent, where a block-level child shrinks
+   to fit its content instead of filling the track; the text then wraps early
+   and looks squeezed even though there is room either side. Claiming the full
+   width first, then capping with max-width, gets the measure you asked for
+   rather than the one the parent guessed.
+
+   THE CAP IS IN ch, WHICH IS RELATIVE TO THIS ELEMENT'S OWN FONT-SIZE. On a
+   wrapper inheriting the 16px body size that measures ~1006px in Inter, which
+   is the intent. Put this class on an <h1> instead and 100ch resolves against
+   42px — roughly 2600px — and the cap effectively disappears. Keep it on the
+   wrapper.
+
+   `text-wrap: balance` evens the lines out rather than filling each one before
+   wrapping, so a centred heading does not end on a single stranded word. It is
+   applied to the children, not here: balancing only works on the element that
+   actually holds the text. Browsers cap it at a few lines and ignore it beyond
+   that, and anywhere it is unsupported the text simply wraps normally. */
+.lul-title-block {
+  width: 100%;
+  max-width: 100ch;
+  margin: 0 auto;
+  box-sizing: border-box;
+  text-align: center;
+}
+.lul-title-block > * {
+  text-wrap: balance;
+}
+
 /* The sage fill carries its own text colour, since ink on sage is too low a
    contrast to read. Use it on pills, tags and callout bands. */
 .lul-bg-accent {
