@@ -1,0 +1,35 @@
+<!--
+  DATA DIFFERENCE BUTTON — the "What sets our data apart" link, in white, for
+  placement on a DARK section (Squarespace Code Block).
+
+  Styling comes from styles/lul.css (section 4a, .lul-dd-button). This file is
+  markup only.
+
+  It is deliberately NOT one of the CTA tiers. Primary, secondary, tertiary and
+  quaternary all follow the type doc's "no arrows, no underline" rule; this link
+  breaks both on purpose, because on an ink ground the tertiary purple has no
+  contrast — the underline is what marks it as a link, and the arrow sliding
+  right is the hover feedback in place of a colour change. Naming it for what
+  it is keeps that exception from leaking into the tiers.
+
+  ▶ TO EDIT: change the href and the label text below.
+  ▶ TO ALIGN: left-aligned by default. For centred, add style="text-align:center"
+    to the wrapping <div>.
+  ▶ THE UNDERLINE lives on the __label span, not the link, so it never runs
+    under the arrow.
+  ▶ SIZE: --lul-dd-size, which defaults to the tertiary step (15px). Set it on
+    the wrapper to override, e.g. style="--lul-dd-size: 18px".
+-->
+
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../styles/lul.css">
+
+<div class="lul" style="margin: 25px 0 40px 0;">
+    <a class="lul-dd-button" href="/data-difference">
+        <span class="lul-dd-button__label">What Sets our Data Apart</span>
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 10h12m0 0l-5-5m5 5l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+    </a>
+</div>

@@ -152,12 +152,7 @@
                       (optional per-card flags: plus:false, accent:true → transparent tile)
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
-            var SELECTED = [
-                "parcels",
-                "housing_units",
-                "population",
-                "pages",
-            ];
+            var SELECTED = ["parcels", "acres", "population", "pages"];
 
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
@@ -352,7 +347,13 @@
                 if (reduce || !("IntersectionObserver" in window)) {
                     records.forEach(function (rec) {
                         if (rec.target !== null)
-                            rec.el.innerHTML = withPlus(rec.target, rec.def.plus, rec.def.dp, rec.def.unit, rec.def.floor);
+                            rec.el.innerHTML = withPlus(
+                                rec.target,
+                                rec.def.plus,
+                                rec.def.dp,
+                                rec.def.unit,
+                                rec.def.floor,
+                            );
                     });
                     return;
                 }

@@ -527,6 +527,71 @@ html.squarespace-damask .sqs-blockStatus {
   color: var(--lul-primary-hover);
 }
 
+/* The "What sets our data apart" link — .lul-dd-button, in section 4a below.
+   It is NOT a tertiary variant: it keeps an arrow and an underline, which the
+   CTA tiers deliberately do not have. */
+
+/* --------------------------------------------------------------------------
+   4a. Data Difference link (.lul-dd-button)
+
+   One specific link — "What sets our data apart", pointing at /data-difference
+   — sitting on a DARK section. It is deliberately outside the CTA tiers rather
+   than a variant of tertiary, because it breaks two of their rules on purpose:
+
+     · it carries a trailing arrow, which the type doc forbids on CTA labels
+     · it is underlined, which no CTA tier is
+
+   Both earn their place here. On an ink ground the tertiary purple has no
+   contrast, so the underline is what marks the text as a link, and the arrow
+   sliding right is the hover feedback in place of a colour change.
+
+   White is pinned in every state with !important: Squarespace's own link
+   colours are set with selectors that would otherwise repaint this on a dark
+   section, including :visited.
+   -------------------------------------------------------------------------- */
+.lul-dd-button {
+  --lul-dd-size: var(--lul-size-cta-tertiary);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-dd-size);
+  line-height: var(--lul-leading-cta-tertiary);
+  transition: gap 0.25s ease;
+}
+.lul-dd-button,
+.lul-dd-button:link,
+.lul-dd-button:visited,
+.lul-dd-button:hover,
+.lul-dd-button:active,
+.lul-dd-button:focus {
+  color: var(--lul-white) !important;
+  text-decoration: none;
+}
+/* the arrow slides right on hover — this link's feedback, since the colour
+   cannot change */
+.lul-dd-button:hover {
+  gap: 12px;
+}
+/* the underline sits on the label so it never runs under the arrow */
+.lul-dd-button__label {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.lul-dd-button svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lul-dd-button {
+    transition: none;
+  }
+}
+
 /* Presets, filters, in-flow controls — "Clear all", "Residential basics". */
 /* Quaternary — the segmented toggle: a white button with a keyline that fills
    with ink when selected. Used for the product tabs on the industry pages.
@@ -1159,7 +1224,23 @@ html.squarespace-damask .sqs-blockStatus {
   --lul-chevron-w:         0.46em; /* dropdown triangle width */
   --lul-chevron-gap:       0.32em; /* space between label and triangle */
   --lul-chevron-h:         0.28em; /* triangle height (~0.6 x width) */
-  --lul-logo-height:       56px;   /* Squarespace renders it at 70px */
+  --lul-logo-height:       48px;   /* Squarespace renders it at 70px */
+  /* Breathing room around the logo. It ADDS TO THE BAR HEIGHT, because the
+     logo is what sets the desktop bar: 48 + 4 + 4 + 0.8vw*2 = 76px at 1280.
+     6px here would make the bar 80px — taller than it was with the old 56px
+     logo, which defeats having shrunk it. */
+  --lul-logo-pad:          4px;
+
+  /* ---- burger ("skinny") mode ----
+     Squarespace pads the bar 6vw top and bottom below its burger breakpoint,
+     which is ~25px at 420px wide and makes the header 87px tall. These are the
+     two knobs for that mode; change them, not the rules in section 7. */
+  --lul-header-mobile-pad-y: 14px;  /* replaces Squarespace's 6vw */
+  /* 34px, not Squarespace's own 30px cap. It can go to 37px before the logo
+     overtakes the 37px burger button and starts driving the bar's height. */
+  --lul-logo-height-mobile:  34px;
+  --lul-logo-pad-mobile:     4px; /* kept tighter than desktop — the mobile bar has less to give */
+  --lul-menu-size-mobile:    1.5em; /* overlay labels; desktop keeps --lul-menu-size */
 }
 
 /* --------------------------------------------------------------------------
@@ -1368,11 +1449,91 @@ html.squarespace-damask .sqs-blockStatus {
   height: auto;
   width: auto;
 }
+/* Room around the mark. Padding on the BOX, not the image, so the logo keeps
+   its own height and the space is added around it — which does make the bar
+   taller, since the logo is what sets the desktop bar's height. */
+#header .header-title-logo,
+#header .header-menu-logo {
+  padding: var(--lul-logo-pad);
+}
 
 
 
 
 
+
+
+/* --------------------------------------------------------------------------
+   7. Burger ("skinny") header and overlay menu
+
+   Squarespace's mobile layout is header-mobile-layout-logo-left-nav-right:
+   the logo sits left in a wrapper sized `flex: 1 0 calc(100% - 50px)`, and the
+   burger takes the remaining 50px. The logo's LEFT position is Squarespace's
+   own and is deliberately left alone here, so burger mode matches desktop.
+
+   What this section changes: the bar's height, the burger's vertical
+   alignment (Squarespace pins it to the bottom of the row, which reads badly),
+   the mobile logo cap, and the overlay menu's size and alignment.
+   -------------------------------------------------------------------------- */
+
+/* Scoped to .header-display-mobile, which Squarespace only renders in burger
+   mode — so these need no media query of their own and cannot leak to desktop. */
+#header .header-display-mobile .header-title-logo {
+  padding: var(--lul-logo-pad-mobile);
+}
+#header .header-display-mobile .header-title-logo img {
+  /* RESTORES A CAP WE WERE OVERRIDING. header.css sets
+     `.header-title-logo img { max-height: 30px }` for the mobile logo, but
+     section 6's `#header .header-title-logo img` is (1,1,1) and beat it, so the
+     mobile logo rendered at the DESKTOP height — a 56px image inside a 30px
+     row, poking out of the bar top and bottom. This is (1,2,1), so it wins
+     back. Raising this token makes the header taller; it and
+     --lul-header-mobile-pad-y are what set the bar's height between them. */
+  max-height: var(--lul-logo-height-mobile);
+}
+/* Vertically centred instead of bottom-pinned. Squarespace sets
+   `align-items: flex-end` on this, which drops the button to the bottom of the
+   row — fine on a tall bar, off-centre on a short one. Left in the normal
+   flow, so it still reserves its 50px and the logo keeps its left position. */
+#header .header-display-mobile .header-burger {
+  align-items: center;
+}
+
+/* The bar's own height. This one DOES need the media query, because the
+   padding lives on a wrapper shared with the desktop header. The query is
+   Squarespace's own burger breakpoint, copied verbatim from header.css. */
+@media only screen and (pointer: coarse) and (max-width: 1024px), screen and (max-width: 799px) {
+  #header .header-announcement-bar-wrapper {
+    padding-top: var(--lul-header-mobile-pad-y);
+    padding-bottom: var(--lul-header-mobile-pad-y);
+  }
+}
+
+/* ---- overlay menu: larger labels, left aligned ----
+   header.css centres the whole overlay, and section 1 sizes its links from
+   --lul-menu-size, the same token the DESKTOP dropdown uses. Overriding that
+   token would move both, so the overlay gets its own. These selectors match
+   section 1's specificity (1,2,0) and win on source order, being later. */
+#header .header-menu-nav-item > a,
+#header .header-menu-nav-item > button,
+#header .header-menu-nav-folder .header-menu-nav-item > a {
+  font-size: var(--lul-menu-size-mobile);
+}
+
+#header .header-menu,
+#header .header-menu-nav,
+#header .header-menu-nav-list,
+#header .header-menu-nav-folder,
+#header .header-menu-nav-wrapper,
+#header .header-menu-nav-item {
+  text-align: left;
+}
+/* the link is inline-flex, so it needs its own alignment as well as the
+   text-align on the block above it */
+#header .header-menu-nav-item > a,
+#header .header-menu-nav-item > button {
+  justify-content: flex-start;
+}
 
 
 /* CUSTOM CSS FOR DATA DIFFERENCE */

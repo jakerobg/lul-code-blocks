@@ -3,7 +3,13 @@
 import re, os, sys
 
 HD = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-src = open(os.path.join(HD, 'lul_header.html'), encoding='utf-8', errors='replace').read()
+
+# page-source.html is the current capture, saved straight from the live site;
+# lul_header.html is the older one kept for reference. Prefer the newer file so
+# the preview is built against the markup Squarespace is actually serving.
+SRC = 'page-source.html' if os.path.exists(os.path.join(HD, 'page-source.html')) else 'lul_header.html'
+src = open(os.path.join(HD, SRC), encoding='utf-8', errors='replace').read()
+print('building preview from', SRC)
 
 body_cls = ' '.join(re.search(r'<body[\s\S]*?class="([\s\S]*?)"', src).group(1).split())
 s = src.index('<header'); e = src.index('</header>') + 9

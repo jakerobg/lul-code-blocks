@@ -13,6 +13,349 @@
 
 <!-- inline styles that shipped with the header markup -->
 <style>
+/* latin-ext */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/23e3082b-d762-4bb4-a03a-a15e96509aff/latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/6a06f0f4-199b-4d0c-a434-f2f4b5bffd5f/latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/b700e5bd-dca2-4473-be2d-da21f9356557/vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/d3fb858e-54ba-46aa-9946-92290d0e29fc/cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/e8210424-06bc-480f-ab24-68c9e3985db8/vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/5151666f-01d3-446e-bfa4-c8a9a2622d7d/latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/429e26ea-df2f-47d9-8685-041207252d8c/latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/dc8ef5c0-aa5c-4716-9609-e307cf09992f/greek-ext.woff2') format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/33eec106-c967-4685-845c-712d9f476e39/cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/e639d1a4-c4a9-41cf-a818-cb008dd69288/greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/46ea1c70-77cb-4732-997f-3a1f9947dfa7/greek-ext.woff2') format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/ac496057-4c9f-4e6b-ae6d-795906fe1a84/latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/c9c27ed9-4328-4bd2-b631-aad26e3550c4/cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/b050ea96-eab8-43c5-8d4e-cd30fec00ffd/latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/b557cbe0-bcc3-46d0-98c2-09f4b38fae29/greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/0887871a-2620-4b03-a49c-2ca9c42aeafb/vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/81eea474-93a2-4824-8dfb-80888dd9d833/cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/43b885bd-1ffc-4174-bb56-c4516b5a0bda/vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/abae1e68-19ae-4681-89e9-6592b3950970/cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/77de0f30-8d86-4584-a0e8-51038b4baeb7/greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/a1b8ee65-fb79-4baa-a2f3-43e6d05fcead/greek-ext.woff2') format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/f54c4727-130a-49bb-829f-0eefffeab0fa/latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/4ec15bb5-94d5-48b8-8413-1a58fbe384a9/cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/b545ee98-cc9b-41d7-b56a-96eccd4569e9/latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/0c454122-d521-40bf-9415-da45ee1e5427/cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/30392945-f875-4629-b4ce-1cd240953d64/cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/ab9667b0-db7e-4c1b-8cbd-080a26b565d0/greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/546a0214-a253-4d33-8c9a-9e14db19c86c/greek-ext.woff2') format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/432aa354-8673-4500-a6f1-72e1baeab111/vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/935205cf-c37d-4a5e-b0c0-fa45f321e213/latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/702f4d93-ae31-4e81-817d-b6b451662788/latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/4113b352-221c-42b4-ab47-e24f5cb0bc41/vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/b649195f-d7be-4a83-88d7-87c74c1f1590/latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/66c18e4b-9e34-4808-b5a0-eebe9c0564b3/cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/c0b7ce99-3bb0-49ab-bef5-53895f60c291/latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/af0b57b3-b798-4c02-82c8-b63af1181a46/cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/91ca4c6c-314a-443f-a934-1537bf1e83d4/greek-ext.woff2') format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://file.squarespace-cdn.com/content/v2/namespaces/fonts/libraries/sqsp/assets/c75aaa21-9fdf-4207-8451-1d0a1c883b88/greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+[data-test="block-editor-container"] { width: 1200px !important; }
 @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
         .header-blur-background {
             
@@ -29,16 +372,2818 @@
   .bottom-bun {
     height: 1px;
   }
+.fe-6a71f5420bbecb7190894ec1 {
+  --grid-gutter: calc(var(--sqs-mobile-site-gutter, 6vw) - 0.0px);
+  --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (8 - 1)) ) / 8 );
+
+  display: grid;
+  position: relative;
+  grid-area: 1/1/-1/-1;
+  grid-template-rows: repeat(28,minmax(24px, auto));
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr)
+    repeat(8, minmax(0, var(--cell-max-width)))
+    minmax(var(--grid-gutter), 1fr);
+  row-gap: 0.0px;
+  column-gap: 0.0px;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .background-width--inset .fe-6a71f5420bbecb7190894ec1 {
+    --inset-padding: calc(var(--sqs-site-gutter) * 2);
+  }
+
+  .fe-6a71f5420bbecb7190894ec1 {
+    --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 0.0px);
+    --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (24 - 1)) ) / 24 );
+    --inset-padding: 0vw;
+
+    --row-height-scaling-factor: 0.0215;
+    --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
+
+    grid-template-rows: repeat(28,minmax(calc(var(--container-width) * var(--row-height-scaling-factor)), auto));
+    grid-template-columns:
+      minmax(var(--grid-gutter), 1fr)
+      repeat(24, minmax(0, var(--cell-max-width)))
+      minmax(var(--grid-gutter), 1fr);
+  }
+}
+
+
+  .fe-block-yui_3_17_2_1_1787234951350_4940 {
+    grid-area: 3/2/11/10;
+    z-index: 8;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_4940 .sqs-block {
+    justify-content: flex-end;
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_4940 .sqs-block-alignment-wrapper {
+    align-items: flex-end;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1787234951350_4940 {
+      grid-area: 3/2/8/26;
+      z-index: 6;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_4940 .sqs-block {
+      justify-content: flex-end;
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_4940 .sqs-block-alignment-wrapper {
+      align-items: flex-end;
+    }
+  }
+
+  .fe-block-299fb41098d0940fd973 {
+    grid-area: 11/2/16/10;
+    z-index: 3;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-299fb41098d0940fd973 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-299fb41098d0940fd973 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-299fb41098d0940fd973 {
+      grid-area: 8/2/11/26;
+      z-index: 5;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-299fb41098d0940fd973 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-299fb41098d0940fd973 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-e510b81ccf4bebcd7304 {
+    grid-area: 16/2/28/10;
+    z-index: 7;
+
+    @media (max-width: 767px) {
+      
+      
+    }
+  }
+
+  .fe-block-e510b81ccf4bebcd7304 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-e510b81ccf4bebcd7304 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-e510b81ccf4bebcd7304 {
+      grid-area: 11/2/27/26;
+      z-index: 2;
+
+      
+
+      
+    }
+
+    .fe-block-e510b81ccf4bebcd7304 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-e510b81ccf4bebcd7304 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+.fe-block-yui_3_17_2_1_1787234951350_4940 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-block-299fb41098d0940fd973 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+#block-e510b81ccf4bebcd7304 {
+        --image-component-focal-point: 50% 50%;
+        
+  --image-component-object-fit: contain;
+  --image-component-overlay-opacity: 0;
+  --image-component-overlay-blend-mode: normal;
+  
+  --image-component-native-aspect-ratio: 2491/996;
+  
+  
+  
+
+      }
+      #block-e510b81ccf4bebcd7304 .fluid-image-container.visitor-mode {
+        
+  
+  overflow: hidden;-webkit-mask-image: -webkit-radial-gradient(white, black);clip-path: none;-webkit-clip-path: none;
+
+      }
+      #block-e510b81ccf4bebcd7304 .js-content-mode-element-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      #block-e510b81ccf4bebcd7304 .js-content-mode-element-system_desktop {
+        display: block;
+      }
+.fe-block-e510b81ccf4bebcd7304 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-6a763a10c72c113a9f040c5f {
+  --grid-gutter: calc(var(--sqs-mobile-site-gutter, 6vw) - 0.0px);
+  --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (8 - 1)) ) / 8 );
+
+  display: grid;
+  position: relative;
+  grid-area: 1/1/-1/-1;
+  grid-template-rows: repeat(53,minmax(24px, auto));
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr)
+    repeat(8, minmax(0, var(--cell-max-width)))
+    minmax(var(--grid-gutter), 1fr);
+  row-gap: 0.0px;
+  column-gap: 0.0px;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .background-width--inset .fe-6a763a10c72c113a9f040c5f {
+    --inset-padding: calc(var(--sqs-site-gutter) * 2);
+  }
+
+  .fe-6a763a10c72c113a9f040c5f {
+    --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 0.0px);
+    --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (24 - 1)) ) / 24 );
+    --inset-padding: 0vw;
+
+    --row-height-scaling-factor: 0.0215;
+    --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
+
+    grid-template-rows: repeat(27,minmax(calc(var(--container-width) * var(--row-height-scaling-factor)), auto));
+    grid-template-columns:
+      minmax(var(--grid-gutter), 1fr)
+      repeat(24, minmax(0, var(--cell-max-width)))
+      minmax(var(--grid-gutter), 1fr);
+  }
+}
+
+
+  .fe-block-yui_3_17_2_1_1787234951350_17816 {
+    grid-area: 3/2/10/10;
+    z-index: 3;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_17816 .sqs-block {
+    justify-content: flex-end;
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_17816 .sqs-block-alignment-wrapper {
+    align-items: flex-end;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1787234951350_17816 {
+      grid-area: 3/2/6/12;
+      z-index: 7;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_17816 .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_17816 .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-2cd4da67a6871137b1da {
+    grid-area: 10/2/14/10;
+    z-index: 3;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-2cd4da67a6871137b1da .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-2cd4da67a6871137b1da .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-2cd4da67a6871137b1da {
+      grid-area: 6/2/9/12;
+      z-index: 5;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-2cd4da67a6871137b1da .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-2cd4da67a6871137b1da .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-ad993e1d15a19f9c44fb {
+    grid-area: 14/2/26/10;
+    z-index: 4;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-ad993e1d15a19f9c44fb .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-ad993e1d15a19f9c44fb .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-ad993e1d15a19f9c44fb {
+      grid-area: 2/12/8/26;
+      z-index: 4;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-ad993e1d15a19f9c44fb .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-ad993e1d15a19f9c44fb .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1786132978450_4869 {
+    grid-area: 27/2/54/10;
+    z-index: 2;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1786132978450_4869 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-yui_3_17_2_1_1786132978450_4869 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1786132978450_4869 {
+      grid-area: 9/2/26/26;
+      z-index: 2;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1786132978450_4869 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-yui_3_17_2_1_1786132978450_4869 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+.fe-block-yui_3_17_2_1_1787234951350_17816 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.lul-wlink {
+        --lul-wlink-size: 18px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    /* every state pinned to white, and !important so Squarespace's global
+       link colors can't override it on a dark section */
+    .lul-wlink a,
+    .lul-wlink a:link,
+    .lul-wlink a:visited,
+    .lul-wlink a:hover,
+    .lul-wlink a:active,
+    .lul-wlink a:focus {
+        color: #ffffff !important;
+        text-decoration: none;
+    }
+    .lul-wlink a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: var(--lul-wlink-size);
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        line-height: 1.4;
+        transition: gap 0.25s ease;
+    }
+    .lul-wlink a:hover {
+        gap: 12px;
+    }
+    /* underline lives on the label so it never runs under the arrow */
+    .lul-wlink__label {
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+    }
+    .lul-wlink svg {
+        width: 1em;
+        height: 1em;
+        flex: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lul-wlink a {
+            transition: none !important;
+        }
+    }
+.fe-block-2cd4da67a6871137b1da {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.lul-cov {
+            color: var(--lul-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 20px 0;
+            /* never let the block paint outside its Squarespace container */
+            overflow-x: clip;
+        }
+        .lul-cov *,
+        .lul-cov *::before,
+        .lul-cov *::after {
+            box-sizing: border-box;
+        }
+
+        .lul-cov__grid {
+            display: grid;
+            /* Cards are 180px wide and wrap to the next row instead of
+               stretching to fill. --lul-cols is set by the ResizeObserver in
+               the script below (4 / 2 / 1) from the BLOCK's measured width.
+               minmax(0, 180px) is the safety net: if the block is ever
+               narrower than the row needs, tracks shrink rather than
+               overflowing past the code block's edge. */
+            grid-template-columns: repeat(var(--lul-cols, 1), minmax(0, 170px));
+            justify-content: center; /* centers the row of cards in the block */
+            gap: 25px;
+            width: 100%;
+            max-width: 100%;
+            margin-inline: auto;
+        }
+
+        .lul-cov__card {
+            background: var(--lul-white);
+            border-radius: 0;
+            padding: 25px 20px 25px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 150px; /* taller card -> bigger number-to-text gap */
+            box-shadow: 2px 6px 10px var(--lul-ink-28);
+            text-align: left;
+            align-items: flex-start;
+            border: solid 1px var(--lul-ink-30);
+        }
+
+        /* Face, size, leading, tracking and tabular figures all come from
+           .lul-stat. Only the colour and the push-to-bottom are local. */
+        .lul-cov__num {
+            /* Holds the number's line open before the fetch lands. The card is
+               built empty so nothing flashes, and without this the empty <p>
+               would collapse to 0 and the block would grow when the numbers
+               arrive. 1em == one line at --lul-leading-stat (1.0). */
+            min-height: 1em;
+            color: var(--lul-primary);
+            margin: 0;
+            margin-top: auto; /* number sits at the bottom, label on top */
+        }
+        .lul-cov__plus {
+            font-size: 0.6em; /* a little smaller than the number */
+            /* No font-weight: it used to be pinned to 400 to match the old
+               400-weight number. .lul-stat is 700, so pinning it would now
+               render the + lighter than the digits it follows. */
+            margin-left: 0.15em;
+            vertical-align: 0.5em;
+        }
+
+        /* transparent "ghost" tile — opt-in per hardcoded card via `accent: true`.
+           For placement on a DARK background: no fill, a cream keyline + cream
+           text so it reads as a different class of figure using one palette. */
+        .lul-cov__card--accent {
+            background: transparent;
+            /* inset ring instead of a real border, so it doesn't shift the
+               content down by the border width like a border-box border would */
+            box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
+        }
+        /* The cream (#eeecef) is deliberately NOT a palette token: it is a
+           light-on-dark value with no equivalent in the sheet. --lul-grey-medium
+           (#efedec) is within two units of it but is a light-mode SURFACE, so
+           borrowing it here would tie two unrelated things together. */
+        .lul-cov__card--accent .lul-cov__num {
+            color: #eeecef;
+        }
+        .lul-cov__card--accent .lul-cov__sub {
+            color: rgba(238, 236, 239, 0.78);
+        }
+        .lul-cov__card--accent .lul-cov__plus {
+            color: rgba(238, 236, 239, 0.6);
+        }
+
+        /* Uppercase label. Type comes from .lul-eyebrow, colour from
+           .lul-muted; only its position in the card is local. It sits at the
+           TOP; the number is pushed to the bottom by margin-top:auto above. */
+        .lul-cov__sub {
+            margin: 0;
+        }
+
+        /* Column count is decided in JS (see setCols) — no @media or @container
+           rules here, so nothing depends on the viewport or on how Squarespace
+           wraps the code block. */
+.fe-block-ad993e1d15a19f9c44fb {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-block-yui_3_17_2_1_1786132978450_4869 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-6a71f5420bbecb7190894ec9 {
+  --grid-gutter: calc(var(--sqs-mobile-site-gutter, 6vw) - 0.0px);
+  --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (8 - 1)) ) / 8 );
+
+  display: grid;
+  position: relative;
+  grid-area: 1/1/-1/-1;
+  grid-template-rows: repeat(86,minmax(24px, auto));
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr)
+    repeat(8, minmax(0, var(--cell-max-width)))
+    minmax(var(--grid-gutter), 1fr);
+  row-gap: 0.0px;
+  column-gap: 0.0px;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .background-width--inset .fe-6a71f5420bbecb7190894ec9 {
+    --inset-padding: calc(var(--sqs-site-gutter) * 2);
+  }
+
+  .fe-6a71f5420bbecb7190894ec9 {
+    --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 0.0px);
+    --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (24 - 1)) ) / 24 );
+    --inset-padding: 0vw;
+
+    --row-height-scaling-factor: 0.0215;
+    --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
+
+    grid-template-rows: repeat(36,minmax(calc(var(--container-width) * var(--row-height-scaling-factor)), auto));
+    grid-template-columns:
+      minmax(var(--grid-gutter), 1fr)
+      repeat(24, minmax(0, var(--cell-max-width)))
+      minmax(var(--grid-gutter), 1fr);
+  }
+}
+
+
+  .fe-block-yui_3_17_2_1_1787234951350_16624 {
+    grid-area: 3/2/8/10;
+    z-index: 7;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_16624 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_16624 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1787234951350_16624 {
+      grid-area: 3/2/5/26;
+      z-index: 7;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_16624 .sqs-block {
+      justify-content: flex-end;
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_16624 .sqs-block-alignment-wrapper {
+      align-items: flex-end;
+    }
+  }
+
+  .fe-block-e131a8498204b1d051da {
+    grid-area: 8/2/31/10;
+    z-index: 1;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-e131a8498204b1d051da .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-e131a8498204b1d051da .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-e131a8498204b1d051da {
+      grid-area: 5/2/19/26;
+      z-index: 1;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-e131a8498204b1d051da .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-e131a8498204b1d051da .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-54ac81adeb88fc3df13a {
+    grid-area: 31/2/32/10;
+    z-index: 4;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-54ac81adeb88fc3df13a .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-54ac81adeb88fc3df13a .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-54ac81adeb88fc3df13a {
+      grid-area: 19/3/20/25;
+      z-index: 4;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-54ac81adeb88fc3df13a .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-54ac81adeb88fc3df13a .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_9772 {
+    grid-area: 32/2/37/10;
+    z-index: 6;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_9772 .sqs-block {
+    justify-content: flex-end;
+  }
+
+  .fe-block-yui_3_17_2_1_1787234951350_9772 .sqs-block-alignment-wrapper {
+    align-items: flex-end;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1787234951350_9772 {
+      grid-area: 20/3/23/25;
+      z-index: 6;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_9772 .sqs-block {
+      justify-content: flex-end;
+    }
+
+    .fe-block-yui_3_17_2_1_1787234951350_9772 .sqs-block-alignment-wrapper {
+      align-items: flex-end;
+    }
+  }
+
+  .fe-block-e6c156e2a78c73f8358e {
+    grid-area: 37/2/86/10;
+    z-index: 2;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-e6c156e2a78c73f8358e .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-e6c156e2a78c73f8358e .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-e6c156e2a78c73f8358e {
+      grid-area: 23/3/36/25;
+      z-index: 2;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-e6c156e2a78c73f8358e .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-e6c156e2a78c73f8358e .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+.fe-block-yui_3_17_2_1_1787234951350_16624 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+/* ── LUL Explore Products — LAYOUT ONLY ─────────────────────────── */
+    .lul-products {
+        /* Layout knobs only. Colour and type tokens come from styles/lul.css.
+
+           --lul-img-zoom: how much the graphics blow up past the frame.
+           1 = just fills, >1 crops more (bigger), <1 shows more.
+           Tables ignores this.
+           --lul-card-pad: inner padding around the image + text in each card. */
+        --lul-img-zoom: 1;
+        --lul-card-pad: 40px;
+
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        max-width: none;
+        width: 100%;
+        margin: 0;
+        padding: 20px 0;
+        box-sizing: border-box;
+        position: relative;
+    }
+    .lul-products *,
+    .lul-products *::before,
+    .lul-products *::after {
+        box-sizing: border-box;
+    }
+    .lul-carousel {
+        position: relative;
+    }
+    .lul-track {
+        display: flex;
+        gap: 24px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scroll-padding-left: 60px;
+        scroll-padding-right: 60px;
+        scroll-behavior: smooth;
+        /* bottom/side padding leaves room for the card shadow, which the
+           track's overflow would otherwise clip */
+        padding: 12px 60px 5px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .lul-track::-webkit-scrollbar {
+        display: none;
+    }
+    .lul-card {
+        flex: 0 0 calc((100% - 24px * 3) / 4);
+        min-width: 300px;
+        scroll-snap-align: start;
+        background: var(--lul-white);
+        border: 1px solid var(--lul-ink-15);
+        border-radius: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition:
+            transform 0.25s ease,
+            border-color 0.25s ease,
+            box-shadow 0.25s ease;
+        box-shadow: none;
+    }
+    .lul-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--lul-ink-40);
+        box-shadow: 0 6px 28px var(--lul-ink-10);
+    }
+    /* The card is an <a>, so the title and copy inside it would otherwise
+       take the theme's link colour and underline. */
+    .lul-card,
+    .lul-card:visited,
+    .lul-card:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    /* image is inset from the card edges; body padding below matches the
+       horizontal value so the graphic and the text share one left edge */
+    .lul-card__media {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+        position: relative;
+        background: var(--lul-white);
+        padding: var(--lul-card-pad) var(--lul-card-pad) 0;
+    }
+    .lul-card__media img {
+        width: 100%;
+        height: 100%;
+        /* contain = show the whole graphic, never crop it */
+        object-fit: contain;
+        /* only zooms past the frame if --lul-img-zoom is set above 1 */
+        transform: scale(var(--lul-img-zoom));
+        transform-origin: center bottom;
+        /* sits the graphic on the bottom edge of the frame */
+        object-position: center bottom;
+        display: block;
+    }
+    /* Tables keeps the whole graphic visible (no crop) */
+    .lul-card__media--fit {
+        padding: var(--lul-card-pad) var(--lul-card-pad) 0;
+    }
+    .lul-card__media--fit img {
+        object-fit: contain;
+        transform: none;
+    }
+    .lul-card__body {
+        padding: 28px var(--lul-card-pad) 30px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    /* Spacing only — the type classes in the markup carry face, size, leading. */
+    .lul-card__title {
+        margin: 0 0 14px;
+    }
+    .lul-card__desc {
+        margin: 0 0 20px;
+        flex: 1;
+    }
+    /* The link is .lul-cta--tertiary from styles/lul.css — purple, 15px, no
+       box. Only its placement in the card's flex column is local. */
+    .lul-card__btn {
+        align-self: flex-start;
+    }
+    /* Driven by the CARD's hover, not the link's — the whole card is the
+       link, so the colour has to shift wherever the pointer is on it. */
+    .lul-card:hover .lul-card__btn {
+        color: var(--lul-primary-hover);
+    }
+    .lul-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: var(--lul-white);
+        border: 1px solid var(--lul-ink-08);
+        box-shadow: 0 2px 6px var(--lul-ink-12);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--lul-ink);
+        z-index: 2;
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease,
+            opacity 0.2s ease;
+        padding: 0;
+    }
+    .lul-nav:hover {
+        background: var(--lul-accent);
+    }
+    .lul-nav:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+    .lul-nav svg {
+        width: 16px;
+        height: 16px;
+    }
+    .lul-nav--prev {
+        left: 4px;
+    }
+    .lul-nav--next {
+        right: 4px;
+    }
+    @media (max-width: 1100px) {
+        .lul-card {
+            flex: 0 0 calc((100% - 24px * 2) / 3);
+        }
+    }
+    @media (max-width: 820px) {
+        .lul-card {
+            flex: 0 0 calc((100% - 24px) / 2);
+        }
+    }
+    @media (max-width: 640px) {
+        .lul-products {
+            --lul-card-pad: 26px;
+            padding: 20px 0 28px;
+        }
+        .lul-track {
+            gap: 16px;
+            padding: 12px 20px 28px;
+            scroll-padding-left: 20px;
+            scroll-padding-right: 20px;
+        }
+        .lul-card {
+            flex: 0 0 85%;
+            min-width: 260px;
+            max-width: 420px;
+        }
+        .lul-card__body {
+            padding: 22px var(--lul-card-pad) 32px;
+        }
+        /* Card body stays at 14px on mobile too. The doc is explicit that card
+           text is a summary the reader scans, not a paragraph they settle
+           into; the old 16px override made the grid heavier than the page. */
+        .lul-card__desc {
+            margin-bottom: 20px;
+        }
+    }
+.fe-block-e131a8498204b1d051da {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-block-54ac81adeb88fc3df13a {
+      --opacity: 24%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-block-yui_3_17_2_1_1787234951350_9772 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+/* ── LUL Audience Cards — LAYOUT ONLY ───────────────────────────── */
+    .lul-aud {
+        padding: 20px 0;
+    }
+    .lul-aud-grid {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+    }
+    .lul-aud-card {
+        display: flex;
+        flex-direction: column;
+        background: var(--lul-white);
+        border: 1px solid var(--lul-ink-15);
+        border-radius: 0; /* corner radius is 0 sitewide */
+        padding: 30px 24px;
+        text-decoration: none;
+        transition:
+            border-color 0.25s ease,
+            box-shadow 0.25s ease,
+            transform 0.25s ease;
+    }
+    .lul-aud-card:hover {
+        border-color: var(--lul-ink-40);
+        box-shadow: 0 6px 28px var(--lul-ink-10);
+        transform: translateY(-2px);
+    }
+    .lul-aud-icon {
+        color: var(--lul-ink);
+        margin-bottom: 22px;
+        line-height: 0;
+    }
+    .lul-aud-icon svg {
+        width: 28px;
+        height: 28px;
+        display: block;
+    }
+
+    /* Spacing only — the type classes in the markup carry face, size, leading. */
+    .lul-aud-title {
+        margin: 0 0 14px;
+    }
+    .lul-aud-body {
+        margin: 0 0 26px;
+        flex-grow: 1;
+    }
+    /* The link is .lul-cta--tertiary from styles/lul.css. Only placement is
+       local. (It used to be display:block to stop a trailing arrow stranding
+       itself on a wrapped label; the arrow is gone, so inline-flex is fine.) */
+    .lul-aud-link {
+        align-self: flex-start;
+    }
+    .lul-aud-card:hover .lul-aud-link {
+        color: var(--lul-primary-hover);
+    }
+
+    /* Squarespace link-colour override safety. `color: inherit` is load
+       bearing: the card is an <a>, and the type classes deliberately set no
+       colour, so without this the title takes the browser's (or Squarespace's)
+       link colour instead of the block's ink. The link label opts back out
+       below. */
+    .lul-aud a,
+    .lul-aud a:visited,
+    .lul-aud a:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+    @media (max-width: 1024px) {
+        .lul-aud-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+    }
+    @media (max-width: 640px) {
+        .lul-aud {
+            padding: 44px 0;
+        }
+        .lul-aud-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+        }
+        .lul-aud-card {
+            padding: 28px 24px 26px;
+        }
+        .lul-aud-body {
+            margin-bottom: 20px;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lul-aud-card,
+        .lul-aud-link {
+            transition: none !important;
+        }
+        .lul-aud-card:hover {
+            transform: none !important;
+        }
+    }
+.fe-block-e6c156e2a78c73f8358e {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-6a71f5420bbecb7190894ecd {
+  --grid-gutter: calc(var(--sqs-mobile-site-gutter, 6vw) - 0.0px);
+  --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (8 - 1)) ) / 8 );
+
+  display: grid;
+  position: relative;
+  grid-area: 1/1/-1/-1;
+  grid-template-rows: repeat(28,minmax(24px, auto));
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr)
+    repeat(8, minmax(0, var(--cell-max-width)))
+    minmax(var(--grid-gutter), 1fr);
+  row-gap: 0.0px;
+  column-gap: 0.0px;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .background-width--inset .fe-6a71f5420bbecb7190894ecd {
+    --inset-padding: calc(var(--sqs-site-gutter) * 2);
+  }
+
+  .fe-6a71f5420bbecb7190894ecd {
+    --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 0.0px);
+    --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (24 - 1)) ) / 24 );
+    --inset-padding: 0vw;
+
+    --row-height-scaling-factor: 0.0215;
+    --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
+
+    grid-template-rows: repeat(16,minmax(calc(var(--container-width) * var(--row-height-scaling-factor)), auto));
+    grid-template-columns:
+      minmax(var(--grid-gutter), 1fr)
+      repeat(24, minmax(0, var(--cell-max-width)))
+      minmax(var(--grid-gutter), 1fr);
+  }
+}
+
+
+  .fe-block-yui_3_17_2_1_1787139958495_19924 {
+    grid-area: 2/2/28/10;
+    z-index: 1;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1787139958495_19924 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-yui_3_17_2_1_1787139958495_19924 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1787139958495_19924 {
+      grid-area: 2/3/15/25;
+      z-index: 1;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1787139958495_19924 .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-yui_3_17_2_1_1787139958495_19924 .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-37d2764caf2e35748b7f {
+    grid-area: 4/3/12/9;
+    z-index: 4;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-37d2764caf2e35748b7f .sqs-block {
+    justify-content: flex-end;
+  }
+
+  .fe-block-37d2764caf2e35748b7f .sqs-block-alignment-wrapper {
+    align-items: flex-end;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-37d2764caf2e35748b7f {
+      grid-area: 6/4/10/13;
+      z-index: 8;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-37d2764caf2e35748b7f .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-37d2764caf2e35748b7f .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-cc7e3c33e43319c3f42e {
+    grid-area: 15/2/28/10;
+    z-index: 3;
+
+    @media (max-width: 767px) {
+      
+      
+    }
+  }
+
+  .fe-block-cc7e3c33e43319c3f42e .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-cc7e3c33e43319c3f42e .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-cc7e3c33e43319c3f42e {
+      grid-area: 2/14/15/25;
+      z-index: 3;
+
+      
+
+      
+    }
+
+    .fe-block-cc7e3c33e43319c3f42e .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-cc7e3c33e43319c3f42e .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+#block-yui_3_17_2_1_1787139958495_19924 .sqs-shape-block-container-system_desktop {
+      display: flex;
+    }
+    #block-yui_3_17_2_1_1787139958495_19924 .sqs-block-alignment-wrapper {
+      
+      
+      justify-content: center;
+      
+      
+    }
+
+    
+      #block-yui_3_17_2_1_1787139958495_19924 .sqs-shape > * {
+        
+          stroke: none;
+        
+      }
+    
+
+    
+      
+    
+
+    
+      
+        #block-yui_3_17_2_1_1787139958495_19924 {
+          --shape-block-background-color: 
+  
+    
+      hsla(var(--black-hsl), 1)
+    
+  
+  
+;
+        }
+#block-yui_3_17_2_1_1787139958495_19924 .sqs-shape-block-container-system_desktop {
+    	display: flex;
+    }
+  @media screen and (max-width: 767px) {
+      
+
+
+      #block-yui_3_17_2_1_1787139958495_19924 .sqs-block-alignment-wrapper {
+        
+        
+          justify-content: center;
+        
+        
+      }
+
+      
+
+      #block-yui_3_17_2_1_1787139958495_19924 {
+        
+          
+        
+
+        
+          
+            --shape-block-background-color: 
+  
+    
+      hsla(var(--black-hsl), 1)
+    
+  
+  
+;
+          
+        
+
+        
+          
+          
+        
+      }
+    }
+.fe-block-yui_3_17_2_1_1787139958495_19924 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.lul-h2-white {
+          margin: 0 0 20px;
+          color: #FFFFFF;
+      }
+      .lul-p-white {
+          margin: 0;
+          color: #FFFFFF;
+          letter-spacing: -0.03rem;
+      }
+.fe-block-37d2764caf2e35748b7f {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+#block-cc7e3c33e43319c3f42e {
+        --image-component-focal-point: 50% 50%;
+        
+  --image-component-object-fit: cover;
+  --image-component-overlay-opacity: 0;
+  --image-component-overlay-blend-mode: normal;
+  
+  --image-component-native-aspect-ratio: 2096/1252;
+  
+  
+  
+
+      }
+      #block-cc7e3c33e43319c3f42e .fluid-image-container.visitor-mode {
+        
+  
+  overflow: hidden;-webkit-mask-image: -webkit-radial-gradient(white, black);clip-path: none;-webkit-clip-path: none;
+
+      }
+      #block-cc7e3c33e43319c3f42e .js-content-mode-element-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      #block-cc7e3c33e43319c3f42e .js-content-mode-element-system_desktop {
+        display: block;
+      }
+.fe-block-cc7e3c33e43319c3f42e {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-6a85978eb905411c9a8908fa {
+  --grid-gutter: calc(var(--sqs-mobile-site-gutter, 6vw) - 0.0px);
+  --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (8 - 1)) ) / 8 );
+
+  display: grid;
+  position: relative;
+  grid-area: 1/1/-1/-1;
+  grid-template-rows: repeat(19,minmax(24px, auto));
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr)
+    repeat(8, minmax(0, var(--cell-max-width)))
+    minmax(var(--grid-gutter), 1fr);
+  row-gap: 0.0px;
+  column-gap: 0.0px;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .background-width--inset .fe-6a85978eb905411c9a8908fa {
+    --inset-padding: calc(var(--sqs-site-gutter) * 2);
+  }
+
+  .fe-6a85978eb905411c9a8908fa {
+    --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 0.0px);
+    --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (0.0px * (24 - 1)) ) / 24 );
+    --inset-padding: 0vw;
+
+    --row-height-scaling-factor: 0.0215;
+    --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
+
+    grid-template-rows: repeat(10,minmax(calc(var(--container-width) * var(--row-height-scaling-factor)), auto));
+    grid-template-columns:
+      minmax(var(--grid-gutter), 1fr)
+      repeat(24, minmax(0, var(--cell-max-width)))
+      minmax(var(--grid-gutter), 1fr);
+  }
+}
+
+
+  .fe-block-e0d37537caab42078fdb {
+    grid-area: 2/2/4/10;
+    z-index: 4;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-e0d37537caab42078fdb .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-e0d37537caab42078fdb .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-e0d37537caab42078fdb {
+      grid-area: 3/3/4/11;
+      z-index: 4;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-e0d37537caab42078fdb .sqs-block {
+      justify-content: flex-end;
+    }
+
+    .fe-block-e0d37537caab42078fdb .sqs-block-alignment-wrapper {
+      align-items: flex-end;
+    }
+  }
+
+  .fe-block-6305405afda1196e72c6 {
+    grid-area: 4/2/20/10;
+    z-index: 3;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-6305405afda1196e72c6 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-6305405afda1196e72c6 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-6305405afda1196e72c6 {
+      grid-area: 4/3/9/25;
+      z-index: 3;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-6305405afda1196e72c6 .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-6305405afda1196e72c6 .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+#block-e0d37537caab42078fdb {
+    
+    --stroke-style: none;--stroke-thickness: 2px;
+    
+      --tweak-text-block-stroke-color: hsla(var(--black-hsl), 1)
+;
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-e0d37537caab42078fdb .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-e0d37537caab42078fdb {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-e0d37537caab42078fdb {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-e0d37537caab42078fdb {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-e0d37537caab42078fdb {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-e0d37537caab42078fdb {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-e0d37537caab42078fdb .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
+.fe-block-e0d37537caab42078fdb {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+/* ── LUL Resource Cards (secondary) — LAYOUT ONLY ───────────────── */
+    .lul-res {
+        padding: 30px 0;
+    }
+
+    .lul-res-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .lul-res-card {
+        display: flex;
+        flex-direction: column;
+        /* flat tint instead of a raised white surface */
+        background: var(--lul-ink-05);
+        border: 1px solid var(--lul-ink-15);
+        border-radius: 0;
+        padding: 18px 20px 16px;
+        text-decoration: none;
+        transition:
+            background 0.25s ease,
+            border-color 0.25s ease;
+    }
+    .lul-res-card:hover {
+        background: var(--lul-grey-medium);
+        border-color: var(--lul-ink-15);
+        /* no shadow, no lift — those belong to the product cards */
+    }
+
+    /* Spacing only. The type classes in the markup carry face, size and
+       leading; .lul-muted carries the quieter ink. */
+    .lul-res-title {
+        margin: 0 0 6px;
+    }
+    .lul-res-body {
+        margin: 0 0 18px;
+        flex-grow: 1;
+    }
+    /* The link is .lul-cta--tertiary from styles/lul.css. Two local lines:
+       placement, and a muted rest colour that keeps this strip the quietest of
+       the three tiers; hover falls through to the shared tertiary purple.
+
+       The colour override needs TWO classes. `.lul-cta.lul-cta--tertiary` is
+       (0,2,0), so a bare `.lul-res-link` (0,1,0) loses and the link comes out
+       purple at rest. `.lul-res .lul-res-link` ties at (0,2,0) and wins on
+       source order, since this <style> follows the shared sheet. */
+    .lul-res-link {
+        align-self: flex-start;
+    }
+    .lul-res .lul-res-link {
+        color: var(--lul-grey-dark);
+    }
+    /* Driven by the CARD's hover, not the link's — the whole card is the link,
+       and the label is a <span> the pointer never lands on directly, so
+       .lul-cta--tertiary:hover would never fire. (0,2,1) beats the rule
+       above. */
+    .lul-res-card:hover .lul-res-link {
+        color: var(--lul-primary);
+    }
+
+    /* Squarespace link-colour override safety. `color: inherit` is load
+       bearing: the card is an <a>, and the type classes deliberately set no
+       colour, so without this the title takes the browser's (or Squarespace's)
+       link colour instead of the block's ink. The link label opts back out
+       above. */
+    .lul-res a,
+    .lul-res a:visited,
+    .lul-res a:hover {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    @media (max-width: 1024px) {
+        .lul-res-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 640px) {
+        .lul-res-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+        }
+        .lul-res-card {
+            padding: 16px 18px 14px;
+        }
+        .lul-res-body {
+            margin-bottom: 14px;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lul-res-card,
+        .lul-res-link {
+            transition: none !important;
+        }
+    }
+.fe-block-6305405afda1196e72c6 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+.fe-6962f84c3bfe5730dc12688b {
+  --grid-gutter: calc(var(--sqs-mobile-site-gutter, 6vw) - 11.0px);
+  --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (11.0px * (8 - 1)) ) / 8 );
+
+  display: grid;
+  position: relative;
+  grid-area: 1/1/-1/-1;
+  grid-template-rows: repeat(34,minmax(24px, auto));
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr)
+    repeat(8, minmax(0, var(--cell-max-width)))
+    minmax(var(--grid-gutter), 1fr);
+  row-gap: 11.0px;
+  column-gap: 11.0px;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+@media (min-width: 768px) {
+  .background-width--inset .fe-6962f84c3bfe5730dc12688b {
+    --inset-padding: calc(var(--sqs-site-gutter) * 2);
+  }
+
+  .fe-6962f84c3bfe5730dc12688b {
+    --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 11.0px);
+    --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (11.0px * (24 - 1)) ) / 24 );
+    --inset-padding: 0vw;
+
+    --row-height-scaling-factor: 0.0215;
+    --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
+
+    grid-template-rows: repeat(17,minmax(calc(var(--container-width) * var(--row-height-scaling-factor)), auto));
+    grid-template-columns:
+      minmax(var(--grid-gutter), 1fr)
+      repeat(24, minmax(0, var(--cell-max-width)))
+      minmax(var(--grid-gutter), 1fr);
+  }
+}
+
+
+  .fe-block-7a6efb8841c6874f715c {
+    grid-area: 2/5/7/10;
+    z-index: 2;
+
+    @media (max-width: 767px) {
+      
+      
+    }
+  }
+
+  .fe-block-7a6efb8841c6874f715c .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-7a6efb8841c6874f715c .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-7a6efb8841c6874f715c {
+      grid-area: 2/6/7/11;
+      z-index: 2;
+
+      
+
+      
+    }
+
+    .fe-block-7a6efb8841c6874f715c .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-7a6efb8841c6874f715c .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773520651189_3462 {
+    grid-area: 2/2/7/5;
+    z-index: 6;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773520651189_3462 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-yui_3_17_2_1_1773520651189_3462 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1773520651189_3462 {
+      grid-area: 2/2/7/5;
+      z-index: 5;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1773520651189_3462 .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-yui_3_17_2_1_1773520651189_3462 .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-baecbeef05f1f176efa5 {
+    grid-area: 7/2/8/10;
+    z-index: 7;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-baecbeef05f1f176efa5 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-baecbeef05f1f176efa5 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-baecbeef05f1f176efa5 {
+      grid-area: 7/2/8/14;
+      z-index: 6;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-baecbeef05f1f176efa5 .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-baecbeef05f1f176efa5 .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773520651189_5670 {
+    grid-area: 8/2/17/10;
+    z-index: 8;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773520651189_5670 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-yui_3_17_2_1_1773520651189_5670 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1773520651189_5670 {
+      grid-area: 8/2/15/5;
+      z-index: 7;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1773520651189_5670 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-yui_3_17_2_1_1773520651189_5670 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-56f1af41ec6232f8e7e7 {
+    grid-area: 8/6/16/9;
+    z-index: 9;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-56f1af41ec6232f8e7e7 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-56f1af41ec6232f8e7e7 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-56f1af41ec6232f8e7e7 {
+      grid-area: 8/6/14/9;
+      z-index: 8;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-56f1af41ec6232f8e7e7 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-56f1af41ec6232f8e7e7 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-db39529787b6f04c7b49 {
+    grid-area: 17/2/24/10;
+    z-index: 10;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-db39529787b6f04c7b49 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-db39529787b6f04c7b49 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-db39529787b6f04c7b49 {
+      grid-area: 8/10/14/14;
+      z-index: 9;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-db39529787b6f04c7b49 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-db39529787b6f04c7b49 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773593013886_4536 {
+    grid-area: 25/2/31/10;
+    z-index: 3;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773593013886_4536 .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-yui_3_17_2_1_1773593013886_4536 .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1773593013886_4536 {
+      grid-area: 5/16/12/24;
+      z-index: 10;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1773593013886_4536 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-yui_3_17_2_1_1773593013886_4536 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-4a125c814bbbddcbf67e {
+    grid-area: 25/2/27/10;
+    z-index: 1;
+
+    @media (max-width: 767px) {
+      
+      
+    }
+  }
+
+  .fe-block-4a125c814bbbddcbf67e .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-4a125c814bbbddcbf67e .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-4a125c814bbbddcbf67e {
+      grid-area: 3/16/5/24;
+      z-index: 1;
+
+      
+
+      
+    }
+
+    .fe-block-4a125c814bbbddcbf67e .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-4a125c814bbbddcbf67e .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773517820947_13874 {
+    grid-area: 32/2/33/10;
+    z-index: 5;
+
+    @media (max-width: 767px) {
+      
+        
+      
+      
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_1773517820947_13874 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-yui_3_17_2_1_1773517820947_13874 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_1773517820947_13874 {
+      grid-area: 15/2/16/26;
+      z-index: 3;
+
+      
+        
+      
+
+      
+    }
+
+    .fe-block-yui_3_17_2_1_1773517820947_13874 .sqs-block {
+      justify-content: center;
+    }
+
+    .fe-block-yui_3_17_2_1_1773517820947_13874 .sqs-block-alignment-wrapper {
+      align-items: center;
+    }
+  }
+
+  .fe-block-4b50ee6f6aad65ad80fa {
+    grid-area: 33/2/35/10;
+    z-index: 4;
+
+    @media (max-width: 767px) {
+      
+      
+    }
+  }
+
+  .fe-block-4b50ee6f6aad65ad80fa .sqs-block {
+    justify-content: flex-start;
+  }
+
+  .fe-block-4b50ee6f6aad65ad80fa .sqs-block-alignment-wrapper {
+    align-items: flex-start;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-4b50ee6f6aad65ad80fa {
+      grid-area: 16/2/17/26;
+      z-index: 4;
+
+      
+
+      
+    }
+
+    .fe-block-4b50ee6f6aad65ad80fa .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-4b50ee6f6aad65ad80fa .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+#block-7a6efb8841c6874f715c {
+    
+    --stroke-style: none;--stroke-thickness: 6px;
+    
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-7a6efb8841c6874f715c .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-7a6efb8841c6874f715c {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-7a6efb8841c6874f715c {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-7a6efb8841c6874f715c {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-7a6efb8841c6874f715c {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-7a6efb8841c6874f715c {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-7a6efb8841c6874f715c .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
+#block-yui_3_17_2_1_1773520651189_3462 {
+        --image-component-focal-point: 50% 50%;
+        
+  --image-component-object-fit: contain;
+  --image-component-overlay-opacity: 0;
+  --image-component-overlay-blend-mode: normal;
+  
+  --image-component-native-aspect-ratio: 312/311;
+  
+  
+  
+
+      }
+      #block-yui_3_17_2_1_1773520651189_3462 .fluid-image-container.visitor-mode {
+        
+  
+  overflow: hidden;-webkit-mask-image: -webkit-radial-gradient(white, black);clip-path: none;-webkit-clip-path: none;
+
+      }
+      #block-yui_3_17_2_1_1773520651189_3462 .js-content-mode-element-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      #block-yui_3_17_2_1_1773520651189_3462 .js-content-mode-element-system_desktop {
+        display: block;
+      }
+.fe-block-yui_3_17_2_1_1773520651189_3462 {
+      --opacity: 100%;
+      --translate-x: 0px;
+      --translate-y: 0px;
+      --rotation: 0deg;
+      --scale-x: 100%;
+      --scale-y: 100%;
+      --skew-x: 0deg;
+      --skew-y: 0deg;
+      --origin-x: 50%;
+      --origin-y: 50%;
+      --block-transform: none;
+
+      opacity: var(--opacity, 1);
+      transform: var(--block-transform);
+      transform-origin: var(--origin-x) var(--origin-y);
+    }
+#block-yui_3_17_2_1_1773520651189_5670 {
+    
+    --stroke-style: none;--stroke-thickness: 2px;
+    
+      --tweak-text-block-stroke-color: hsla(var(--black-hsl), 1)
+;
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-yui_3_17_2_1_1773520651189_5670 .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-yui_3_17_2_1_1773520651189_5670 {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-yui_3_17_2_1_1773520651189_5670 {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-yui_3_17_2_1_1773520651189_5670 {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-yui_3_17_2_1_1773520651189_5670 {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-yui_3_17_2_1_1773520651189_5670 {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-yui_3_17_2_1_1773520651189_5670 .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
+#block-56f1af41ec6232f8e7e7 {
+    
+    --stroke-style: none;--stroke-thickness: 2px;
+    
+      --tweak-text-block-stroke-color: hsla(var(--black-hsl), 1)
+;
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-56f1af41ec6232f8e7e7 .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-56f1af41ec6232f8e7e7 {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-56f1af41ec6232f8e7e7 {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-56f1af41ec6232f8e7e7 {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-56f1af41ec6232f8e7e7 {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-56f1af41ec6232f8e7e7 {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-56f1af41ec6232f8e7e7 .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
+#block-db39529787b6f04c7b49 {
+    
+    --stroke-style: none;--stroke-thickness: 2px;
+    
+      --tweak-text-block-stroke-color: hsla(var(--black-hsl), 1)
+;
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-db39529787b6f04c7b49 .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-db39529787b6f04c7b49 {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-db39529787b6f04c7b49 {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-db39529787b6f04c7b49 {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-db39529787b6f04c7b49 {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-db39529787b6f04c7b49 {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-db39529787b6f04c7b49 .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
+#block-4a125c814bbbddcbf67e {
+    
+    --stroke-style: none;--stroke-thickness: 6px;
+    
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-4a125c814bbbddcbf67e .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-4a125c814bbbddcbf67e {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-4a125c814bbbddcbf67e {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-4a125c814bbbddcbf67e {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-4a125c814bbbddcbf67e {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-4a125c814bbbddcbf67e {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-4a125c814bbbddcbf67e .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
+#block-4b50ee6f6aad65ad80fa {
+    
+    --stroke-style: none;--stroke-thickness: 6px;
+    
+      
+      
+      
+    
+
+
+
+  }
+
+  #block-4b50ee6f6aad65ad80fa .sqs-html-content {
+    
+    --tweak-text-block-padding: 6% 6% 6% 6%;
+  --tweak-text-block-padding: initial;
+}
+
+  .fe-block-4b50ee6f6aad65ad80fa {
+      mix-blend-mode: var(--tweak-text-block-blend
+  );
+      border-radius: var(--tweak-text-block-radius);
+  }
+
+  
+  
+.fe-block-4b50ee6f6aad65ad80fa {
+      --tweak-text-block-radius: 0px 0px 0px 0px;
+    }
+
+
+  
+  .fe-block-4b50ee6f6aad65ad80fa {
+      --tweak-text-block-blend
+  : normal;
+    }
+  
+
+  .fe-block-4b50ee6f6aad65ad80fa {
+    --blur-value: blur(15px);}
+@media screen and (max-width: 767px) {
+          
+            
+
+#block-4b50ee6f6aad65ad80fa {
+            
+            }
+        }
+    
+  
+    @media screen and (max-width: 767px) {
+          #block-4b50ee6f6aad65ad80fa .sqs-html-content {
+            
+            }
+        }
+    
+  @media screen and (max-width: 767px) {
+          
+          
+
+          
+          
+          
+        }
 </style>
 
-<!-- your overrides -->
-<!-- The header restyle now lives INSIDE styles/lul.css (section 8), together
-     with the palette and type tokens it depends on. header.custom.css was
-     deleted on 2026-09-21: it had become a verbatim copy of that section, and
-     two files holding the same rules is how they drift apart. -->
+<!-- your overrides: palette, type scale and the header restyle, one file -->
 <link rel="stylesheet" href="../styles/lul.css">
 </head>
-<body class="tweak-blog-alternating-side-by-side-width-full tweak-blog-alternating-side-by-side-image-aspect-ratio-11-square tweak-blog-alternating-side-by-side-text-alignment-left tweak-blog-alternating-side-by-side-read-more-style-show tweak-blog-alternating-side-by-side-image-text-alignment-middle tweak-blog-alternating-side-by-side-delimiter-bullet tweak-blog-alternating-side-by-side-meta-position-top tweak-blog-alternating-side-by-side-primary-meta-categories tweak-blog-alternating-side-by-side-secondary-meta-date tweak-blog-alternating-side-by-side-excerpt-show image-block-poster-text-alignment-left image-block-card-content-position-center image-block-card-text-alignment-left image-block-overlap-content-position-center image-block-overlap-text-alignment-left image-block-collage-content-position-center image-block-collage-text-alignment-left image-block-stack-text-alignment-left form-use-theme-colors form-field-style-solid form-field-shape-rounded form-field-border-none form-field-checkbox-type-button form-field-checkbox-fill-solid form-field-checkbox-color-inverted form-field-checkbox-shape-rounded form-field-checkbox-layout-fit form-field-radio-type-button form-field-radio-fill-solid form-field-radio-color-inverted form-field-radio-shape-rounded form-field-radio-layout-fit form-field-survey-fill-solid form-field-survey-color-inverted form-field-survey-shape-rounded form-field-hover-focus-accent form-submit-button-style-ellipsis tweak-global-animations-complexity-level-detailed tweak-global-animations-animation-style-fade tweak-global-animations-animation-type-none tweak-global-animations-animation-curve-ease tweak-blog-masonry-width-full tweak-blog-masonry-text-alignment-left tweak-blog-masonry-primary-meta-categories tweak-blog-masonry-secondary-meta-date tweak-blog-masonry-meta-position-top tweak-blog-masonry-read-more-style-show tweak-blog-masonry-delimiter-space tweak-blog-masonry-image-placement-above tweak-blog-masonry-excerpt-show tweak-portfolio-grid-overlay-width-full tweak-portfolio-grid-overlay-height-large tweak-portfolio-grid-overlay-image-aspect-ratio-11-square tweak-portfolio-grid-overlay-text-placement-center tweak-portfolio-grid-overlay-show-text-after-hover tweak-blog-single-column-width-full tweak-blog-single-column-text-alignment-left tweak-blog-single-column-image-placement-above tweak-blog-single-column-delimiter-bullet tweak-blog-single-column-read-more-style-show tweak-blog-single-column-primary-meta-categories tweak-blog-single-column-secondary-meta-date tweak-blog-single-column-meta-position-top tweak-blog-single-column-content-full-post header-width-full tweak-transparent-header tweak-fixed-header tweak-fixed-header-style-basic tweak-blog-item-width-medium tweak-blog-item-text-alignment-left tweak-blog-item-meta-position-above-title tweak-blog-item-show-categories tweak-blog-item-show-date tweak-blog-item-delimiter-bullet tweak-blog-side-by-side-width-full tweak-blog-side-by-side-image-placement-left tweak-blog-side-by-side-image-aspect-ratio-11-square tweak-blog-side-by-side-primary-meta-categories tweak-blog-side-by-side-secondary-meta-date tweak-blog-side-by-side-meta-position-top tweak-blog-side-by-side-text-alignment-left tweak-blog-side-by-side-image-text-alignment-middle tweak-blog-side-by-side-read-more-style-show tweak-blog-side-by-side-delimiter-bullet tweak-blog-side-by-side-excerpt-show primary-button-style-solid primary-button-shape-square secondary-button-style-solid secondary-button-shape-square tertiary-button-style-outline tertiary-button-shape-square tweak-events-stacked-width-full tweak-events-stacked-height-large tweak-events-stacked-show-thumbnails tweak-events-stacked-thumbnail-size-32-standard tweak-events-stacked-date-style-with-text tweak-events-stacked-show-time tweak-events-stacked-show-location tweak-events-stacked-show-excerpt tweak-blog-basic-grid-width-inset tweak-blog-basic-grid-image-aspect-ratio-32-standard tweak-blog-basic-grid-text-alignment-center tweak-blog-basic-grid-delimiter-bullet tweak-blog-basic-grid-image-placement-above tweak-blog-basic-grid-read-more-style-show tweak-blog-basic-grid-primary-meta-categories tweak-blog-basic-grid-secondary-meta-date tweak-blog-basic-grid-excerpt-show tweak-portfolio-grid-basic-width-full tweak-portfolio-grid-basic-height-large tweak-portfolio-grid-basic-image-aspect-ratio-11-square tweak-portfolio-grid-basic-text-alignment-left tweak-portfolio-grid-basic-hover-effect-fade header-overlay-alignment-center tweak-portfolio-index-background-link-format-stacked tweak-portfolio-index-background-width-full tweak-portfolio-index-background-height-large tweak-portfolio-index-background-vertical-alignment-middle tweak-portfolio-index-background-horizontal-alignment-center tweak-portfolio-index-background-delimiter-none tweak-portfolio-index-background-animation-type-fade tweak-portfolio-index-background-animation-duration-medium tweak-portfolio-hover-follow-layout-inline tweak-portfolio-hover-follow-delimiter-bullet tweak-portfolio-hover-follow-animation-type-fade tweak-portfolio-hover-follow-animation-duration-fast tweak-portfolio-hover-static-layout-inline tweak-portfolio-hover-static-front tweak-portfolio-hover-static-delimiter-hyphen tweak-portfolio-hover-static-animation-type-fade tweak-portfolio-hover-static-animation-duration-fast hide-opentable-icons opentable-style-dark tweak-product-quick-view-button-style-floating tweak-product-quick-view-button-position-bottom tweak-product-quick-view-lightbox-excerpt-display-truncate tweak-product-quick-view-lightbox-show-arrows tweak-product-quick-view-lightbox-show-close-button tweak-product-quick-view-lightbox-controls-weight-light native-currency-code-usd collection-6962f84b3bfe5730dc1267d7 collection-type-page collection-layout-default mobile-style-available sqs-seven-one">
+<body class="tweak-blog-alternating-side-by-side-width-full tweak-blog-alternating-side-by-side-image-aspect-ratio-11-square tweak-blog-alternating-side-by-side-text-alignment-left tweak-blog-alternating-side-by-side-read-more-style-show tweak-blog-alternating-side-by-side-image-text-alignment-middle tweak-blog-alternating-side-by-side-delimiter-bullet tweak-blog-alternating-side-by-side-meta-position-top tweak-blog-alternating-side-by-side-primary-meta-categories tweak-blog-alternating-side-by-side-secondary-meta-date tweak-blog-alternating-side-by-side-excerpt-show image-block-poster-text-alignment-left image-block-card-content-position-center image-block-card-text-alignment-left image-block-overlap-content-position-center image-block-overlap-text-alignment-left image-block-collage-content-position-center image-block-collage-text-alignment-left image-block-stack-text-alignment-left form-use-theme-colors form-field-style-solid form-field-shape-square form-field-border-none form-field-checkbox-type-button form-field-checkbox-fill-solid form-field-checkbox-color-inverted form-field-checkbox-shape-rounded form-field-checkbox-layout-fit form-field-radio-type-button form-field-radio-fill-solid form-field-radio-color-inverted form-field-radio-shape-rounded form-field-radio-layout-fit form-field-survey-fill-solid form-field-survey-color-inverted form-field-survey-shape-rounded form-field-hover-focus-accent form-submit-button-style-ellipsis tweak-global-animations-complexity-level-detailed tweak-global-animations-animation-style-fade tweak-global-animations-animation-type-none tweak-global-animations-animation-curve-ease tweak-blog-masonry-width-full tweak-blog-masonry-text-alignment-left tweak-blog-masonry-primary-meta-categories tweak-blog-masonry-secondary-meta-date tweak-blog-masonry-meta-position-top tweak-blog-masonry-read-more-style-show tweak-blog-masonry-delimiter-space tweak-blog-masonry-image-placement-above tweak-blog-masonry-excerpt-show tweak-portfolio-grid-overlay-width-full tweak-portfolio-grid-overlay-height-large tweak-portfolio-grid-overlay-image-aspect-ratio-11-square tweak-portfolio-grid-overlay-text-placement-center tweak-portfolio-grid-overlay-show-text-after-hover tweak-blog-single-column-width-full tweak-blog-single-column-text-alignment-left tweak-blog-single-column-image-placement-above tweak-blog-single-column-delimiter-bullet tweak-blog-single-column-read-more-style-show tweak-blog-single-column-primary-meta-categories tweak-blog-single-column-secondary-meta-date tweak-blog-single-column-meta-position-top tweak-blog-single-column-content-full-post header-width-full tweak-transparent-header tweak-fixed-header tweak-fixed-header-style-basic tweak-blog-item-width-medium tweak-blog-item-text-alignment-left tweak-blog-item-meta-position-above-title tweak-blog-item-show-categories tweak-blog-item-show-date tweak-blog-item-delimiter-bullet tweak-blog-side-by-side-width-full tweak-blog-side-by-side-image-placement-left tweak-blog-side-by-side-image-aspect-ratio-11-square tweak-blog-side-by-side-primary-meta-categories tweak-blog-side-by-side-secondary-meta-date tweak-blog-side-by-side-meta-position-top tweak-blog-side-by-side-text-alignment-left tweak-blog-side-by-side-image-text-alignment-middle tweak-blog-side-by-side-read-more-style-show tweak-blog-side-by-side-delimiter-bullet tweak-blog-side-by-side-excerpt-show primary-button-style-solid primary-button-shape-square secondary-button-style-solid secondary-button-shape-square tertiary-button-style-outline tertiary-button-shape-square tweak-events-stacked-width-full tweak-events-stacked-height-large tweak-events-stacked-show-thumbnails tweak-events-stacked-thumbnail-size-32-standard tweak-events-stacked-date-style-with-text tweak-events-stacked-show-time tweak-events-stacked-show-location tweak-events-stacked-show-excerpt tweak-blog-basic-grid-width-inset tweak-blog-basic-grid-image-aspect-ratio-32-standard tweak-blog-basic-grid-text-alignment-center tweak-blog-basic-grid-delimiter-bullet tweak-blog-basic-grid-image-placement-above tweak-blog-basic-grid-read-more-style-show tweak-blog-basic-grid-primary-meta-categories tweak-blog-basic-grid-secondary-meta-date tweak-blog-basic-grid-excerpt-show tweak-portfolio-grid-basic-width-full tweak-portfolio-grid-basic-height-large tweak-portfolio-grid-basic-image-aspect-ratio-11-square tweak-portfolio-grid-basic-text-alignment-left tweak-portfolio-grid-basic-hover-effect-fade header-overlay-alignment-center tweak-portfolio-index-background-link-format-stacked tweak-portfolio-index-background-width-full tweak-portfolio-index-background-height-large tweak-portfolio-index-background-vertical-alignment-middle tweak-portfolio-index-background-horizontal-alignment-center tweak-portfolio-index-background-delimiter-none tweak-portfolio-index-background-animation-type-fade tweak-portfolio-index-background-animation-duration-medium tweak-portfolio-hover-follow-layout-inline tweak-portfolio-hover-follow-delimiter-bullet tweak-portfolio-hover-follow-animation-type-fade tweak-portfolio-hover-follow-animation-duration-fast tweak-portfolio-hover-static-layout-inline tweak-portfolio-hover-static-front tweak-portfolio-hover-static-delimiter-hyphen tweak-portfolio-hover-static-animation-type-fade tweak-portfolio-hover-static-animation-duration-fast hide-opentable-icons opentable-style-dark tweak-product-quick-view-button-style-floating tweak-product-quick-view-button-position-bottom tweak-product-quick-view-lightbox-excerpt-display-truncate tweak-product-quick-view-lightbox-show-arrows tweak-product-quick-view-lightbox-show-close-button tweak-product-quick-view-lightbox-controls-weight-light native-currency-code-usd collection-type-page collection-layout-default collection-6a71f5420bbecb7190894ebe homepage mobile-style-available sqs-seven-one">
 <!-- #siteWrapper is required: several Squarespace rules are scoped to it -->
 <div id="siteWrapper" class="clearfix site-wrapper">
 <header
@@ -48,179 +3193,179 @@
     class="
       
         
-          white-bold
+          light
         
       
       header theme-col--primary
     "
-    data-section-theme="white-bold"
+    data-section-theme="light"
     data-controller="Header"
     data-current-styles="{
-      &quot;layout&quot;: &quot;navCenter&quot;,
-      &quot;action&quot;: {
-        &quot;href&quot;: &quot;/contact&quot;,
-        &quot;buttonText&quot;: &quot;Contact Us&quot;,
-        &quot;newWindow&quot;: false
-      },
-      &quot;showSocial&quot;: false,
-      &quot;socialOptions&quot;: {
-        &quot;socialBorderShape&quot;: &quot;none&quot;,
-        &quot;socialBorderStyle&quot;: &quot;outline&quot;,
-        &quot;socialBorderThickness&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 1.0
-        }
-      },
-      &quot;menuOverlayAnimation&quot;: &quot;fade&quot;,
-      &quot;cartStyle&quot;: &quot;text&quot;,
-      &quot;cartText&quot;: &quot;Cart&quot;,
-      &quot;showEmptyCartState&quot;: false,
-      &quot;cartOptions&quot;: {
-        &quot;iconType&quot;: &quot;stroke-9&quot;,
-        &quot;cartBorderShape&quot;: &quot;none&quot;,
-        &quot;cartBorderStyle&quot;: &quot;outline&quot;,
-        &quot;cartBorderThickness&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 1.0
-        }
-      },
-      &quot;showButton&quot;: true,
-      &quot;showCart&quot;: false,
-      &quot;showAccountLogin&quot;: false,
-      &quot;headerStyle&quot;: &quot;dynamic&quot;,
-      &quot;languagePicker&quot;: {
-        &quot;enabled&quot;: false,
-        &quot;iconEnabled&quot;: false,
-        &quot;iconType&quot;: &quot;globe&quot;,
-        &quot;flagShape&quot;: &quot;shiny&quot;,
-        &quot;languageFlags&quot;: [ ]
-      },
-      &quot;iconOptions&quot;: {
-        &quot;desktopDropdownIconOptions&quot;: {
-          &quot;size&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 1.0
-          },
-          &quot;iconSpacing&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 0.1
-          },
-          &quot;strokeWidth&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 2.0
-          },
-          &quot;endcapType&quot;: &quot;square&quot;,
-          &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
-          &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
-        },
-        &quot;mobileDropdownIconOptions&quot;: {
-          &quot;size&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 1.0
-          },
-          &quot;iconSpacing&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 0.15
-          },
-          &quot;strokeWidth&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 0.5
-          },
-          &quot;endcapType&quot;: &quot;square&quot;,
-          &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
-          &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
-        }
-      },
-      &quot;mobileOptions&quot;: {
-        &quot;layout&quot;: &quot;logoLeftNavRight&quot;,
-        &quot;menuIconOptions&quot;: {
-          &quot;style&quot;: &quot;doubleLineHamburger&quot;,
-          &quot;thickness&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 1.0
-          }
-        }
-      },
-      &quot;solidOptions&quot;: {
-        &quot;headerOpacity&quot;: {
-          &quot;unit&quot;: &quot;%&quot;,
-          &quot;value&quot;: 100.0
-        },
-        &quot;blurBackground&quot;: {
-          &quot;enabled&quot;: false,
-          &quot;blurRadius&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 12.0
-          }
-        }
-      },
-      &quot;gradientOptions&quot;: {
-        &quot;gradientType&quot;: &quot;faded&quot;,
-        &quot;headerOpacity&quot;: {
-          &quot;unit&quot;: &quot;%&quot;,
-          &quot;value&quot;: 90.0
-        },
-        &quot;blurBackground&quot;: {
-          &quot;enabled&quot;: false,
-          &quot;blurRadius&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 12.0
-          }
-        }
-      },
-      &quot;dropShadowOptions&quot;: {
-        &quot;enabled&quot;: false,
-        &quot;blur&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 7.0
-        },
-        &quot;spread&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 0.0
-        },
-        &quot;distance&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 2.0
-        }
-      },
-      &quot;borderOptions&quot;: {
-        &quot;enabled&quot;: true,
-        &quot;position&quot;: &quot;bottom&quot;,
-        &quot;thickness&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 1.0
-        },
-        &quot;color&quot;: {
-          &quot;type&quot;: &quot;SITE_PALETTE_COLOR&quot;,
-          &quot;sitePaletteColor&quot;: {
-            &quot;colorName&quot;: &quot;darkAccent&quot;,
-            &quot;alphaModifier&quot;: 0.31
-          }
-        }
-      },
-      &quot;showPromotedElement&quot;: false,
-      &quot;buttonVariant&quot;: &quot;secondary&quot;,
-      &quot;blurBackground&quot;: {
-        &quot;enabled&quot;: false,
-        &quot;blurRadius&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 12.0
-        }
-      },
-      &quot;headerOpacity&quot;: {
-        &quot;unit&quot;: &quot;%&quot;,
-        &quot;value&quot;: 100.0
-      }
-    }"
+                                                                                                                                                                                          &quot;layout&quot;: &quot;navRight&quot;,
+                                                                                                                                                                                          &quot;action&quot;: {
+                                                                                                                                                                                            &quot;href&quot;: &quot;/contact&quot;,
+                                                                                                                                                                                            &quot;buttonText&quot;: &quot;Contact Us&quot;,
+                                                                                                                                                                                            &quot;newWindow&quot;: false
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;showSocial&quot;: false,
+                                                                                                                                                                                          &quot;socialOptions&quot;: {
+                                                                                                                                                                                            &quot;socialBorderShape&quot;: &quot;none&quot;,
+                                                                                                                                                                                            &quot;socialBorderStyle&quot;: &quot;outline&quot;,
+                                                                                                                                                                                            &quot;socialBorderThickness&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 1.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;menuOverlayAnimation&quot;: &quot;fade&quot;,
+                                                                                                                                                                                          &quot;cartStyle&quot;: &quot;text&quot;,
+                                                                                                                                                                                          &quot;cartText&quot;: &quot;Cart&quot;,
+                                                                                                                                                                                          &quot;showEmptyCartState&quot;: false,
+                                                                                                                                                                                          &quot;cartOptions&quot;: {
+                                                                                                                                                                                            &quot;iconType&quot;: &quot;stroke-9&quot;,
+                                                                                                                                                                                            &quot;cartBorderShape&quot;: &quot;none&quot;,
+                                                                                                                                                                                            &quot;cartBorderStyle&quot;: &quot;outline&quot;,
+                                                                                                                                                                                            &quot;cartBorderThickness&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 1.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;showButton&quot;: false,
+                                                                                                                                                                                          &quot;showCart&quot;: false,
+                                                                                                                                                                                          &quot;showAccountLogin&quot;: false,
+                                                                                                                                                                                          &quot;headerStyle&quot;: &quot;dynamic&quot;,
+                                                                                                                                                                                          &quot;languagePicker&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: false,
+                                                                                                                                                                                            &quot;iconEnabled&quot;: false,
+                                                                                                                                                                                            &quot;iconType&quot;: &quot;globe&quot;,
+                                                                                                                                                                                            &quot;flagShape&quot;: &quot;shiny&quot;,
+                                                                                                                                                                                            &quot;languageFlags&quot;: [ ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;iconOptions&quot;: {
+                                                                                                                                                                                            &quot;desktopDropdownIconOptions&quot;: {
+                                                                                                                                                                                              &quot;size&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 1.0
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;iconSpacing&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 0.1
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;strokeWidth&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 2.0
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;endcapType&quot;: &quot;square&quot;,
+                                                                                                                                                                                              &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
+                                                                                                                                                                                              &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;mobileDropdownIconOptions&quot;: {
+                                                                                                                                                                                              &quot;size&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 1.0
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;iconSpacing&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 0.15
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;strokeWidth&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 0.5
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;endcapType&quot;: &quot;square&quot;,
+                                                                                                                                                                                              &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
+                                                                                                                                                                                              &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;mobileOptions&quot;: {
+                                                                                                                                                                                            &quot;layout&quot;: &quot;logoLeftNavRight&quot;,
+                                                                                                                                                                                            &quot;menuIconOptions&quot;: {
+                                                                                                                                                                                              &quot;style&quot;: &quot;doubleLineHamburger&quot;,
+                                                                                                                                                                                              &quot;thickness&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 1.0
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;solidOptions&quot;: {
+                                                                                                                                                                                            &quot;headerOpacity&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;%&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 100.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;blurBackground&quot;: {
+                                                                                                                                                                                              &quot;enabled&quot;: false,
+                                                                                                                                                                                              &quot;blurRadius&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 12.0
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;gradientOptions&quot;: {
+                                                                                                                                                                                            &quot;gradientType&quot;: &quot;faded&quot;,
+                                                                                                                                                                                            &quot;headerOpacity&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;%&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 90.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;blurBackground&quot;: {
+                                                                                                                                                                                              &quot;enabled&quot;: false,
+                                                                                                                                                                                              &quot;blurRadius&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 12.0
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;dropShadowOptions&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: false,
+                                                                                                                                                                                            &quot;blur&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 7.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;spread&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 0.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;distance&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 2.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;borderOptions&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: true,
+                                                                                                                                                                                            &quot;position&quot;: &quot;bottom&quot;,
+                                                                                                                                                                                            &quot;thickness&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 1.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;color&quot;: {
+                                                                                                                                                                                              &quot;type&quot;: &quot;SITE_PALETTE_COLOR&quot;,
+                                                                                                                                                                                              &quot;sitePaletteColor&quot;: {
+                                                                                                                                                                                                &quot;colorName&quot;: &quot;darkAccent&quot;,
+                                                                                                                                                                                                &quot;alphaModifier&quot;: 0.31
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;showPromotedElement&quot;: false,
+                                                                                                                                                                                          &quot;buttonVariant&quot;: &quot;secondary&quot;,
+                                                                                                                                                                                          &quot;blurBackground&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: false,
+                                                                                                                                                                                            &quot;blurRadius&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 12.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;headerOpacity&quot;: {
+                                                                                                                                                                                            &quot;unit&quot;: &quot;%&quot;,
+                                                                                                                                                                                            &quot;value&quot;: 100.0
+                                                                                                                                                                                          }
+                                                                                                                                                                                        }"
     data-section-id="header"
     data-header-style="dynamic"
     data-language-picker="{
-      &quot;enabled&quot;: false,
-      &quot;iconEnabled&quot;: false,
-      &quot;iconType&quot;: &quot;globe&quot;,
-      &quot;flagShape&quot;: &quot;shiny&quot;,
-      &quot;languageFlags&quot;: [ ]
-    }"
+                                                                                                                                                                                          &quot;enabled&quot;: false,
+                                                                                                                                                                                          &quot;iconEnabled&quot;: false,
+                                                                                                                                                                                          &quot;iconType&quot;: &quot;globe&quot;,
+                                                                                                                                                                                          &quot;flagShape&quot;: &quot;shiny&quot;,
+                                                                                                                                                                                          &quot;languageFlags&quot;: [ ]
+                                                                                                                                                                                        }"
     
     
     data-first-focusable-element
@@ -367,9 +3512,9 @@
         
         
         
+         header-layout-nav-right
         
         
-         header-layout-nav-center
         
         
         
@@ -472,6 +3617,20 @@
           
             <div class="header-nav-folder-item">
               <a
+                href="/zoningapi"
+                
+              >
+                <span class="header-nav-folder-item-content">
+                  Zoning API
+                </span>
+              </a>
+            </div>
+          
+          
+        
+          
+            <div class="header-nav-folder-item">
+              <a
                 href="/districts"
                 
               >
@@ -790,16 +3949,6 @@
               </div>
 
               
-                <div class="header-actions-action header-actions-action--cta" data-animation-role="header-element">
-                  <a
-                    class="btn btn--border theme-btn--primary-inverse sqs-button-element--secondary"
-                    href="/contact"
-                    
-                  >
-                    Contact Us
-                  </a>
-                </div>
-              
             </div>
           
             
@@ -816,9 +3965,11 @@
 <!-- Burger -->
 <div class="header-burger
 
-  menu-overlay-has-visible-non-navigation-items
+  menu-overlay-does-not-have-visible-non-navigation-items
 
 
+  
+  no-actions
   
 " data-animation-role="header-element">
   <button class="header-burger-btn burger" data-test="header-burger">
@@ -916,6 +4067,20 @@
           
             <div class="header-nav-folder-item">
               <a
+                href="/zoningapi"
+                
+              >
+                <span class="header-nav-folder-item-content">
+                  Zoning API
+                </span>
+              </a>
+            </div>
+          
+          
+        
+          
+            <div class="header-nav-folder-item">
+              <a
                 href="/districts"
                 
               >
@@ -1234,16 +4399,6 @@
               </div>
 
               
-                <div class="header-actions-action header-actions-action--cta" data-animation-role="header-element">
-                  <a
-                    class="btn btn--border theme-btn--primary-inverse sqs-button-element--secondary"
-                    href="/contact"
-                    
-                  >
-                    Contact Us
-                  </a>
-                </div>
-              
             </div>
           
             
@@ -1260,9 +4415,11 @@
 <!-- Burger -->
 <div class="header-burger
 
-  menu-overlay-has-visible-non-navigation-items
+  menu-overlay-does-not-have-visible-non-navigation-items
 
 
+  
+  no-actions
   
 " data-animation-role="header-element">
   <button class="header-burger-btn burger" data-test="header-burger">
@@ -1296,162 +4453,162 @@
       "
       data-section-theme=""
       data-current-styles="{
-      &quot;layout&quot;: &quot;navCenter&quot;,
-      &quot;action&quot;: {
-        &quot;href&quot;: &quot;/contact&quot;,
-        &quot;buttonText&quot;: &quot;Contact Us&quot;,
-        &quot;newWindow&quot;: false
-      },
-      &quot;showSocial&quot;: false,
-      &quot;socialOptions&quot;: {
-        &quot;socialBorderShape&quot;: &quot;none&quot;,
-        &quot;socialBorderStyle&quot;: &quot;outline&quot;,
-        &quot;socialBorderThickness&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 1.0
-        }
-      },
-      &quot;menuOverlayAnimation&quot;: &quot;fade&quot;,
-      &quot;cartStyle&quot;: &quot;text&quot;,
-      &quot;cartText&quot;: &quot;Cart&quot;,
-      &quot;showEmptyCartState&quot;: false,
-      &quot;cartOptions&quot;: {
-        &quot;iconType&quot;: &quot;stroke-9&quot;,
-        &quot;cartBorderShape&quot;: &quot;none&quot;,
-        &quot;cartBorderStyle&quot;: &quot;outline&quot;,
-        &quot;cartBorderThickness&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 1.0
-        }
-      },
-      &quot;showButton&quot;: true,
-      &quot;showCart&quot;: false,
-      &quot;showAccountLogin&quot;: false,
-      &quot;headerStyle&quot;: &quot;dynamic&quot;,
-      &quot;languagePicker&quot;: {
-        &quot;enabled&quot;: false,
-        &quot;iconEnabled&quot;: false,
-        &quot;iconType&quot;: &quot;globe&quot;,
-        &quot;flagShape&quot;: &quot;shiny&quot;,
-        &quot;languageFlags&quot;: [ ]
-      },
-      &quot;iconOptions&quot;: {
-        &quot;desktopDropdownIconOptions&quot;: {
-          &quot;size&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 1.0
-          },
-          &quot;iconSpacing&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 0.1
-          },
-          &quot;strokeWidth&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 2.0
-          },
-          &quot;endcapType&quot;: &quot;square&quot;,
-          &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
-          &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
-        },
-        &quot;mobileDropdownIconOptions&quot;: {
-          &quot;size&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 1.0
-          },
-          &quot;iconSpacing&quot;: {
-            &quot;unit&quot;: &quot;em&quot;,
-            &quot;value&quot;: 0.15
-          },
-          &quot;strokeWidth&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 0.5
-          },
-          &quot;endcapType&quot;: &quot;square&quot;,
-          &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
-          &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
-        }
-      },
-      &quot;mobileOptions&quot;: {
-        &quot;layout&quot;: &quot;logoLeftNavRight&quot;,
-        &quot;menuIconOptions&quot;: {
-          &quot;style&quot;: &quot;doubleLineHamburger&quot;,
-          &quot;thickness&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 1.0
-          }
-        }
-      },
-      &quot;solidOptions&quot;: {
-        &quot;headerOpacity&quot;: {
-          &quot;unit&quot;: &quot;%&quot;,
-          &quot;value&quot;: 100.0
-        },
-        &quot;blurBackground&quot;: {
-          &quot;enabled&quot;: false,
-          &quot;blurRadius&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 12.0
-          }
-        }
-      },
-      &quot;gradientOptions&quot;: {
-        &quot;gradientType&quot;: &quot;faded&quot;,
-        &quot;headerOpacity&quot;: {
-          &quot;unit&quot;: &quot;%&quot;,
-          &quot;value&quot;: 90.0
-        },
-        &quot;blurBackground&quot;: {
-          &quot;enabled&quot;: false,
-          &quot;blurRadius&quot;: {
-            &quot;unit&quot;: &quot;px&quot;,
-            &quot;value&quot;: 12.0
-          }
-        }
-      },
-      &quot;dropShadowOptions&quot;: {
-        &quot;enabled&quot;: false,
-        &quot;blur&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 7.0
-        },
-        &quot;spread&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 0.0
-        },
-        &quot;distance&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 2.0
-        }
-      },
-      &quot;borderOptions&quot;: {
-        &quot;enabled&quot;: true,
-        &quot;position&quot;: &quot;bottom&quot;,
-        &quot;thickness&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 1.0
-        },
-        &quot;color&quot;: {
-          &quot;type&quot;: &quot;SITE_PALETTE_COLOR&quot;,
-          &quot;sitePaletteColor&quot;: {
-            &quot;colorName&quot;: &quot;darkAccent&quot;,
-            &quot;alphaModifier&quot;: 0.31
-          }
-        }
-      },
-      &quot;showPromotedElement&quot;: false,
-      &quot;buttonVariant&quot;: &quot;secondary&quot;,
-      &quot;blurBackground&quot;: {
-        &quot;enabled&quot;: false,
-        &quot;blurRadius&quot;: {
-          &quot;unit&quot;: &quot;px&quot;,
-          &quot;value&quot;: 12.0
-        }
-      },
-      &quot;headerOpacity&quot;: {
-        &quot;unit&quot;: &quot;%&quot;,
-        &quot;value&quot;: 100.0
-      }
-    }"
+                                                                                                                                                                                          &quot;layout&quot;: &quot;navRight&quot;,
+                                                                                                                                                                                          &quot;action&quot;: {
+                                                                                                                                                                                            &quot;href&quot;: &quot;/contact&quot;,
+                                                                                                                                                                                            &quot;buttonText&quot;: &quot;Contact Us&quot;,
+                                                                                                                                                                                            &quot;newWindow&quot;: false
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;showSocial&quot;: false,
+                                                                                                                                                                                          &quot;socialOptions&quot;: {
+                                                                                                                                                                                            &quot;socialBorderShape&quot;: &quot;none&quot;,
+                                                                                                                                                                                            &quot;socialBorderStyle&quot;: &quot;outline&quot;,
+                                                                                                                                                                                            &quot;socialBorderThickness&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 1.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;menuOverlayAnimation&quot;: &quot;fade&quot;,
+                                                                                                                                                                                          &quot;cartStyle&quot;: &quot;text&quot;,
+                                                                                                                                                                                          &quot;cartText&quot;: &quot;Cart&quot;,
+                                                                                                                                                                                          &quot;showEmptyCartState&quot;: false,
+                                                                                                                                                                                          &quot;cartOptions&quot;: {
+                                                                                                                                                                                            &quot;iconType&quot;: &quot;stroke-9&quot;,
+                                                                                                                                                                                            &quot;cartBorderShape&quot;: &quot;none&quot;,
+                                                                                                                                                                                            &quot;cartBorderStyle&quot;: &quot;outline&quot;,
+                                                                                                                                                                                            &quot;cartBorderThickness&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 1.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;showButton&quot;: false,
+                                                                                                                                                                                          &quot;showCart&quot;: false,
+                                                                                                                                                                                          &quot;showAccountLogin&quot;: false,
+                                                                                                                                                                                          &quot;headerStyle&quot;: &quot;dynamic&quot;,
+                                                                                                                                                                                          &quot;languagePicker&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: false,
+                                                                                                                                                                                            &quot;iconEnabled&quot;: false,
+                                                                                                                                                                                            &quot;iconType&quot;: &quot;globe&quot;,
+                                                                                                                                                                                            &quot;flagShape&quot;: &quot;shiny&quot;,
+                                                                                                                                                                                            &quot;languageFlags&quot;: [ ]
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;iconOptions&quot;: {
+                                                                                                                                                                                            &quot;desktopDropdownIconOptions&quot;: {
+                                                                                                                                                                                              &quot;size&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 1.0
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;iconSpacing&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 0.1
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;strokeWidth&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 2.0
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;endcapType&quot;: &quot;square&quot;,
+                                                                                                                                                                                              &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
+                                                                                                                                                                                              &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;mobileDropdownIconOptions&quot;: {
+                                                                                                                                                                                              &quot;size&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 1.0
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;iconSpacing&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;em&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 0.15
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;strokeWidth&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 0.5
+                                                                                                                                                                                              },
+                                                                                                                                                                                              &quot;endcapType&quot;: &quot;square&quot;,
+                                                                                                                                                                                              &quot;folderDropdownIcon&quot;: &quot;openArrowHead&quot;,
+                                                                                                                                                                                              &quot;languagePickerIcon&quot;: &quot;openArrowHead&quot;
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;mobileOptions&quot;: {
+                                                                                                                                                                                            &quot;layout&quot;: &quot;logoLeftNavRight&quot;,
+                                                                                                                                                                                            &quot;menuIconOptions&quot;: {
+                                                                                                                                                                                              &quot;style&quot;: &quot;doubleLineHamburger&quot;,
+                                                                                                                                                                                              &quot;thickness&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 1.0
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;solidOptions&quot;: {
+                                                                                                                                                                                            &quot;headerOpacity&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;%&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 100.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;blurBackground&quot;: {
+                                                                                                                                                                                              &quot;enabled&quot;: false,
+                                                                                                                                                                                              &quot;blurRadius&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 12.0
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;gradientOptions&quot;: {
+                                                                                                                                                                                            &quot;gradientType&quot;: &quot;faded&quot;,
+                                                                                                                                                                                            &quot;headerOpacity&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;%&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 90.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;blurBackground&quot;: {
+                                                                                                                                                                                              &quot;enabled&quot;: false,
+                                                                                                                                                                                              &quot;blurRadius&quot;: {
+                                                                                                                                                                                                &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                                &quot;value&quot;: 12.0
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;dropShadowOptions&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: false,
+                                                                                                                                                                                            &quot;blur&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 7.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;spread&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 0.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;distance&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 2.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;borderOptions&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: true,
+                                                                                                                                                                                            &quot;position&quot;: &quot;bottom&quot;,
+                                                                                                                                                                                            &quot;thickness&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 1.0
+                                                                                                                                                                                            },
+                                                                                                                                                                                            &quot;color&quot;: {
+                                                                                                                                                                                              &quot;type&quot;: &quot;SITE_PALETTE_COLOR&quot;,
+                                                                                                                                                                                              &quot;sitePaletteColor&quot;: {
+                                                                                                                                                                                                &quot;colorName&quot;: &quot;darkAccent&quot;,
+                                                                                                                                                                                                &quot;alphaModifier&quot;: 0.31
+                                                                                                                                                                                              }
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;showPromotedElement&quot;: false,
+                                                                                                                                                                                          &quot;buttonVariant&quot;: &quot;secondary&quot;,
+                                                                                                                                                                                          &quot;blurBackground&quot;: {
+                                                                                                                                                                                            &quot;enabled&quot;: false,
+                                                                                                                                                                                            &quot;blurRadius&quot;: {
+                                                                                                                                                                                              &quot;unit&quot;: &quot;px&quot;,
+                                                                                                                                                                                              &quot;value&quot;: 12.0
+                                                                                                                                                                                            }
+                                                                                                                                                                                          },
+                                                                                                                                                                                          &quot;headerOpacity&quot;: {
+                                                                                                                                                                                            &quot;unit&quot;: &quot;%&quot;,
+                                                                                                                                                                                            &quot;value&quot;: 100.0
+                                                                                                                                                                                          }
+                                                                                                                                                                                        }"
       data-section-id="overlay-nav"
       data-show-account-login="false"
       data-test="header-menu">
@@ -1494,6 +4651,20 @@
                     >
                       <div class="header-menu-nav-item-content">
                         Parcel Reports
+                      </div>
+                    </a>
+                  </div>
+                
+                
+              
+                
+                  <div class="container header-menu-nav-item">
+                    <a
+                      href="/zoningapi"
+                      
+                    >
+                      <div class="header-menu-nav-item-content">
+                        Zoning API
                       </div>
                     </a>
                   </div>
@@ -1809,16 +4980,6 @@
             </div>
             
             
-            
-            <div class="header-menu-cta">
-              <a
-                class="theme-btn--primary btn sqs-button-element--secondary"
-                href="/contact"
-                
-              >
-                Contact Us
-              </a>
-            </div>
             
           </div>
         </nav>
