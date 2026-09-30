@@ -2,7 +2,7 @@
   ZONING API SANDBOX — live request against the production gateway
 
 
-  Calls https://lul-api-prod.azure-api.net/api/v1/point — Parameters are either `addr=` or `lat=`+`lon=`; the key rides as
+  Calls https://api.landuselabs.com/api/v1/point — Parameters are either `addr=` or `lat=`+`lon=`; the key rides as
   `subscription-key=`
 
   The demo key answers for Lafayette, CO only. A point outside it comes back 403
@@ -1010,15 +1010,18 @@
             root.dataset.sbReady = "1";
 
             /* ── edit these ─────────────────────────────────────────────────────── */
-            var DOCS_URL = "https://lul-api-prod.azure-api.net/docs/api/v1/docs/";
+            /* The endpoint's own reference page on the docs site, not the site root — the
+               blurb this sits in is about this endpoint specifically. */
+            var DOCS_URL = "https://land-use-labs.github.io/lul-docs-site/api/point-query/";
 
             /* One entry per query type. Add another and it appears in the picker. */
             var ENDPOINTS = [
                 {
                     id: "point",
                     label: "v1/point",
-                    path: "/api/v1/point", // what the terminal prints
-                    url: "https://lul-api-prod.azure-api.net/api/v1/point", // what is called
+                    /* Called AND printed: the terminal shows the full URL, so the line a
+                       reader sees is the request that was actually made. */
+                    url: "https://api.landuselabs.com/api/v1/point",
                     blurb:
                         "Zoning endpoint returns all zoning districts and their regulations. " +
                         '<a href="' +
@@ -1984,7 +1987,7 @@
                     cls: "lul-sb__line--wrap",
                     h:
                         '<span class="lul-sb__method">GET </span><span class="lul-sb__url">' +
-                        esc(current.path + "?addr=" + encodeURIComponent(EXAMPLE.addr)) +
+                        esc(current.url + "?addr=" + encodeURIComponent(EXAMPLE.addr)) +
                         '</span><span class="lul-sb__caret"></span>',
                 });
             }
@@ -2355,7 +2358,7 @@
                     cls: "lul-sb__line--wrap",
                     h:
                         '<span class="lul-sb__method">GET </span><span class="lul-sb__url">' +
-                        esc(current.path + q.params) +
+                        esc(current.url + q.params) +
                         "</span>",
                 });
 

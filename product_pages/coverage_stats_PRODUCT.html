@@ -58,7 +58,16 @@
             padding: 0 10px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            /* BOTTOM-PACKED, not top. The cards are grid items, so they all
+               take the height of the tallest in the row; packing to the bottom
+               puts every number on one baseline and lets a label that wraps
+               grow UPWARD instead of shoving its own number down.
+
+               With flex-start, a two-line label like "use classifications"
+               pushed that one card's number below the others. Now the label's
+               last line sits the same 5px above the number in every card, so
+               both the numbers and the labels' bottom lines stay aligned. */
+            justify-content: flex-end;
             box-shadow: none;
             /* Label and number are both flush left inside the card, so the
                label's left edge lines up with the first digit. The grid still
@@ -141,7 +150,12 @@
                       (optional per-card flags: plus:false, accent:true → transparent tile)
                   Mix and match, e.g. 3 live + 1 hardcoded, or all 4 live.
                ════════════════════════════════════════════════════════════ */
-            var SELECTED = ["parcels", "acres", "population", "pages"];
+            var SELECTED = [
+                "jurisdictions",
+                "census_tracts",
+                "block_groups",
+                { value: 90, label: "summary stats", plus: false, accent: true },
+            ];
             /* Show the "+" marker after each number? true = on, false = off.
                A hardcoded card can override this with its own `plus:` property,
                e.g. { value: 186, label: "zoning rules offered", plus: false }. */
