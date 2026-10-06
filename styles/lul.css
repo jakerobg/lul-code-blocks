@@ -978,6 +978,7 @@ html.squarespace-damask .sqs-blockStatus {
   margin-inline: auto;
   color: var(--lul-ink);
   box-sizing: border-box;
+  padding: 20px 0;
 }
 .lul-tabs *,
 .lul-tabs *::before,
@@ -1098,7 +1099,757 @@ html.squarespace-damask .sqs-blockStatus {
 }
 
 /* --------------------------------------------------------------------------
-   8. Numerals
+   8. Sector card grid (.lul-sgrid)
+   Six linked cards — title, description, text link — laid out three across in
+   fixed-width tracks that CENTRE rather than stretch. Used by the sector splash.
+
+   SUBGRID is the reason this is a grid and not flex. Flex would make the cards
+   equal height, but each card's three rows would still stack independently, so
+   a two-line description would push that one card's link below its neighbours'.
+   With `grid-template-rows: subgrid`, every card on a row shares one set of row
+   tracks, and the links sit on a shared baseline. There is an @supports flex
+   fallback below for browsers without it.
+
+     .lul-sgrid              the block; --lul-sgrid-card-w sets the track width
+     .lul-sgrid__grid        the three-track row
+     .lul-sgrid__card        one card — an <a>, so the whole card is the link
+     .lul-sgrid__title       Card title L
+     .lul-sgrid__desc        Card body
+     .lul-sgrid__link        the text action; colour shifts on CARD hover
+
+   Breakpoints are plain numbers, not derived from --lul-sgrid-card-w: CSS
+   cannot compute a media query from a variable. Change the card width and the
+   two queries at the bottom have to change with it.
+   -------------------------------------------------------------------------- */
+
+.lul-sgrid {
+  --lul-sgrid-card-w: 350px;
+  --lul-sgrid-gap: 20px;
+  --lul-sgrid-card-pad: 26px 24px 24px;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 32px 20px;
+  color: var(--lul-ink);
+}
+.lul-sgrid *,
+.lul-sgrid *::before,
+.lul-sgrid *::after {
+  box-sizing: border-box;
+}
+
+/* Fixed-width tracks, not 1fr — the cards keep their width on a wide block
+   instead of stretching to the edge, and justify-content centres the row in
+   what is left. minmax(0, …) lets them shrink once the block is narrower than
+   the row needs, so they never overflow. */
+.lul-sgrid__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, var(--lul-sgrid-card-w)));
+  justify-content: center;
+  gap: var(--lul-sgrid-gap);
+}
+
+.lul-sgrid__card {
+  grid-row: span 3;              /* title, description, link */
+  display: grid;
+  grid-template-rows: subgrid;
+  /* a subgrid inherits the parent's gap, which would add --lul-sgrid-gap
+     between every row INSIDE the card on top of each element's own margin */
+  row-gap: 0;
+  min-width: 0;
+  background: var(--lul-white);
+  border: 1px solid var(--lul-ink-15);
+  border-radius: 0;
+  box-shadow: 0 1px 3px var(--lul-ink-05);
+  padding: var(--lul-sgrid-card-pad);
+  /* the card is an <a>: without this the title and body take the theme's link
+     colour, since the type classes below deliberately set none of their own */
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+.lul-sgrid__card:hover {
+  border-color: var(--lul-ink-40);
+  box-shadow: 0 6px 28px var(--lul-ink-10);
+  transform: translateY(-2px);
+}
+
+/* Without subgrid: equal-height cards, link pushed to a shared baseline by the
+   description's flex-grow. Inner spacing can differ by a pixel or two. */
+@supports not (grid-template-rows: subgrid) {
+  .lul-sgrid__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .lul-sgrid__card {
+    flex: 0 1 var(--lul-sgrid-card-w);
+    display: flex;
+    flex-direction: column;
+  }
+  .lul-sgrid__desc {
+    flex-grow: 1;
+  }
+}
+
+.lul-sgrid__title {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-card-title-l);
+  line-height: var(--lul-leading-card-title-l);
+  color: var(--lul-ink);
+  margin: 0 0 14px;
+}
+.lul-sgrid__desc {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-card-body);
+  line-height: var(--lul-leading-card-body);
+  color: var(--lul-grey-dark);
+  margin: 0 0 30px;
+}
+
+/* A <span>, not an <a> — the card itself is the anchor, so a nested link would
+   be invalid. It takes .lul-cta--tertiary's type and colour from section 4;
+   only its placement and the CARD-driven hover are local. */
+.lul-sgrid__link {
+  /* Both axes, because the two layout paths use different properties for the
+     horizontal one. In the subgrid, align-self is the BLOCK axis (top of the
+     shared link row) and justify-self is the INLINE axis; in the @supports
+     flex fallback the card is a column flex, where align-self is the cross
+     axis and does the horizontal job on its own.
+
+     justify-self is what keeps the label flush with the title and body above
+     it: .lul-cta is an inline-flex built for a boxed button, so as a grid item
+     it stretches the full card width and centres its own label. */
+  align-self: start;
+  justify-self: start;
+}
+.lul-sgrid__card:hover .lul-sgrid__link {
+  color: var(--lul-primary-hover);
+}
+
+/* ---- responsive. 3 across needs 3*350 + 2*20 = 1090px of block; the numbers
+   below are the viewport equivalents the block already shipped as its
+   no-container-query fallback. @media, not @container: LESS reads a leading
+   @name as a variable, so @container is a syntax error in Custom CSS. ---- */
+@media (max-width: 1154px) {
+  .lul-sgrid__grid {
+    grid-template-columns: repeat(2, minmax(0, var(--lul-sgrid-card-w)));
+  }
+}
+@media (max-width: 772px) {
+  .lul-sgrid__grid {
+    grid-template-columns: minmax(0, var(--lul-sgrid-card-w));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lul-sgrid__card {
+    transition: none;
+  }
+  .lul-sgrid__card:hover {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8a. Product card grid (.lul-pgrid)
+   The sector grid's bigger sibling: same fixed-width, centred, wrapping tracks
+   and the same subgrid row alignment, but five rows per card — format pill,
+   title, description, price block, button — instead of three.
+
+   Card sizing is deliberately NOT fractional. The tracks are a fixed width, so
+   a card keeps its proportions on a wide block and the row simply wraps to the
+   next line as space runs out, rather than every card stretching.
+
+   The button is .lul-cta--secondary, sized to its label. It used to be
+   `display: block` with centred text, which spanned the whole card — the one
+   thing in the layout that did stretch.
+
+     .lul-pgrid__card              five-row card
+       --thin                      three rows: pill, title, description
+       --selector                  grey "find your product" card
+     .lul-pgrid__pill              format tag, five colourways
+     .lul-pgrid__pricewrap         label + price, kept as one row
+   -------------------------------------------------------------------------- */
+
+.lul-pgrid {
+  --lul-pgrid-card-w: 350px;
+  --lul-pgrid-gap: 28px;
+  --lul-pgrid-card-pad: 26px 24px 24px;
+  --lul-pgrid-btn-w: 184px;
+
+  width: 100%;
+  box-sizing: border-box;
+  padding: 32px 20px;
+  color: var(--lul-ink);
+}
+.lul-pgrid *,
+.lul-pgrid *::before,
+.lul-pgrid *::after {
+  box-sizing: border-box;
+}
+
+.lul-pgrid__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, var(--lul-pgrid-card-w)));
+  justify-content: center;
+  gap: var(--lul-pgrid-gap);
+}
+
+.lul-pgrid__card {
+  grid-row: span 5;      /* pill, title, description, price, button */
+  display: grid;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  min-width: 0;
+  background: var(--lul-white);
+  border: 1px solid var(--lul-ink-15);
+  border-radius: 0;
+  box-shadow: 0 1px 3px var(--lul-ink-05);
+  padding: var(--lul-pgrid-card-pad);
+}
+/* no price block and no button */
+.lul-pgrid__card--thin {
+  grid-row: span 3;
+  display: flex;
+  flex-direction: column;
+}
+.lul-pgrid__card--thin .lul-pgrid__desc {
+  flex-grow: 0;
+  margin-bottom: 20px;
+}
+/* The thin card drops the subgrid for a column flex, which flips the meaning
+   of the button's alignment: align-self is now the CROSS axis, i.e. across the
+   card, so the `end` that keeps the product buttons on the bottom row would
+   shove this one to the right edge instead. Reset it to the left and let
+   margin-top take the vertical job. */
+.lul-pgrid__card--thin .lul-pgrid__btn {
+  align-self: flex-start;
+  margin-top: auto;
+}
+.lul-pgrid__card--selector {
+  background: var(--lul-grey-medium);
+  border-color: var(--lul-ink-15);
+}
+
+@supports not (grid-template-rows: subgrid) {
+  .lul-pgrid__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .lul-pgrid__card {
+    flex: 0 1 var(--lul-pgrid-card-w);
+    display: flex;
+    flex-direction: column;
+  }
+  .lul-pgrid__desc {
+    flex-grow: 1;
+  }
+}
+
+/* ---- format pill ----
+   The one place the eyebrow step is used on a tinted ground, so each colourway
+   carries its own ink. These pairs are from the source blocks and are not in
+   the palette: they are per-format tints, not system colours. */
+.lul-pgrid__pill {
+  justify-self: start;   /* inline axis in the subgrid */
+  align-self: start;     /* block axis */
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-eyebrow);
+  line-height: 1;
+  letter-spacing: var(--lul-track-eyebrow);
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.lul-pgrid__pill--document { background: #e2def2; color: #453a72; }
+.lul-pgrid__pill--vector   { background: #d8deec; color: #33406b; }
+.lul-pgrid__pill--raster   { background: #eaddc7; color: #6b5330; }
+.lul-pgrid__pill--summary  { background: #e0e5c2; color: #4a5620; }
+.lul-pgrid__pill--api      { background: #f0d5bd; color: #7c3a0e; }
+
+/* the selector card's label sits where a pill would, without the tint */
+.lul-pgrid__selectorLabel {
+  justify-self: start;
+  align-self: start;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-eyebrow);
+  line-height: 1;
+  letter-spacing: var(--lul-track-eyebrow);
+  text-transform: uppercase;
+  color: var(--lul-ink);
+  padding: 7px 0;
+  margin-bottom: 14px;
+}
+.lul-pgrid__selectorLabel svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.lul-pgrid__title {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-card-title-l);
+  line-height: var(--lul-leading-card-title-l);
+  color: var(--lul-ink);
+  margin: 0 0 14px;
+}
+.lul-pgrid__desc {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-card-body);
+  line-height: var(--lul-leading-card-body);
+  color: var(--lul-grey-dark);
+  margin: 0 0 30px;
+}
+
+.lul-pgrid__pricewrap {
+  margin-bottom: 13px;
+}
+.lul-pgrid__priceLabel {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-eyebrow);
+  line-height: var(--lul-leading-card-eyebrow);
+  letter-spacing: var(--lul-track-eyebrow);
+  text-transform: uppercase;
+  color: var(--lul-grey-dark);
+  margin: 0 0 3px;
+}
+.lul-pgrid__price {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-card-body);
+  line-height: 1.4;
+  color: var(--lul-ink);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sized to --lul-pgrid-btn-w, not to the card and not to its label. Without
+   the min-width the buttons come out 142-180px wide depending on the product
+   name ("Explore API" vs "Explore Districts"), which reads as sloppy when
+   they sit on a shared baseline across a row. 184px is the longest label plus
+   a little slack, so the text never has to wrap; raise the token if a longer
+   label is added. max-width keeps it from overflowing a card narrower than
+   the token on small screens.
+
+   Both alignment axes are set because the two layout paths disagree on which
+   one is horizontal: in the subgrid justify-self is the inline axis and
+   align-self the block axis, while in the @supports flex fallback the card is
+   a column flex and align-self is the cross axis. --end keeps it on the
+   card's bottom row. */
+.lul-pgrid__btn {
+  justify-self: start;
+  align-self: end;
+  min-width: var(--lul-pgrid-btn-w);
+  max-width: 100%;
+}
+
+@media (max-width: 1154px) {
+  .lul-pgrid__grid {
+    grid-template-columns: repeat(2, minmax(0, var(--lul-pgrid-card-w)));
+  }
+}
+@media (max-width: 772px) {
+  .lul-pgrid__grid {
+    grid-template-columns: minmax(0, var(--lul-pgrid-card-w));
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8b. Product comparison table (.lul-ptab)
+   Six products x six columns: an eyebrow header row on the grey band,
+   alternating white / grey product rows, product name and pricing in the
+   display face. Splash-page companion to .lul-pgrid.
+
+     .lul-ptab              the block; --lul-ptab-max caps its width
+     .lul-ptab__inner       heading + table share it, so they share a left edge
+     .lul-ptab__head        heading wrapper
+     .lul-ptab__title       borrows the H1 spec (see below)
+     .lul-ptab__intro       subheading
+     .lul-ptab__table       the table itself
+     .lul-ptab__col--*      the six column widths
+     .lul-ptab__name        product name cell — also the card heading when stacked
+     .lul-ptab__price       pricing cell
+
+   UNDER 940px EACH ROW BECOMES A CARD. A six-column table can't stay legible
+   on a phone, and a horizontal scroller hides the header row as you scroll, so
+   every cell carries its own label from data-label instead. That is a VIEWPORT
+   width. The block used to measure its own width with @container, which is more
+   correct, but LESS reads a leading @name as a variable and so @container is a
+   syntax error once the sheet is pasted into Custom CSS. 940px is the figure
+   the block's own no-container-queries fallback already used.
+   -------------------------------------------------------------------------- */
+
+.lul-ptab {
+  /* Caps the table so it doesn't run to the edge of a wide block. It is a
+     little WIDER than .lul-pgrid's card span (3 * 350px + 2 * 28px = 1106px)
+     on purpose: six columns of prose need the extra 100px, and "Unit of
+     analysis" wraps in its header at 1106. Anything narrower than the cap just
+     fills the block. */
+  --lul-ptab-max: 1206px;
+
+  --lul-ptab-cell-pad: 20px 22px;
+  --lul-ptab-head-pad: 16px 22px;
+  --lul-ptab-head-gap: 40px;   /* heading to table */
+
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: var(--lul-ink);
+  /* side padding matches .lul-pgrid so the two blocks' outer edges align when
+     they sit above one another on a page */
+  padding: 32px 20px;
+}
+.lul-ptab *,
+.lul-ptab *::before,
+.lul-ptab *::after {
+  box-sizing: border-box;
+}
+
+.lul-ptab__inner {
+  width: 100%;
+  max-width: var(--lul-ptab-max);
+  margin-inline: auto;
+}
+
+/* ── heading ── flush left at every width, including stacked mode ── */
+.lul-ptab__head {
+  text-align: left;
+  margin-bottom: var(--lul-ptab-head-gap);
+}
+/* The H1 spec on an <h3>: the page this block sits in already has its own
+   headings, so the level is chosen for the outline and only the treatment is
+   borrowed — the same thing .lul-sb__title does in the API sandbox. */
+.lul-ptab__title {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  font-size: var(--lul-size-h1);
+  line-height: var(--lul-leading-h1);
+  letter-spacing: var(--lul-track-h1);
+  margin: 0 0 var(--lul-space-h1);
+}
+.lul-ptab__intro {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-body);
+  line-height: var(--lul-leading-body);
+  color: var(--lul-grey-dark);
+  margin: 0;
+}
+
+.lul-ptab__table {
+  width: 100%;
+  border-collapse: collapse;
+  /* fixed keeps the columns at the widths set below instead of letting the
+     longest cell dictate them */
+  table-layout: fixed;
+}
+
+/* ── header row ── the shared eyebrow treatment, on the grey band ── */
+.lul-ptab__table thead th {
+  background: var(--lul-grey-medium);
+  text-align: left;
+  vertical-align: bottom;
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-semibold);
+  font-size: var(--lul-size-eyebrow);
+  line-height: var(--lul-leading-eyebrow);
+  letter-spacing: var(--lul-track-eyebrow);
+  text-transform: uppercase;
+  color: var(--lul-ink);
+  padding: var(--lul-ptab-head-pad);
+}
+
+/* ── body ── */
+.lul-ptab__table tbody td {
+  font-family: var(--lul-font-body);
+  font-weight: var(--lul-weight-regular);
+  font-size: var(--lul-size-small);
+  line-height: var(--lul-leading-small);
+  color: var(--lul-grey-dark);
+  vertical-align: top;
+  padding: var(--lul-ptab-cell-pad);
+  border-bottom: 1px solid var(--lul-ink-12);
+}
+/* alternating stripe — every other product row picks up the grey */
+.lul-ptab__table tbody tr:nth-child(even) td {
+  background: var(--lul-grey-medium);
+}
+/* Product name and pricing are the anchors of each row, so they take the
+   display face and full ink while the rest of the row stays grey. */
+.lul-ptab__table tbody td.lul-ptab__name,
+.lul-ptab__table tbody td.lul-ptab__price {
+  font-family: var(--lul-font-display);
+  font-weight: var(--lul-weight-display);
+  color: var(--lul-ink);
+}
+
+/* Column widths. Percentages, so they scale with the block; they add to 100.
+
+   --unit is 17% rather than the 15% the other narrow columns get, because
+   "UNIT OF ANALYSIS" is the longest header label by a wide margin and at 15%
+   it had 2px to spare — the shared eyebrow tracking (--lul-track-eyebrow,
+   0.12em) is looser than the 0.09em this block used to set for itself, and
+   Inter is a touch wider than the Helvetica it used to run in. The 2% comes
+   off --best, which has the most slack in its own header of any column. */
+.lul-ptab__col--name   { width: 15%; }
+.lul-ptab__col--get    { width: 21%; }
+.lul-ptab__col--best   { width: 20%; }
+.lul-ptab__col--unit   { width: 17%; }
+.lul-ptab__col--format { width: 13%; }
+.lul-ptab__col--price  { width: 14%; }
+
+/* ── stacked mode ── one card per product ── */
+@media (max-width: 940px) {
+  .lul-ptab__table,
+  .lul-ptab__table tbody,
+  .lul-ptab__table tr,
+  .lul-ptab__table td {
+    display: block;
+    width: 100%;
+  }
+  /* The header row is redundant once every cell is labelled. Clipped rather
+     than display:none so it stays in the accessibility tree. */
+  .lul-ptab__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .lul-ptab__table tbody tr {
+    border: 1px solid var(--lul-ink-12);
+    margin-bottom: 16px;
+    padding: 6px 0;
+  }
+  .lul-ptab__table tbody tr:nth-child(even) {
+    background: var(--lul-grey-medium);
+  }
+  .lul-ptab__table tbody tr:nth-child(even) td {
+    background: transparent;   /* the row carries the stripe now */
+  }
+  .lul-ptab__table tbody td {
+    border-bottom: none;
+    padding: 8px 20px;
+  }
+  /* the column name, in the same eyebrow treatment as the header row */
+  .lul-ptab__table tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-family: var(--lul-font-body);
+    font-weight: var(--lul-weight-semibold);
+    font-size: var(--lul-size-eyebrow);
+    line-height: var(--lul-leading-eyebrow);
+    letter-spacing: var(--lul-track-eyebrow);
+    text-transform: uppercase;
+    color: var(--lul-grey-dark);
+    margin-bottom: 3px;
+  }
+  /* the product name is the card's heading, so it steps up and drops its label */
+  .lul-ptab__table tbody td.lul-ptab__name {
+    font-size: var(--lul-size-card-title-m);
+    line-height: var(--lul-leading-card-title-m);
+    padding-top: 14px;
+  }
+  .lul-ptab__table tbody td.lul-ptab__name::before {
+    content: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8c. Coverage stats (.lul-cov)
+   Four count-up figures, each an eyebrow label over a .lul-stat number. Two
+   blocks use it, and they used to carry these rules in their own <style> under
+   the same class names, so the two could not share a page:
+
+     coverage_stats.html                     light — white cards, purple figures
+     product_pages/coverage_stats_PRODUCT    dark  — no cards, white on ink
+
+     .lul-cov               the block (light by default)
+     .lul-cov--dark         the dark variant: ink ground, no card chrome
+     .lul-cov--four         set by the block's script when four fit in a row
+     .lul-cov__grid         the row of cards
+     .lul-cov__card         one figure; --accent is the ghost tile (light only)
+     .lul-cov__sub          the label — .lul-eyebrow, sits above the number
+     .lul-cov__num          the number — .lul-stat
+     .lul-cov__plus         the small trailing "+"
+
+   TWO OR FOUR ACROSS, NEVER ONE. Four in a row when the BLOCK is wide enough,
+   otherwise a 2 x 2 — a single column of four huge numbers read as a list, not a
+   set. The block's script measures its own width and sets .lul-cov--four; that
+   is a BLOCK width, not the viewport, because a code block can sit in a narrow
+   column on a wide screen. Measured in JS rather than with @container, which
+   LESS cannot compile (see the note at the top of this file). Tracks are
+   minmax(0, card width), so a 2 x 2 in a column narrower than two cards shrinks
+   them instead of overflowing.
+   -------------------------------------------------------------------------- */
+
+.lul-cov {
+  --lul-cov-card-w: 170px;
+  --lul-cov-gap: 25px;
+
+  color: var(--lul-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 20px 0;
+  /* never let the block paint outside its Squarespace container */
+  overflow-x: clip;
+}
+.lul-cov *,
+.lul-cov *::before,
+.lul-cov *::after {
+  box-sizing: border-box;
+}
+
+.lul-cov__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, var(--lul-cov-card-w)));
+  justify-content: center;
+  gap: var(--lul-cov-gap);
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+}
+.lul-cov--four .lul-cov__grid {
+  grid-template-columns: repeat(4, minmax(0, var(--lul-cov-card-w)));
+}
+
+/* Light card: label at the top, number pinned to the bottom by margin-top:
+   auto, so a taller card opens the gap between them rather than padding below. */
+.lul-cov__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  min-height: 150px;
+  padding: 25px 20px;
+  background: var(--lul-white);
+  border: 1px solid var(--lul-ink-30);
+  border-radius: 0;
+  box-shadow: 2px 6px 10px var(--lul-ink-28);
+}
+
+/* Face, size, leading, tracking and tabular figures all come from .lul-stat. */
+.lul-cov__num {
+  /* Holds the number's line open before the fetch lands. The card is built
+     empty so nothing flashes; without this the empty <p> collapses and the
+     block grows when the numbers arrive. 1em is one line at leading 1. */
+  min-height: 1em;
+  margin: 0;
+  margin-top: auto;
+  color: var(--lul-primary);
+}
+.lul-cov__plus {
+  font-size: 0.6em;
+  margin-left: 0.15em;
+  vertical-align: 0.5em;
+  /* no font-weight: .lul-stat's 700 carries through, so the + matches the digits */
+}
+.lul-cov__sub {
+  margin: 0;
+}
+
+/* Ghost tile — opt-in per hardcoded card (`accent: true`), for a light block
+   placed on a DARK section: no fill, a cream keyline and cream text. The cream
+   (#eeecef) is deliberately not a token: it is light-on-dark, and
+   --lul-grey-medium, two units away, is a light-mode SURFACE. An inset ring
+   rather than a border, so it does not shift the content by the border width. */
+.lul-cov__card--accent {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
+}
+.lul-cov__card--accent .lul-cov__num {
+  color: #eeecef;
+}
+.lul-cov__card--accent .lul-cov__sub {
+  color: rgba(238, 236, 239, 0.78);
+}
+.lul-cov__card--accent .lul-cov__plus {
+  color: rgba(238, 236, 239, 0.6);
+}
+
+/* ---- dark variant ------------------------------------------------------
+   Written after the accent rules on purpose: at equal specificity the dark
+   colours win, so `accent: true` is a no-op inside a dark block (every figure
+   there is already transparent) rather than turning its text cream. */
+.lul-cov--dark {
+  --lul-cov-card-w: 180px;
+  color: var(--lul-white);
+  background: var(--lul-ink);
+}
+/* No card. BOTTOM-packed: grid items take the height of the tallest in the
+   row, so packing to the bottom puts every number on one baseline and lets a
+   label that wraps to two lines grow upward instead of pushing its own number
+   below the others. */
+.lul-cov--dark .lul-cov__card {
+  justify-content: flex-end;
+  min-height: 0;
+  padding: 0 10px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.lul-cov--dark .lul-cov__num {
+  margin-top: 0;
+  color: var(--lul-white);
+}
+.lul-cov--dark .lul-cov__plus {
+  color: inherit;
+}
+/* White at 85% has no token: the palette is light-mode only. An rgba colour
+   rather than opacity, which would also fade anything nested in the label. */
+.lul-cov--dark .lul-cov__sub {
+  margin: 0 0 5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---- phones ---------------------------------------------------------------
+   A 2 x 2 on a 375px screen leaves each card ~160px, so the gap and the card's
+   padding come in to give the number its width back. The number itself steps
+   down with the type scale (--lul-size-stat, section 10). Viewport-based: by
+   this width the block is as wide as the screen anyway. */
+@media (max-width: 767px) {
+  .lul-cov {
+    --lul-cov-gap: 14px;
+  }
+  .lul-cov__card {
+    min-height: 118px;
+    padding: 18px 14px;
+  }
+  .lul-cov--dark .lul-cov__card {
+    padding: 0 4px;
+  }
+  /* With no card edges, the tighter gap put each row's label right under the
+     number above it; the dark rows keep more air than the columns do. */
+  .lul-cov--dark .lul-cov__grid {
+    row-gap: 24px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Numerals
    Tabular in tables, stat bands, chart labels and folios — figures have to
    line up in a column. Proportional figures only in running prose. The
    slashed zero stays OFF throughout: it reads as technical rather than
@@ -1118,7 +1869,7 @@ html.squarespace-damask .sqs-blockStatus {
 }
 
 /* --------------------------------------------------------------------------
-   9. Mobile step-down
+  10. Mobile step-down
    NOT IN THE DOC — the typography spec gives one web scale and is silent on
    breakpoints. 56px display and 42px H1 overflow a 375px viewport, so the
    four largest steps are stepped down here. Literal values, no calc(), so

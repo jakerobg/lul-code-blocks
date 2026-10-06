@@ -4,126 +4,24 @@
   Numbers tick up from 0 → target the first time the block scrolls into view.
   Values come live from the zoning-atlas coverage API.
 
-  TYPE AND COLOUR COME FROM styles/lul.css. The number is .lul-stat (Space
-  Grotesk 700, 40px, tabular figures) and the label is .lul-eyebrow. This
-  block sets layout, the dark ground and the light-on-dark text only.
+  ALL STYLING IS IN styles/lul.css, section 8c (.lul-cov), as .lul-cov--dark.
+  This file is markup and behaviour only. It is the same component as the
+  light block in the repo root (coverage_stats.html), so the two can share a
+  page without restyling each other.
+
+  ▶ FOUR ACROSS OR 2 x 2, never one column. The script below measures the
+    block and sets .lul-cov--four when four fit.
 
   ▶ CONFIG (top of the <script> below): SELECTED lists the 4 cards. Each
     is either a metric key (fetched live from METRICS) or a hardcoded
     { value, label } card.
-
-  ▶ SHARES CLASS NAMES with the light version in the repo root
-    (coverage_stats.html). Both define .lul-cov / .lul-cov__num / __sub in
-    their own <style>, so putting BOTH on one Squarespace page would let the
-    later block restyle the earlier one. They have never been paired, but if
-    that changes, this one wants renaming to .lul-cov--dark rather than
-    redefining .lul-cov.
 -->
 
 <!-- Local preview only. Squarespace already carries these rules in Custom CSS,
      so this line can be deleted when pasting the block in (harmless if left). -->
 <link rel="stylesheet" href="../styles/lul.css" />
 
-<section class="lul lul-cov" aria-label="Data coverage statistics">
-    <style>
-        .lul-cov {
-            /* colour was var(--lul-header) — ink text ON an ink ground, which
-               only worked because every child set its own white. Anything
-               added here without an explicit colour would have been invisible. */
-            color: var(--lul-white);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 20px 0;
-            background: var(--lul-ink);
-        }
-        .lul-cov *,
-        .lul-cov *::before,
-        .lul-cov *::after {
-            box-sizing: border-box;
-        }
-        .lul-cov__grid {
-            display: grid;
-            /* fixed-width cards, centered — they wrap to the next row
-               at each breakpoint instead of stretching to fill. */
-            grid-template-columns: repeat(4, 180px);
-            justify-content: center;
-            gap: 25px;
-        }
-        /* no card: just a centered label + number, transparent background */
-        .lul-cov__card {
-            background: transparent;
-            border-radius: 0;
-            padding: 0 10px;
-            display: flex;
-            flex-direction: column;
-            /* BOTTOM-PACKED, not top. The cards are grid items, so they all
-               take the height of the tallest in the row; packing to the bottom
-               puts every number on one baseline and lets a label that wraps
-               grow UPWARD instead of shoving its own number down.
-
-               With flex-start, a two-line label like "use classifications"
-               pushed that one card's number below the others. Now the label's
-               last line sits the same 5px above the number in every card, so
-               both the numbers and the labels' bottom lines stay aligned. */
-            justify-content: flex-end;
-            box-shadow: none;
-            /* Label and number are both flush left inside the card, so the
-               label's left edge lines up with the first digit. The grid still
-               centers the row of cards as a whole. */
-            text-align: left;
-            align-items: flex-start;
-        }
-        /* Face, size, leading, tracking and tabular figures come from
-           .lul-stat; only the light-on-dark colour is local. */
-        .lul-cov__num {
-            /* Holds the number's line open before the fetch lands. The card is
-               built empty so nothing flashes, and without this the empty <p>
-               would collapse to 0 and the block would grow when the numbers
-               arrive. 1em == one line at --lul-leading-stat (1.0). */
-            min-height: 1em;
-            color: var(--lul-white);
-            margin: 0;
-        }
-        .lul-cov__plus {
-            font-size: 0.6em; /* a little smaller than the number */
-            /* No font-weight: it used to be pinned to 400 to match the old
-               400-weight number. .lul-stat is 700, so pinning it would now
-               render the + lighter than the digits it follows. */
-            margin-left: 0.15em;
-            vertical-align: 0.5em;
-        }
-        /* `accent: true` used to draw a ghost tile. With the cards removed
-           every stat is already transparent, so this is now a no-op kept
-           only so existing SELECTED configs don't break. */
-        .lul-cov__card--accent {
-            background: transparent;
-            box-shadow: none;
-        }
-        /* Uppercase label — type comes from .lul-eyebrow. Only the
-           light-on-dark colour and the gap above the number are local.
-           White at 85% has no palette token: the sheet is a light-mode
-           palette and there is no light-on-dark ramp in it yet. Set as an
-           rgba colour rather than `opacity`, which would also fade anything
-           nested inside the label. */
-        .lul-cov__sub {
-            color: rgba(255, 255, 255, 0.85);
-            margin: 0 0 5px 0;
-        }
-        @media (max-width: 820px) {
-            .lul-cov__grid {
-                grid-template-columns: repeat(2, 180px);
-            }
-        }
-        @media (max-width: 450px) {
-            .lul-cov__grid {
-                /* never exceed the viewport (minus side margins) on tiny screens */
-                grid-template-columns: min(180px, calc(100vw - 32px));
-                gap: 25px;
-            }
-        }
-    </style>
+<section class="lul lul-cov lul-cov--dark" aria-label="Data coverage statistics">
     <div class="lul-cov__grid" id="lul-cov-grid"></div>
     <script>
         (function () {
@@ -369,6 +267,24 @@
                     io.observe(rec.el);
                 });
             }
+            // ── Four across or 2 x 2, measured off the BLOCK (not the viewport) ──
+            // Four in a row when 4*180 + 3*25 = 795px fits, otherwise the CSS
+            // default of 2 x 2. Never one column. Same logic as the light block.
+            var CARD_W = 180,
+                GAP = 25;
+            function setCols() {
+                var w = root.clientWidth || root.getBoundingClientRect().width || 0;
+                if (!w) return;
+                root.classList.toggle("lul-cov--four", w >= 4 * CARD_W + 3 * GAP);
+            }
+            setCols();
+            if ("ResizeObserver" in window) {
+                new ResizeObserver(setCols).observe(root);
+            } else {
+                window.addEventListener("resize", setCols);
+                window.addEventListener("load", setCols);
+            }
+
             // ── Fetch live data, then animate (fall back on failure/timeout) ──
             var timer = setTimeout(function () {
                 populate(null);

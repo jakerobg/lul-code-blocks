@@ -4,10 +4,14 @@
   it. Numbers tick up from 0 → target the first time the block scrolls into
   view. Values come live from the zoning-atlas coverage API.
 
-  TYPE AND COLOUR COME FROM styles/lul.css. The number is .lul-stat (Space
-  Grotesk 700, 40px, tabular figures — the doc's data face) and the label is
-  .lul-eyebrow, the one uppercase element the system allows. This block sets
-  layout, the card surface and the count-up behaviour only.
+  ALL STYLING IS IN styles/lul.css, section 8c (.lul-cov). This file is markup
+  and behaviour only. The number is .lul-stat and the label .lul-eyebrow; the
+  card, grid and phone sizes are the .lul-cov component. The dark version on
+  the product pages is the same component with .lul-cov--dark, so the two can
+  share a page.
+
+  ▶ FOUR ACROSS OR 2 x 2, never one column. The script below measures the
+    block and sets .lul-cov--four when four cards fit.
 
   ▶ CONFIG (top of the <script> below): SELECTED lists the 4 cards. Each
     is either a metric key (fetched live from METRICS) or a hardcoded
@@ -19,110 +23,6 @@
 <link rel="stylesheet" href="styles/lul.css" />
 
 <section class="lul lul-cov" aria-label="Data coverage statistics">
-    <style>
-        .lul-cov {
-            color: var(--lul-primary);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            padding: 20px 0;
-            /* never let the block paint outside its Squarespace container */
-            overflow-x: clip;
-        }
-        .lul-cov *,
-        .lul-cov *::before,
-        .lul-cov *::after {
-            box-sizing: border-box;
-        }
-
-        .lul-cov__grid {
-            display: grid;
-            /* Cards are 180px wide and wrap to the next row instead of
-               stretching to fill. --lul-cols is set by the ResizeObserver in
-               the script below (4 / 2 / 1) from the BLOCK's measured width.
-               minmax(0, 180px) is the safety net: if the block is ever
-               narrower than the row needs, tracks shrink rather than
-               overflowing past the code block's edge. */
-            grid-template-columns: repeat(var(--lul-cols, 1), minmax(0, 170px));
-            justify-content: center; /* centers the row of cards in the block */
-            gap: 25px;
-            width: 100%;
-            max-width: 100%;
-            margin-inline: auto;
-        }
-
-        .lul-cov__card {
-            background: var(--lul-white);
-            border-radius: 0;
-            padding: 25px 20px 25px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            min-height: 150px; /* taller card -> bigger number-to-text gap */
-            box-shadow: 2px 6px 10px var(--lul-ink-28);
-            text-align: left;
-            align-items: flex-start;
-            border: solid 1px var(--lul-ink-30);
-        }
-
-        /* Face, size, leading, tracking and tabular figures all come from
-           .lul-stat. Only the colour and the push-to-bottom are local. */
-        .lul-cov__num {
-            /* Holds the number's line open before the fetch lands. The card is
-               built empty so nothing flashes, and without this the empty <p>
-               would collapse to 0 and the block would grow when the numbers
-               arrive. 1em == one line at --lul-leading-stat (1.0). */
-            min-height: 1em;
-            color: var(--lul-primary);
-            margin: 0;
-            margin-top: auto; /* number sits at the bottom, label on top */
-        }
-        .lul-cov__plus {
-            font-size: 0.6em; /* a little smaller than the number */
-            /* No font-weight: it used to be pinned to 400 to match the old
-               400-weight number. .lul-stat is 700, so pinning it would now
-               render the + lighter than the digits it follows. */
-            margin-left: 0.15em;
-            vertical-align: 0.5em;
-        }
-
-        /* transparent "ghost" tile — opt-in per hardcoded card via `accent: true`.
-           For placement on a DARK background: no fill, a cream keyline + cream
-           text so it reads as a different class of figure using one palette. */
-        .lul-cov__card--accent {
-            background: transparent;
-            /* inset ring instead of a real border, so it doesn't shift the
-               content down by the border width like a border-box border would */
-            box-shadow: inset 0 0 0 2px rgba(238, 236, 239, 0.45);
-        }
-        /* The cream (#eeecef) is deliberately NOT a palette token: it is a
-           light-on-dark value with no equivalent in the sheet. --lul-grey-medium
-           (#efedec) is within two units of it but is a light-mode SURFACE, so
-           borrowing it here would tie two unrelated things together. */
-        .lul-cov__card--accent .lul-cov__num {
-            color: #eeecef;
-        }
-        .lul-cov__card--accent .lul-cov__sub {
-            color: rgba(238, 236, 239, 0.78);
-        }
-        .lul-cov__card--accent .lul-cov__plus {
-            color: rgba(238, 236, 239, 0.6);
-        }
-
-        /* Uppercase label. Type comes from .lul-eyebrow, colour from
-           .lul-muted; only its position in the card is local. It sits at the
-           TOP; the number is pushed to the bottom by margin-top:auto above. */
-        .lul-cov__sub {
-            margin: 0;
-        }
-
-        /* Column count is decided in JS (see setCols) — no @media or @container
-           rules here, so nothing depends on the viewport or on how Squarespace
-           wraps the code block. */
-    </style>
-
     <div class="lul-cov__grid" id="lul-cov-grid"></div>
 
     <script>
@@ -377,21 +277,18 @@
                 });
             }
 
-            // ── Responsive columns, measured off the BLOCK (not the viewport) ──
+            // ── Four across or 2 x 2, measured off the BLOCK (not the viewport) ──
             // Squarespace drops this into a code block of unknown width, so the
-            // column count comes from the block's own measured width. Widths
-            // needed: 4 across = 4*180 + 3*25 = 795; 2 across = 2*180 + 25 = 385.
+            // layout comes from the block's own measured width: four in a row
+            // when 4*180 + 3*25 = 795px fits, otherwise the CSS default of 2 x 2.
+            // Never one column — below two cards' width the 2 x 2 tracks shrink.
             var CARD_W = 180,
                 GAP = 25;
-            function widthFor(cols) {
-                return cols * CARD_W + (cols - 1) * GAP;
-            }
             function setCols() {
                 // clientWidth excludes any scrollbar; padding here is vertical only
                 var w = root.clientWidth || root.getBoundingClientRect().width || 0;
                 if (!w) return;
-                var cols = w >= widthFor(4) ? 4 : w >= widthFor(2) ? 2 : 1;
-                root.style.setProperty("--lul-cols", cols);
+                root.classList.toggle("lul-cov--four", w >= 4 * CARD_W + 3 * GAP);
             }
             setCols();
             if ("ResizeObserver" in window) {

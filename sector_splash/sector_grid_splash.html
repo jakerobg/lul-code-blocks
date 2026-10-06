@@ -1,260 +1,79 @@
 <!--
-  SECTOR GRID — six cards, 2 rows x 3 columns (Squarespace Code Block).
+  SECTOR GRID — eight cards, three across (Squarespace Code Block).
 
-  Same card design as product_splash/product_grid.html — fixed-width cards,
-  faint keyline, radius 0, subtle shadow, secondary (outlined) buttons,
-  subgrid row alignment — with a simpler card: title, description, button.
-  No category pill and no pricing block, and no heading above the grid.
+  STYLING COMES FROM styles/lul.css (section 8, .lul-sgrid). This file is
+  markup only — fixed-width cards, faint keyline, radius 0, subtle shadow,
+  subgrid row alignment, with a simple card: title, description, text link.
 
-  ▶ SUBGRID keeps every button on a shared baseline across a row even when
-    one card's description runs to two lines (e.g. Policymaking). Without
-    it that card's button would drop below its neighbours'.
-  ▶ REFLOW: measured against the BLOCK's width, not the browser window —
-    3 across, 2 across under 1106px, 1 under 728px.
-  ▶ All classes are prefixed lul-sgrid- / --luls- so this can share a page
-    with the product blocks without either one clobbering the other.
+  ▶ SUBGRID keeps every link on a shared baseline across a row even when one
+    card's description runs to two lines (e.g. Policymaking). Without it that
+    card's link would drop below its neighbours'.
+  ▶ REFLOW: 3 across, 2 under 1154px, 1 under 772px. These are VIEWPORT
+    widths. The block used to measure its own width with @container, which is
+    more correct, but LESS reads a leading @name as a variable and so
+    @container is a syntax error once the sheet is pasted into Custom CSS.
+  ▶ NO ARROWS on the link. The type doc is explicit — "No CTA label carries a
+    trailing arrow, chevron, or caret" — and the sibling block
+    HOME/sector_grid_HOME.html lost its arrows in the same pass. Hover shifts
+    the colour instead, driven by the CARD, not the link.
+  ▶ The card is the <a>, so the link is a <span>: a nested anchor would be
+    invalid markup.
 -->
 
-<section class="lul-sgrid" aria-label="Sectors we serve">
-    <style>
-        .lul-sgrid {
-            --luls-ink: #393348;
-            --luls-link: #594496; /* card link — matches sector_grid_HOME */
-            --luls-link-hover: #3f2e70;
-            --luls-shadow-hover: 0 6px 28px rgba(57, 51, 72, 0.1);
-            --luls-body: rgba(57, 51, 72, 0.75);
-            --luls-border: rgba(57, 51, 72, 0.15); /* card keyline — faint */
-            --luls-shadow: 0 1px 3px rgba(57, 51, 72, 0.05);
-            --luls-gap: 20px; /* space BETWEEN cards */
-            --luls-card-pad: 26px 24px 24px; /* inner card padding */
-            /* Card width is FIXED at this until the block can't fit three of
-               them; the grid centers in whatever space is left rather than
-               stretching to the edge. 3 * 350 + 2 * 20 = 1090px of block width
-               for a full row. Change --luls-card-w OR --luls-gap and update the
-               two @container breakpoints below to match, since CSS can't
-               compute a breakpoint from a variable. */
-            --luls-card-w: 350px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            color: var(--luls-ink);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            width: 100%;
-            box-sizing: border-box;
-            padding: 32px 20px;
-            container-type: inline-size;
-            container-name: lulsgrid;
-        }
-        .lul-sgrid *,
-        .lul-sgrid *::before,
-        .lul-sgrid *::after {
-            box-sizing: border-box;
-        }
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../styles/lul.css">
 
-        /* ── GRID ──
-           Real grid + subgrid, not flex. Flex would make every card the same
-           HEIGHT, but each card's internal sections would still stack
-           independently, so a two-line description would push that card's
-           button below the others on its row. With subgrid, all cards on a
-           row share one set of row tracks, so the buttons line up. */
-        .lul-sgrid__grid {
-            display: grid;
-            /* Fixed-width tracks, not 1fr — cards stay --luls-card-w wide on a
-               wide block instead of stretching to the edge. minmax(0, …) lets
-               them shrink once the block is narrower than the row needs, so
-               they never overflow. justify-content centers the row in the
-               leftover space. */
-            grid-template-columns: repeat(3, minmax(0, var(--luls-card-w)));
-            justify-content: center;
-            gap: var(--luls-gap);
-        }
-
-        .lul-sgrid__card {
-            /* 3 children: title, description, button */
-            grid-row: span 3;
-            display: grid;
-            grid-template-rows: subgrid;
-            /* A subgrid inherits the parent's gap, which would add --luls-gap
-               between every row INSIDE the card on top of each element's own
-               margin. Spacing here is margin-driven, so zero it out. */
-            row-gap: 0;
-            min-width: 0;
-            background: #ffffff;
-            border: 1px solid var(--luls-border);
-            border-radius: 0;
-            box-shadow: var(--luls-shadow);
-            padding: var(--luls-card-pad);
-            /* whole card is the link — same as sector_grid_HOME */
-            text-decoration: none;
-            transition:
-                border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                transform 0.25s ease;
-        }
-        .lul-sgrid__card:hover {
-            border-color: rgba(57, 51, 72, 0.4);
-            box-shadow: var(--luls-shadow-hover);
-            transform: translateY(-2px);
-        }
-
-        /* Browsers without subgrid fall back to flex: cards are equal height
-           and the button sits on a shared baseline via the description's
-           flex-grow, though inner spacing may differ slightly. */
-        @supports not (grid-template-rows: subgrid) {
-            .lul-sgrid__grid {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .lul-sgrid__card {
-                /* fixed width here too — grow:0 so they don't stretch to fill
-                   the row; wrapping is what changes the column count. */
-                flex: 0 1 var(--luls-card-w);
-                display: flex;
-                flex-direction: column;
-            }
-            .lul-sgrid__desc {
-                flex-grow: 1;
-            }
-        }
-
-        .lul-sgrid__title {
-            font-size: 21px;
-            font-weight: 700;
-            letter-spacing: -0.015em;
-            line-height: 1.2;
-            color: var(--luls-ink);
-            margin: 0 0 14px;
-        }
-
-        .lul-sgrid__desc {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 14px;
-            line-height: 1.55;
-            color: var(--luls-body);
-            margin: 0 0 30px;
-        }
-
-        /* Purple text link with an arrow — same treatment as
-           sector_grid_HOME.html. The card itself is the anchor, so this is a
-           <span>: it reads as a link but isn't a nested one. */
-        .lul-sgrid__link {
-            /* NOT inline-flex — see sector_grid_HOME.html: a long label wraps
-               and a flex gap would strand the arrow at the card's right edge. */
-            display: block;
-            align-self: start;
-            font-size: 15px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-            color: var(--luls-link);
-            transition: color 0.25s ease;
-        }
-        .lul-sgrid__card:hover .lul-sgrid__link {
-            color: var(--luls-link-hover);
-        }
-        .lul-sgrid__arrow {
-            display: inline-block;
-            margin-left: 8px;
-            transition: margin-left 0.25s ease;
-        }
-        .lul-sgrid__card:hover .lul-sgrid__arrow {
-            margin-left: 12px;
-        }
-        /* Squarespace link-color override safety */
-        .lul-sgrid a,
-        .lul-sgrid a:visited {
-            text-decoration: none;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .lul-sgrid__card,
-            .lul-sgrid__link {
-                transition: none !important;
-            }
-            .lul-sgrid__card:hover {
-                transform: none !important;
-            }
-        }
-
-        /* ── RESPONSIVE ──
-           3 across needs 3*350 + 2*20 = 1090px; 2 across needs 720px. Cards
-           keep their fixed width in every tier and the row stays centered —
-           they only shrink below the last breakpoint. */
-        @container lulsgrid (max-width: 1089px) {
-            .lul-sgrid__grid {
-                grid-template-columns: repeat(2, minmax(0, var(--luls-card-w)));
-            }
-        }
-        @container lulsgrid (max-width: 719px) {
-            .lul-sgrid__grid {
-                grid-template-columns: minmax(0, var(--luls-card-w));
-            }
-        }
-        /* Fallback for browsers without container queries (pre-2023): fall
-           back to viewport breakpoints so the block still reflows. */
-        @supports not (container-type: inline-size) {
-            @media (max-width: 1154px) {
-                .lul-sgrid__grid {
-                    grid-template-columns: repeat(2, minmax(0, var(--luls-card-w)));
-                }
-            }
-            @media (max-width: 772px) {
-                .lul-sgrid__grid {
-                    grid-template-columns: minmax(0, var(--luls-card-w));
-                }
-            }
-        }
-    </style>
-
+<section class="lul lul-sgrid" aria-label="Sectors we serve">
     <div class="lul-sgrid__grid">
         <!-- ══ DEVELOPMENT ══ -->
         <a class="lul-sgrid__card" data-sector="developers" href="/developers">
             <h4 class="lul-sgrid__title">Development</h4>
             <p class="lul-sgrid__desc">Stop reading zoning codes. Start building.</p>
-            <span class="lul-sgrid__link">Explore Development <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Development</span>
         </a>
         <!-- ══ ENVIRONMENTAL CONSULTING ══ -->
         <a class="lul-sgrid__card" data-sector="environmental-consultants" href="/environmental-consultants">
             <h4 class="lul-sgrid__title">Environmental Consulting</h4>
             <p class="lul-sgrid__desc">Environmental reviews need zoning analysis.</p>
-            <span class="lul-sgrid__link"
-                >Explore Environmental Consulting <span class="lul-sgrid__arrow">&rarr;</span></span
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Environmental Consulting</span
             >
         </a>
         <!-- ══ FINANCIAL SERVICES ══ -->
         <a class="lul-sgrid__card" data-sector="financial-services" href="/financial-services">
             <h4 class="lul-sgrid__title">Financial Services</h4>
             <p class="lul-sgrid__desc">Flag zoning issues before they become problems.</p>
-            <span class="lul-sgrid__link">Explore Financial Services <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Financial Services</span>
         </a>
         <!-- ══ PLANNING ══ -->
         <a class="lul-sgrid__card" data-sector="planners" href="/planners">
             <h4 class="lul-sgrid__title">Planning</h4>
             <p class="lul-sgrid__desc">Get the tools you need to plan your places.</p>
-            <span class="lul-sgrid__link">Explore Planning <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Planning</span>
         </a>
         <!-- ══ POLICYMAKING ══ -->
         <a class="lul-sgrid__card" data-sector="policymakers" href="/policymakers">
             <h4 class="lul-sgrid__title">Policymaking</h4>
             <p class="lul-sgrid__desc">Debating reform? Inform the vote and benchmark your zoning.</p>
-            <span class="lul-sgrid__link">Explore Policymaking <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Policymaking</span>
         </a>
         <!-- ══ PROPERTY OWNERSHIP ══ -->
         <a class="lul-sgrid__card" data-sector="owners" href="/owners">
             <h4 class="lul-sgrid__title">Property Ownership</h4>
             <p class="lul-sgrid__desc">What can you do with your property? Find out fast.</p>
-            <span class="lul-sgrid__link">Explore Property Ownership <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Property Ownership</span>
         </a>
         <!-- ══ REAL ESTATE ══ -->
         <a class="lul-sgrid__card" data-sector="real-estate" href="/real-estate">
             <h4 class="lul-sgrid__title">Real Estate</h4>
             <p class="lul-sgrid__desc">Finalizing a deal? Know its zoning before you sign.</p>
-            <span class="lul-sgrid__link">Explore Real Estate <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Real Estate</span>
         </a>
         <!-- ══ RESEARCH ══ -->
         <a class="lul-sgrid__card" data-sector="researchers" href="/researchers">
             <h4 class="lul-sgrid__title">Research</h4>
             <p class="lul-sgrid__desc">Researching land use? Get zoning data at scale.</p>
-            <span class="lul-sgrid__link">Explore Research <span class="lul-sgrid__arrow">&rarr;</span></span>
+            <span class="lul-sgrid__link lul-cta lul-cta--tertiary">Explore Research</span>
         </a>
     </div>
 </section>

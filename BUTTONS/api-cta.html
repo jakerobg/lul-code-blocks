@@ -1,0 +1,80 @@
+<!--
+  API page CTAs — primary (filled purple) + secondary (outlined), each with a
+  leading icon: a key for getting access, a terminal prompt for the demo.
+
+  ▶ The buttons come from styles/lul.css (section 4), exactly as in
+    BUTTONS_PRIMARY_SECONDARY.html. The only additions are the icons and the
+    small <style> below that sizes them.
+
+  ▶ The icon sits before the label as the button's first child. .lul-cta is
+    already a flex row with `gap: 8px` (12px on hover), so the gap spaces the
+    icon from the label and widens on hover the same way it does for a
+    dropdown chevron — no margins needed here.
+
+  ▶ Icons are stroked in `currentColor`, so they take the button's text
+    colour: white on the purple primary, ink on the outlined secondary, and
+    they follow any hover colour change without separate copies. They are
+    aria-hidden — the label already says what the button does.
+-->
+<!-- Local preview only. Squarespace already carries these rules in Custom CSS,
+     so this line can be deleted when pasting the block in (harmless if left). -->
+<link rel="stylesheet" href="../styles/lul.css" />
+
+<style>
+    /* 18px at the 16px CTA size; in em so it scales if the CTA step changes.
+       `flex: none` stops the row from shrinking the icon on a narrow screen. */
+    .lul-cta__icon {
+        width: 1.125em;
+        height: 1.125em;
+        flex: none;
+    }
+
+    /* Optical correction. The system pads a CTA 26px either side, which balances a
+       text-only label, but an icon is lighter than a word and its drawing sits ~2px
+       inside its box — so at 26px the left side reads wider than the right. Trimming
+       only the icon side evens it out. Scoped with :has() so a button without an
+       icon keeps the system padding. */
+    .lul-cta:has(> .lul-cta__icon) {
+        padding-left: 20px;
+    }
+</style>
+
+<div class="lul lul-actions" style="padding: 10px 0 0 0">
+    <a class="lul-cta lul-cta--primary" href="/contact">
+        <!-- key -->
+        <svg
+            class="lul-cta__icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+        >
+            <circle cx="8" cy="16" r="5" />
+            <path d="M11.5 12.5 21 3" />
+            <path d="M16.5 7.5l3 3" />
+            <path d="M14 10l2 2" />
+        </svg>
+        Get API Access
+    </a>
+    <a class="lul-cta lul-cta--secondary" href="#demo">
+        <!-- terminal prompt -->
+        <svg
+            class="lul-cta__icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+        >
+            <path d="M3 4h18v16H3z" />
+            <path d="M7 9l3 3-3 3" />
+            <path d="M12.5 15H17" />
+        </svg>
+        Try the Demo
+    </a>
+</div>

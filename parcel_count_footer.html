@@ -1,0 +1,64 @@
+<!--
+  PARCEL COUNT — site-wide fill-in (Squarespace Code Injection).
+
+  Paste this entire file (this comment + the <script> below) into Squarespace
+  → Settings → Advanced → Code Injection → FOOTER (site-wide).
+
+  Any element on any page marked with  data-lul-parcels  gets its text
+  replaced with the live parcel count, e.g.
+
+      covering <span data-lul-parcels>96+ million</span> parcels
+
+  Whatever is written inside the span is the fallback — it stays put if the
+  fetch fails, and it's what shows in the Squarespace editor (which disables
+  scripts while you're logged in). Keeping the fetch here instead of in each
+  Code Block is what lets those blocks be plain HTML with no <script>, so they
+  render the same in the editor as they do live.
+
+  Used by:
+    • TEXT/MAIN-TITLE.html
+    • TEXT/Data-difference-hero.html
+    • HOME/explore_products_NEW.html  (every cloned carousel card — the
+      carousel script runs inline in the page body, so it has already
+      cloned the cards by the time Footer injection runs)
+    • product_splash/product_grid.html
+    • product_pages/order_forms/REPORTS/reports_list.html
+
+  Not used by coverage_stats.html or api/api_hero.html — both fetch the same
+  endpoint themselves, since they animate the number.
+
+  Endpoint: a static JSON file published by the parcel-count-public repo.
+
+      { "parcel_count": 97872884, "generated_at": "2026-09-24T17:06:31Z" }
+
+  FLOORED to whole millions so the "+" stays honest — 97,872,884 reads
+  "97+ million", never 98.
+-->
+<script>
+    (function () {
+        var PARCELS_API = "https://land-use-labs.github.io/parcel-count-public/parcels.json";
+
+        function run() {
+            var els = document.querySelectorAll("[data-lul-parcels]");
+            if (!els.length) return; // nothing on this page → skip the fetch
+            fetch(PARCELS_API, { headers: { Accept: "application/json" } })
+                .then(function (r) {
+                    if (!r.ok) throw new Error("HTTP " + r.status);
+                    return r.json();
+                })
+                .then(function (data) {
+                    var n = data && data.parcel_count;
+                    if (typeof n !== "number" || n < 1e6) return;
+                    var label = Math.floor(n / 1e6) + "+ million";
+                    // re-query: catches anything added since the first check
+                    document.querySelectorAll("[data-lul-parcels]").forEach(function (el) {
+                        el.textContent = label;
+                    });
+                })
+                .catch(function () {}); // keep the fallbacks
+        }
+
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
+        else run();
+    })();
+</script>
